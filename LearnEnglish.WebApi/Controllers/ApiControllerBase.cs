@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace LearnEnglish.WebApi.Controllers
 {
     /// <summary>
-    /// Web API 控制器基类，提供统一的响应辅助方法。 测试提交22
+    /// Web API 控制器基类，提供统一的响应辅助方法。 
     /// 用于与主项目 MVC BaseController 的 ApiOk/ApiFail 语义一致，方便前端兼容。
     /// </summary>
     [ApiController]
