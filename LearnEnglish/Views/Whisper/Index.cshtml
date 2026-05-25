@@ -1,0 +1,234 @@
+﻿@{
+    ViewData["Title"] = "Lightweight Speech Recognition";
+    Layout = null;
+}
+
+<style>
+    .low-confidence-word {
+        background-color: #fff3cd;
+        border-bottom: 2px dashed #ffc107;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+        .low-confidence-word:hover {
+            background-color: #ffeeba;
+            border-bottom: 2px solid #ffc107;
+        }
+
+    .tolerance-indicator {
+        display: inline-block;
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background-color: #dee2e6;
+        margin: 0 2px;
+    }
+
+        .tolerance-indicator.active {
+            background-color: #0d6efd;
+        }
+</style>
+
+
+<div class="container mt-5">
+    <button id="recordButton" class="btn btn-primary">Start Recording</button>
+    <div id="status" class="mt-3 text-info">Ready to record</div>
+    <div id="result" class="mt-3 alert alert-success" style="display:none"></div>
+    <div id="error" class="mt-3 alert alert-danger" style="display:none"></div>
+
+    <!-- 音频播放器（用于调试） -->
+    <audio id="audioPlayer" controls class="mt-3" style=""></audio>
+</div>
+
+<div class="card mb-3">
+    <div class="card-header bg-secondary text-white">
+        <i class="bi bi-sliders me-2"></i>Recognition Settings
+    </div>
+    <div class="card-body">
+        <div class="mb-3">
+            <label class="form-label">Tolerance Level:</label>
+            <input type="range" class="form-range" id="toleranceSlider" min="1" max="5" value="3">
+            <div class="d-flex justify-content-between">
+                <small><i class="bi bi-check-circle-fill text-success"></i> Strict</small>
+                <small><i class="bi bi-check2-all text-warning"></i> Balanced</small>
+                <small><i class="bi bi-lightning-fill text-danger"></i> Lenient</small>
+            </div>
+        </div>
+
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="showAlternatives" checked>
+            <label class="form-check-label" for="showAlternatives">
+                <i class="bi bi-list-ul me-1"></i>Show alternative results
+            </label>
+        </div>
+
+        <div class="form-check form-switch">
+            <input class="form-check-input" type="checkbox" id="showSimilarWords" checked>
+            <label class="form-check-label" for="showSimilarWords">
+                <i class="bi bi-lightbulb me-1"></i>Show word suggestions
+            </label>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 当前容错设置
+    let currentSettings = {
+        threshold: 0.3,
+        alternatives: 5,
+        distance: 2
+    };
+
+    // 容错级别映射
+    const toleranceLevels = {
+        1: { threshold: 0.5, alternatives: 3, distance: 1 },
+        2: { threshold: 0.4, alternatives: 4, distance: 1 },
+        3: { threshold: 0.3, alternatives: 5, distance: 2 },
+        4: { threshold: 0.2, alternatives: 7, distance: 2 },
+        5: { threshold: 0.1, alternatives: 10, distance: 3 }
+    };
+
+    // 初始化滑块
+    document.getElementById('toleranceSlider').addEventListener('input', function() {
+        const level = parseInt(this.value);
+        currentSettings = toleranceLevels[level];
+        updateToleranceIndicator(level);
+    });
+
+    // 更新指示器
+    function updateToleranceIndicator(level) {
+        const indicators = document.querySelectorAll('.tolerance-indicator');
+        indicators.forEach((ind, index) => {
+            if (index < level) {
+                ind.classList.add('active');
+            } else {
+                ind.classList.remove('active');
+            }
+        });
+    }
+
+    // 在结果中高亮低置信度单词
+    function highlightLowConfidenceWords(primaryText, lowConfidenceWords) {
+        let highlighted = primaryText;
+
+        lowConfidenceWords.forEach(word => {
+            const regex = new RegExp(`\\b${escapeRegExp(word)}\\b`, 'gi');
+            highlighted = highlighted.replace(regex,
+                `<span class="low-confidence-word" data-word="${word}">${word}</span>`);
+        });
+
+        return highlighted;
+    }
+
+    // 转义正则表达式特殊字符
+    function escapeRegExp(string) {
+        return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+
+     let mediaRecorder;
+        let audioChunks = [];
+        const recordButton = document.getElementById('recordButton');
+        const statusDiv = document.getElementById('status');
+        const resultDiv = document.getElementById('result');
+        const errorDiv = document.getElementById('error');
+        const audioPlayer = document.getElementById('audioPlayer');
+
+        recordButton.addEventListener('click', async () => {
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                try {
+                    // 获取麦克风访问权限
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            sampleRate: 16000, // 16kHz采样率
+                            channelCount: 1    // 单声道
+                        }
+                    });
+
+                    // 设置MediaRecorder
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    // 处理音频数据
+                    mediaRecorder.ondataavailable = e => {
+                        if (e.data.size > 0) {
+                            audioChunks.push(e.data);
+                        }
+                    };
+
+                    // 录音结束后的处理
+                    mediaRecorder.onstop = async () => {
+                        // 创建Blob并上传
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        await processRecording(audioBlob);
+
+                        // 停止所有轨道（释放麦克风）
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    // 开始录音
+                    mediaRecorder.start();
+                    recordButton.textContent = "Stop Recording";
+                    recordButton.classList.replace('btn-primary', 'btn-danger');
+                    statusDiv.textContent = "Recording...";
+                    resultDiv.style.display = 'none';
+                    errorDiv.style.display = 'none';
+                } catch (err) {
+                    showError(`Microphone error: ${err.message}`);
+                }
+            } else {
+                // 停止录音
+                mediaRecorder.stop();
+                recordButton.textContent = "Start Recording";
+                recordButton.classList.replace('btn-danger', 'btn-primary');
+                statusDiv.textContent = "Processing...";
+            }
+        });
+
+        async function processRecording(audioBlob) {
+
+            try {
+                // 创建FormData
+                const formData = new FormData();
+                formData.append('audioFile', audioBlob, 'recording.wav');
+
+                // 上传到服务器
+                const response = await fetch('/Whisper/Recognize', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+            debugger
+                // 解析结果
+                   const result = await response.text();
+
+
+               if (result) {
+                   resultDiv.textContent = `Recognition Result: ${result}`;
+                       resultDiv.style.display = 'block';
+                       statusDiv.textContent = "Recognition complete";
+                   } else {
+                       throw new Error("No recognition result found");
+                   }
+
+                // 调试用：播放录制的音频
+                const audioUrl = URL.createObjectURL(audioBlob);
+                audioPlayer.src = audioUrl;
+                audioPlayer.style.display = 'block';
+            } catch (err) {
+                showError(`Recognition failed: ${err.message}`);
+            }
+        }
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            statusDiv.textContent = "Error occurred";
+        }
+
+
+</script>

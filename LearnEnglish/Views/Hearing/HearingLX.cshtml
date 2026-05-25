@@ -1,0 +1,710 @@
+﻿@{
+    Layout = null;
+}
+
+ <style>
+
+        .audio-table {
+            width: 100%;
+           /* margin-top: 10px;*/
+           /* font-size: .875rem;*/
+        }
+        .audio-table td {
+           /* border-bottom: 1px dashed #ddd;*/
+        }
+        .audio-table td,
+        .audio-table th {
+           /* padding: 10px 0px;*/
+        }
+        .col2, .col3 {
+            text-align: center;
+        }
+        .col2 {
+            color: gray;
+        }
+        .active td {
+            color: #eb4646;
+        }
+        .play-check {
+            display: inline-grid;
+            width: 32px; height: 32px;
+            place-items: center;
+            -webkit-appearance: none;
+            appearance: none;
+            --mask-img: url("data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cpath d='M512 85.333A426.667 426.667 0 1 0 938.667 512 426.667 426.667 0 0 0 512 85.333zm0 768A341.333 341.333 0 1 1 853.333 512 341.333 341.333 0 0 1 512 853.333zm-78.933-523.946A32 32 0 0 0 384 356.267v311.466a32 32 0 0 0 49.067 26.88l249.6-155.306a32.427 32.427 0 0 0 0-54.614z'/%3E%3C/svg%3E");
+            color: inherit;
+        }
+        .play-check::before {
+            content: '';
+            display: block;
+            width: inherit; height: inherit;
+            background-color: currentColor;
+            -webkit-mask: var(--mask-img) no-repeat center / 24px 24px;
+            mask: var(--mask-img) no-repeat center / 24px 24px;
+        }
+
+        .play-check:checked {
+            --mask-img: url("data:image/svg+xml,%3Csvg viewBox='0 0 1024 1024' xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cpath d='M512 85.333A426.667 426.667 0 1 0 938.667 512 426.667 426.667 0 0 0 512 85.333zm0 768A341.333 341.333 0 1 1 853.333 512 341.333 341.333 0 0 1 512 853.333zm-64-512h-42.667A21.333 21.333 0 0 0 384 362.667v298.666a21.333 21.333 0 0 0 21.333 21.334H448a21.333 21.333 0 0 0 21.333-21.334V362.667A21.333 21.333 0 0 0 448 341.333zm170.667 0H576a21.333 21.333 0 0 0-21.333 21.334v298.666A21.333 21.333 0 0 0 576 682.667h42.667A21.333 21.333 0 0 0 640 661.333V362.667a21.333 21.333 0 0 0-21.333-21.334z'/%3E%3C/svg%3E");
+        }
+        td label,
+        .play-check {
+            cursor: pointer;
+        }
+        td label:hover,
+        .play-check:hover {
+            color: #eb4646;
+        }
+
+        #lyricstwo p {
+        font-size:16px;
+        color:grey;
+            cursor: pointer;
+        }
+
+        #lyricstwo p.active {
+            font-size:20px;
+            font-weight:bolder;
+            color: green;
+        }
+
+        .xhactivetwo{
+           color:red !important;
+        }
+        .bftm{
+            min-width:14px;
+            width:14px;
+              max-width:14px;
+        }
+        .bftm.playing-animate > .plindex {
+
+  display: none;
+}
+.bftm:not(.playing-animate) > .plindex {
+  display: block;
+}
+
+.xhdq{
+    background-size: 24px  24px;
+    width: 20px;
+    height: 20px;
+}
+
+ .bottom-safe-area {  
+    padding-bottom: constant(safe-area-inset-bottom); /* 兼容iOS 11.0 - 11.2 */  
+    padding-bottom: env(safe-area-inset-bottom); /* 兼容iOS 11.2+ */  
+}
+
+    </style>
+
+   <input type="hidden" class="tlHearingId" value="@ViewData["HearingId"]"/>
+   <input type="hidden" class="tlHearingML" value="@ViewData["HearingML"]"/>
+   <input type="hidden" class="tlHearingName" value="@ViewData["courseName"]"/>
+
+
+
+
+   <div class="ttllllxx p-10 " style="">
+
+       <div>
+           <btn  class="btn  bg-primary  xsbrsbtn" id="openplaylist" data-bs-toggle="modal" data-bs-target="#modal-righttwo"  aria-expanded="false">课程列表</btn> 
+           <btn  class="btn  bg-primary ms-10 tlfanyikg" onclick="settlfanyikg()" >翻译</btn> 
+           <label class="wainginfo"></label>
+       </div>
+
+    @*<div class="btplaybg box bgtype" style="margin: 10px; left: 0px; z-index: -1; position: absolute; width: -webkit-fill-available; padding: 10px; height: -webkit-fill-available;">
+       </div>*@
+
+       <div class=" box bgtype mt-10  " style="padding: 10px 0px 10px 20px !important;">
+          <div  id="lyricstwo" data-gcindex="0" style="overflow: auto;padding:0px 10px 0px 0px !important;margin:0px !important;z-index:1000;">
+          <!-- 歌词，每一行代表一句歌词 -->
+
+          <!-- 更多歌词... -->
+          </div>
+    </div>
+
+
+
+
+   </div>
+
+   <div class="p-10 container bbffqq" style="bottom:0;left:50%;box-sizing: border-box;z-index:1000;transform: translateX(-50%); position:fixed;">
+
+
+       <ui-audio id="audio" controls loop="0"></ui-audio>
+
+        <div class="bottom-safe-area"></div>
+    </div>
+
+<div class="modal modal-right fade" id="modal-righttwo" tabindex="-1" style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">听写列表</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body plplaylist" style="overflow: auto;">
+
+               <table id="list" class="audio-table">
+                   <thead>
+                        @* <tr>
+                           <th align="left">播放列表</th>
+                           <th>时长</th>
+                           <th>播放</th>
+                       </tr>*@
+                   </thead>
+               <tbody></tbody>
+               </table>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    <template id="tpl">
+        ${data.map(function (obj, index) {
+            return `<tr>
+              <td class="col3" style="display: flex;justify-content: start;align-items: center;">
+                  <div style="height:40px;width:25px;min-width:25px;max-width:25px;display: flex; justify-content: center;align-items: center;">
+                       <div class="bftm bf_${index}">
+                          <div class="plindex" style="">${index+1}</div> 
+                          <div class="line1"></div> 
+                          <div class="line2"></div> 
+                          <div class="line3"></div>
+                       </div>
+
+                       <input id="c${obj.id}" data-index="${index}" data-kcid="${obj.id}"  class="play-check kcind_${index}"  type="checkbox" value="${obj.url}">
+                  </div>
+                  <div class="col1" align="left" style="margin-left: 10px;width:100%;font-weight: bold;"><label for="c${obj.id}" style="width:100%;">${obj.title}</label></div>
+              </td>
+
+              <td class="col2" style="width: 44px;min-width:44px;max-width:44px;">${formatTime(obj.duration)}</td>
+        @* <td class="col3"><input id="c${obj.id}" data-index="${index}" class="play-check" type="checkbox" value="${obj.url}"></td>*@
+            </tr>`;
+          }).join('')}
+    </template>
+
+  <script type="text/javascript" src='/scripts/pages/ui-audio.js?v=@DateTime.Now.ToString("yyyyMMddHHmmss")'></script>
+    <script>
+       edittitle($(".tlHearingName").val(),"HearingLX");
+          //清空并停止
+        function qinkonandtinzhi(){
+            
+
+            if(typeof audio !== 'undefined')
+            {
+            if (audio !== null && audio !== undefined) {
+            if(audio ){
+                audio.disconnectedCallback();
+                 //audio.pause();
+            }
+            }
+            }
+        }
+
+        function settlfanyikg(){
+
+             $('.tlfanyi').toggle();
+        }
+
+   </script>
+
+
+    <script type="module">
+
+      function parseJson(text){
+
+           // 解码 base64 字符串
+        let decodedStr = atob(text);
+        // 使用 UTF-8 字符集解码
+        let decoder = new TextDecoder('utf-8');
+        let decodedText = decoder.decode(new Uint8Array([...decodedStr].map(c => c.charCodeAt(0))));
+
+        // 尝试将解码后的字符串解析为 JSON
+        let mlArray = JSON.parse(decodedText);
+
+        return mlArray;
+      }
+
+       if(isMobile){
+            $(".gnqan").hide();
+              tbtab(0);
+        }
+
+
+        let tlml = $(".tlHearingML").val();
+
+        let mlArray = parseJson(tlml);
+
+        var dataList = [];
+         for(var i = 0;i<mlArray.length;i++){
+              let ml  = mlArray[i];
+              dataList.push({
+                  "id": ml.Id,
+                  "url": "https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/Hearing/"+ml.Id+".m4a",
+                  "title": ml.Name,
+                  "duration": ml.AudioDuration
+              });
+         }
+
+        String.prototype.interpolate = function (params) {
+            const names = Object.keys(params);
+            const vals = Object.values(params);
+
+            return new Function(...names, `return \`${this}\`;`)(...vals);
+        };
+
+        self.formatTime = function (secs) {
+            var minutes = Math.floor(secs / 60) || 0;
+            var seconds = (secs - minutes * 60) || 0;
+            var shijian =  parseInt(String(seconds).padStart(2, '0'), 10)
+            return minutes + ':' + shijian;
+        }
+
+        let render = function () {
+            const tbody = document.querySelector('tbody');
+            tbody.innerHTML = tpl.innerHTML.interpolate({
+                data: dataList
+            });
+            status();
+        };
+
+        let status = function () {
+            const tbody = document.querySelector('tbody');
+            // 播放状态变化
+            tbody.querySelectorAll('[type="checkbox"]').forEach(checkbox => {
+                // 先设置所有的都不是播放
+                checkbox.checked = false;
+                // 如果播放的音频就是当前列表
+                if (checkbox.value == audio.src) {
+
+                    // 是否播放
+                    if (!audio.paused) {
+                        checkbox.checked = true;
+                    }
+
+                     checkbox.closest('tr').classList.add('active');
+
+
+                } else {
+                    checkbox.closest('tr').classList.remove('active');
+                }
+            });
+        };
+
+        // 播放执行
+        let play = function (index) {
+
+            let data = dataList[index];
+            if (!data) {
+                return;
+            }
+
+            audio.src = data.url;
+            audio.label = data.title;
+
+            // 地址设置
+            setSrc();
+
+            render();
+            setlyrics(index);
+
+        };
+
+        let setSrc = function () {
+            // 根据 src 获得 index
+            let index = dataList.findIndex((obj) => {
+                return obj.url === audio.src;
+            });
+
+            if (index < 0) {
+                return;
+            }
+
+            // 标题
+            audio.label = dataList[index].title;
+
+            // 上一个，下一个
+            let dataPrev = dataList[index - 1];
+            let dataNext = dataList[index + 1];
+
+            // 随机
+            let arrIndexFilter = [];          
+            dataList.forEach((obj, i) => {
+                if (i !== index)  {
+                    arrIndexFilter.push(i);
+                }
+            });
+
+            let indexRandNext = arrIndexFilter[Math.floor(Math.random() * arrIndexFilter.length)];
+
+            // 再次随机
+            let arrIndexFilter2 = [];
+            dataList.forEach((obj, i) => {
+                if (i !== index && i !== indexRandNext)  {
+                    arrIndexFilter2.push(i);
+                }
+            });
+
+            let indexRandprev = arrIndexFilter2[Math.floor(Math.random() * arrIndexFilter2.length)];
+
+            // 开始设置地址
+            // 下一个地址处理
+            if (!audio.prevsrc) {
+                // 如果是随机播放
+                if (audio.loop === '1') {
+                    audio.prevsrc = dataList[indexRandprev].url;
+                } else if (dataPrev) {
+                    audio.prevsrc = dataPrev.url;
+
+                } else {
+                    audio.prevsrc = 'none';
+                }
+            }
+
+            // 如果有地址，则不处理
+            if (!audio.nextsrc) {
+                // 如果是随机播放
+                if (audio.loop === '1') {
+                    audio.nextsrc = dataList[indexRandNext].url;
+
+
+                } else if (dataNext) {
+                    audio.nextsrc = dataNext.url;
+
+                } else {
+                    audio.nextsrc = 'none';
+                }
+            }
+        };
+
+        // 事件处理
+        list.addEventListener('click', function (event) {
+            let target = event.target;
+            if (target && target.type == 'checkbox') {
+
+                if (!this.checked) {
+                    if (audio.src != target.value) {
+                        audio.src = target.value;
+                        audio.prevsrc = '';
+                        audio.nextsrc = '';
+                    } 
+                    audio.play();
+                } else {
+                    audio.pause();
+                }
+            }
+        });
+
+
+
+        //清空数据
+        function temptydata(){
+
+            //清掉循环数据
+            audio.xhdate(0,0);
+            //从0开始播放
+            audio.seek(0);
+            //循环的计时器清空
+            audio.stopTimer();
+        }
+
+        // 顺序播放和随机播放的处理
+        audio.addEventListener('play', function () {
+
+             // 根据 src 获得 index
+            let index = dataList.findIndex((obj) => {
+                return obj.url === audio.src;
+            });
+
+          let gcindex =   $('#lyricstwo').data('gcindex');
+          if(gcindex!=index)
+          {
+               //清空一下
+            temptydata();
+            //加载歌词
+            setlyrics(index);
+          }
+            // 播放时的地址设置
+            setSrc();
+            // 状态设置
+            status();
+        });
+
+        audio.addEventListener('pause', function () {
+            // 状态设置
+            status();
+        });
+
+     function setgc(sentencesArray){
+
+              for(var i = 0;i<sentencesArray.length;i++)
+             {
+                let item = sentencesArray[i];
+
+                let htmlstr = '<div style="display: flex; align-items: center; justify-content: space-between;box-sizing: border-box; padding:10px 0px !important;margin:0px !important;"><p style="margin:0px !important;padding:0px !important;" data-starttime="'+item.startTime+'" data-gcind="'+i+'" data-endtime="'+item.endTime+'">'+item.value+'<br/><span class="tlfanyi" style="font-weight: 300;display:none">'+item.valueCN+'</span></p> <span class="xhdq xunhuanbofang" style="text-align: center; margin: 5px 10px !important;padding:0px !important;display:none;min-width: 20px;cursor: pointer;"></span> </div>'
+
+                $('#lyricstwo').append(htmlstr);
+             }
+
+             
+         let gctop =  $('#lyricstwo').offset().top;
+         let audiotop =  $('.bbffqq').offset().top;
+
+         $('#lyricstwo').css("max-height",audiotop-gctop-10);
+
+        if(!isMobile)
+        {
+
+
+             let totalHeightww = 0;
+                let getTotalHeightOfChildren = function (element) {
+                    element.children().each(function () {
+
+                            totalHeightww += $(this).outerHeight(true); // 包括边距和边框
+                    });
+                    return totalHeightww;
+                }
+
+            let zyszgd = getTotalHeightOfChildren($('#lyricstwo'));
+
+            if(zyszgd>(audiotop-gctop))
+            {
+                $('#lyricstwo').slimScroll({
+                   height:audiotop-gctop-10
+                });
+                $(".ttllllxx .slimScrollDiv").height($(".ttllllxx .slimScrollDiv").height());
+            }
+            else{
+                $('#lyricstwo').slimScroll({
+                   height:zyszgd
+                });
+
+                $('#lyricstwo').height(zyszgd);
+                 $('#lyricstwo').css('height', '');
+
+                  $(".ttllllxx .slimScrollDiv").css('height', '');
+            }
+
+        }
+
+
+        $('#lyricstwo').animate({
+             scrollTop:0
+          }, 20);
+
+
+
+              // 初始化歌词点击事件
+       $('#lyricstwo').find('p').each(function() {
+           $(this).click(function() {
+
+            let start = $(this).data('starttime');
+               start-=0.05;
+               let end = $(this).data('endtime');
+               end +=0.05;
+
+            $('#lyricstwo').find('p').removeClass('active');
+             $(this).addClass('active');
+
+            $('#lyricstwo').find('.xhdq').removeClass('xhactivetwo');
+            audio.stopTimer();
+            audio.pause();
+
+             $('#lyricstwo').find('.xhdq').removeClass('xunhuanbofank').addClass("xunhuanbofang").hide();
+
+             $(this).next().show();
+            //单句是否开启了循环
+            if($(this).next().hasClass('xhactivetwo')){
+
+                 $(this).next().addClass('xunhuanbofank');
+                audio.xhdate(start,end);
+
+            }
+            else{
+               audio.xhdate(0,0);
+            }
+
+
+            //跳转到指定位置播放
+            audio.seek(start);
+            audio.play();
+           });
+       });
+
+       //$('.xhdq').on('click', function () {
+
+       //    let taht = this;
+
+       //         audio.stopTimer();
+       //     //audio.pause();
+
+       //    //当前点击的状态
+       //     if ($(taht).hasClass('xhactivetwo')) {
+       //         $lyrics.find('.xhdq').removeClass('xhactivetwo');
+       //        // $(this).removeClass('xhactivetwo');
+       //         audio.xhdate(0,0);
+
+       //     } else {
+       //        $lyrics.find('.xhdq').removeClass('xhactivetwo');
+       //        $(taht).addClass('xhactivetwo');
+
+       //         var prevElement = $(taht).prev();
+       //         let start = prevElement.data('starttime');
+       //          //  start-=0.05;
+       //            let end = prevElement.data('endtime');
+       //          //  end +=0.05;
+
+       //         audio.pause();
+       //         //跳转到指定位置播放
+       //         audio.xhdate(start,end);
+       //         audio.seek(start);
+       //         audio.play();
+       //     }
+       //     });
+
+       $('#lyricstwo').find('.xhdq').each(function() {
+
+
+           $(this).click(function() {
+
+
+            audio.stopTimer();
+            //audio.pause();
+
+           //当前点击的状态
+
+            if ($(this).hasClass('xhactivetwo')) {
+                $('#lyricstwo').find('.xhdq').removeClass('xhactivetwo');
+                $(this).removeClass('xhactivetwo');
+                audio.xhdate(0,0);
+
+            } else {
+               $(this).addClass('xhactivetwo');
+                var prevElement = $(this).prev();
+                let start = prevElement.data('starttime');
+                  // start-=0.05;
+                   let end = prevElement.data('endtime');
+                   //end +=0.05;
+
+               // audio.pause();
+                //跳转到指定位置播放
+                audio.xhdate(start,end);
+                audio.seek(start);
+                audio.play();
+            }
+           });
+       });
+
+    }
+
+        //歌词
+       // var base64Sentences = "W3siU3RhcnRUaW1lIjoxLjA4LCJFbmRUaW1lIjoyLjgzLCJWYWx1ZSI6Ikxlc3NvbiA0NyJ9LHsiU3RhcnRUaW1lIjoyLjgzLCJFbmRUaW1lIjoxMC40MSwiVmFsdWUiOiJUaGUgZ3JlYXQgZXNjYXBlIn0seyJTdGFydFRpbWUiOjEwLjQxLCJFbmRUaW1lIjoxOC4xLCJWYWx1ZSI6IldoYXQgaXMgb25lIG9mIHRoZSBmZWF0dXJlcyBvZiBtb2Rlcm4gY2FtcGluZyB3aGVyZSBuYXRpb25hbGl0eSBpcyBjb25jZXJuZWQ/In0seyJTdGFydFRpbWUiOjE4LjEsIkVuZFRpbWUiOjIyLjMzLCJWYWx1ZSI6IkVjb25vbXkgaXMgb25lIHBvd2VyZnVsIG1vdGl2ZSBmb3IgY2FtcGluZywifSx7IlN0YXJ0VGltZSI6MjIuMzMsIkVuZFRpbWUiOjM0LjIzLCJWYWx1ZSI6InNpbmNlIGFmdGVyIHRoZSBpbml0aWFsIG91dGxheSB1cG9uIGVxdWlwbWVudCwgb3IgdGhyb3VnaCBoaXJpbmcgaXQsIHRoZSB0b3RhbCBleHBlbnNlIGNhbiBiZSBmYXIgbGVzcyB0aGFuIHRoZSBjb3N0IG9mIGhvdGVscy4ifSx7IlN0YXJ0VGltZSI6MzQuMjMsIkVuZFRpbWUiOjQ0LjIzLCJWYWx1ZSI6IkJ1dCwgY29udHJhcnkgdG8gYSBwb3B1bGFyIGFzc3VtcHRpb24sIGl0IGlzIGZhciBmcm9tIGJlaW5nIHRoZSBvbmx5IG9uZSwgb3IgZXZlbiB0aGUgZ3JlYXRlc3QuIn0seyJTdGFydFRpbWUiOjQ0LjIzLCJFbmRUaW1lIjo1NS41NCwiVmFsdWUiOiJUaGUgbWFuIHdobyBtYW5vZXV2cmVzIGNhcmVsZXNzbHkgaW50byBoaXMgMjAgcG91bmRzJyB3b3J0aCBvZiBzcGFjZSBhdCBvbmUgb2YgRXVyb3BlJ3MgbXlyaWFkIHBlcm1hbmVudCBzaXRlcyBtYXkgZmluZCBoaW1zZWxmIGJ1bXBpbmcgYSBCZW50bGV5LiJ9LHsiU3RhcnRUaW1lIjo1NS41NCwiRW5kVGltZSI6NjYuMTksIlZhbHVlIjoiTW9yZSBsaWtlbHksIEZvcmQgRXNjb3J0IHdpbGwgYmUgaHViIHRvIGh1YiB3aXRoIFJlbmF1bHQgb3IgTWVyY2VkZXMsIGJ1dCByYXJlbHkgd2l0aCBiaWN5Y2xlcyBtYWRlIGZvciB0d28uIn0seyJTdGFydFRpbWUiOjY2LjE5LCJFbmRUaW1lIjo3NS4yNSwiVmFsdWUiOiJUaGF0IHRoZSBlcXVpcG1lbnQgb2YgbW9kZXJuIGNhbXBpbmcgYmVjb21lcyB5ZWFybHkgbW9yZSBzb3BoaXN0aWNhdGVkIGlzIGFuIGVudGVydGFpbmluZyBwYXJhZG94IGZvciB0aGUgY3luaWMsIn0seyJTdGFydFRpbWUiOjc1LjI1LCJFbmRUaW1lIjo4MS4xNCwiVmFsdWUiOiJhIGJyaWdodGVyIHByb21pc2UgZm9yIHRoZSBob3BlZnVsIHRyYXZlbGxlciB3aG8gaGFzIHN3b3JuIHRvIGdldCBhd2F5IGZyb20gaXQgYWxsLiJ9LHsiU3RhcnRUaW1lIjo4MS4xNCwiRW5kVGltZSI6OTMuMTIsIlZhbHVlIjoiSXQgYWxzbyBwcm92aWRlcy0tYW5kIHNvbWUgc3R1ZGVudCBzb2Npb2xvZ2lzdCBtaWdodCBjYXJlIHRvIGJhc2UgaGlzIHRoZXNpcyB1cG9uIHRoZSBwaGVub21lbm9uLS1hbiBlc2NhcGUgb2YgYW5vdGhlciBraW5kLiJ9LHsiU3RhcnRUaW1lIjo5My4xMiwiRW5kVGltZSI6OTkuMTksIlZhbHVlIjoiVGhlIG1vZGVybiB0cmF2ZWxsZXIgaXMgb2Z0ZW4gYSBtYW4gd2hvIGRpc2xpa2VzIHRoZSBTcGxlbmRpZGUgYW5kIHRoZSBCZWxsYXZpc3RhLCJ9LHsiU3RhcnRUaW1lIjo5OS4xOSwiRW5kVGltZSI6MTA3LjIyLCJWYWx1ZSI6Im5vdCBiZWNhdXNlIGhlIGNhbm5vdCBhZmZvcmQsIG9yIHNodW5zIHRoZWlyIG1hdGVyaWFsIGNvbWZvcnRzLCBidXQgYmVjYXVzZSBoZSBpcyBhZnJhaWQgb2YgdGhlbS4ifSx7IlN0YXJ0VGltZSI6MTA3LjIyLCJFbmRUaW1lIjoxMTUuNDksIlZhbHVlIjoiQWZmbHVlbnQgaGUgbWF5IGJlLCBidXQgaGUgaXMgYnkgbm8gbWVhbnMgc3VyZSB3aGF0IHRvIHRpcCB0aGUgZG9vcm1hbiBvciB0aGUgY2hhbWJlcm1haWQuIn0seyJTdGFydFRpbWUiOjExNS40OSwiRW5kVGltZSI6MTI0LjQ5LCJWYWx1ZSI6Ik1hc3RlciBpbiBoaXMgb3duIGhvdXNlIGhlIGhhcyBsaXR0bGUgaWRlYSBvZiB3aGVuIHRvIHNheSBib28gdG8gYSBtYW5hZ2VyIGhvdGVsLiJ9LHsiU3RhcnRUaW1lIjoxMjQuNDksIkVuZFRpbWUiOjEyOC4yMywiVmFsdWUiOiJGcm9tIGFsbCBzdWNoIGZlYXJzIGNhbXBpbmcgcmVsZWFzZXMgaGltLiJ9LHsiU3RhcnRUaW1lIjoxMjguMjMsIkVuZFRpbWUiOjEzNi4xOSwiVmFsdWUiOiJHcmFudGVkLCBhIHNub2JiZXJ5IG9mIGNhbXBpbmcgaXRzZWxmLCBiYXNlZCB1cG9uIGVxdWlwbWVudCBhbmQgdGVjaG5pcXVlcywgYWxyZWFkeSBleGlzdHM7In0seyJTdGFydFRpbWUiOjEzNi4xOSwiRW5kVGltZSI6MTQyLjkzLCJWYWx1ZSI6ImJ1dCBpdCBpcyBvZiBhIGtpbmQgdGhhdCwgaWYgaGUgbWVldHMgaXQsIGhlIGNhbiByZWFkaWx5IHVuZGVyc3RhbmQgYW5kIGRlYWwgd2l0aC4ifSx7IlN0YXJ0VGltZSI6MTQyLjkzLCJFbmRUaW1lIjoxNTIuMjEsIlZhbHVlIjoiVGhlcmUgaXMgbm8gc3VwZXJpb3IgJ3RoZXknIGluIHRoZSBzaGFwZSBvZiBtYW5hZ2VtZW50cyBhbmQgaG90ZWwgaGllcmFyY2hpZXMgdG8gZGFya2VuIGhpcyBob2xpZGF5IGRheXMuIn0seyJTdGFydFRpbWUiOjE1Mi4yMSwiRW5kVGltZSI6MTU2LjQ1LCJWYWx1ZSI6IlRvIHN1Y2ggbW90aXZlcywgeWV0IGFub3RoZXIgbXVzdCBiZSBhZGRlZC4ifSx7IlN0YXJ0VGltZSI6MTU2LjQ1LCJFbmRUaW1lIjoxNjcuMzUsIlZhbHVlIjoiVGhlIGNvbnRlbXBvcmFyeSBwaGVub21lbm9uIG9mIGNhciB3b3JzaGlwIGlzIHRvIGJlIGV4cGxhaW5lZCBub3QgbGVhc3QgYnkgdGhlIHNlbnNlIG9mIGluZGVwZW5kZW5jZSBhbmQgZnJlZWRvbSB0aGF0IG93bmVyc2hpcCBlbnRhaWxzLiJ9LHsiU3RhcnRUaW1lIjoxNjcuMzUsIkVuZFRpbWUiOjE3Mi4yNCwiVmFsdWUiOiJUbyB0aGlzIHBsZWFzdXJlIGNhbXBpbmcgZ2l2ZXMgYW4gZXhxdWlzaXRlIHJlZmluZW1lbnQuIn0seyJTdGFydFRpbWUiOjE3Mi4yNCwiRW5kVGltZSI6MTgxLjUsIlZhbHVlIjoiRnJvbSBvbmUncyBvd24gZnJvbnQgZG9vciB0byBob21lIG9yIGZvcmVpZ24gaGlsbHMgb3Igc2FuZHMgYW5kIGJhY2sgYWdhaW4sIGV2ZXJ5dGhpbmcgaXMgdG8gaGFuZC4ifSx7IlN0YXJ0VGltZSI6MTgxLjUsIkVuZFRpbWUiOjE4OS4xMywiVmFsdWUiOiJOb3Qgb25seSBhcmUgdGhlIG1lYW5zIG9mIGFycml2aW5nIGF0IHRoZSBob2xpZGF5IHBhcmFkaXNlIGVudGlyZWx5IHdpdGhpbiBvbmUncyBvd24gY29tbWFuZCBhbmQga2VlcGluZywifSx7IlN0YXJ0VGltZSI6MTg5LjEzLCJFbmRUaW1lIjoxOTcuNjgsIlZhbHVlIjoiYnV0IHRoZSBtZWFucyBvZiBlc2NhcGUgZnJvbSBob2xpZGF5IGhlbGwgKGlmIHRoZSBiZWFjaCBwcm92ZXMgdG9vIGNyb3dkZWQsIHRoZSBsb2NhbCB3ZWF0aGVyIHRvbyBpbmNsZW1lbnQpIn0seyJTdGFydFRpbWUiOjE5Ny42OCwiRW5kVGltZSI6MjA1LjIsIlZhbHVlIjoiYXJlIHRoZXJlLCBvdXRzaWRlLS1vciwgYXMgbGlrZWx5LCBwYXJ0IG9mLS10aGUgdGVudC4ifSx7IlN0YXJ0VGltZSI6MjA1LjIsIkVuZFRpbWUiOjIxMS4wNiwiVmFsdWUiOiJJZGVhbGlzdHMgaGF2ZSBvYmplY3RlZCB0byB0aGUgcHJhY3RpY2Ugb2YgY2FtcGluZywgYXMgdG8gdGhlIHBhY2thZ2UgdG91ciwifSx7IlN0YXJ0VGltZSI6MjExLjA2LCJFbmRUaW1lIjoyMTguNDYsIlZhbHVlIjoidGhhdCB0aGUgdHJhdmVsbGVyIGFicm9hZCB0aGVyZWJ5IGRlbmllcyBoaW1zZWxmIHRoZSBvcHBvcnR1bml0eSBvZiBnZXR0aW5nIHRvIGtub3cgdGhlIHBlb3BsZSBvZiB0aGUgY291bnRyeSB2aXNpdGVkLiJ9LHsiU3RhcnRUaW1lIjoyMTguNDYsIkVuZFRpbWUiOjIyNC44NywiVmFsdWUiOiJJbnN1bGFyaXR5IGFuZCBzZWxmLWNvbnRhaW5tZW50LCBpdCBpcyBhcmd1ZWQsIGdvIGhhbmQgaW4gaGFuZC4ifSx7IlN0YXJ0VGltZSI6MjI0Ljg3LCJFbmRUaW1lIjoyMzAuNDksIlZhbHVlIjoiVGhlIG9waW5pb24gZG9lcyBub3Qgc3Vydml2ZSBleHBlcmllbmNlIG9mIGEgcG9wdWxhciBDb250aW5lbnRhbCBjYW1waW5nIHBsYWNlLiJ9LHsiU3RhcnRUaW1lIjoyMzAuNDksIkVuZFRpbWUiOjIzOS43NywiVmFsdWUiOiJIb2xpZGF5IGhvdGVscyB0ZW5kIHRvIGNhdGVyIGZvciBvbmUgbmF0aW9uYWxpdHkgb2YgdmlzaXRvcnMgZXNwZWNpYWxseSwgc29tZXRpbWVzIGV4Y2x1c2l2ZWx5LiJ9LHsiU3RhcnRUaW1lIjoyMzkuNzcsIkVuZFRpbWUiOjI0NC41NSwiVmFsdWUiOiJDYW1waW5nIHNpdGVzLCBieSBjb250cmFzdCwgYXJlIGhpZ2hseSBjb3Ntb3BvbGl0YW4uIn0seyJTdGFydFRpbWUiOjI0NC41NSwiRW5kVGltZSI6MjUyLjUxLCJWYWx1ZSI6IkdyYW50ZWQsIGEgcHJlcG9uZGVyYW5jZSBvZiBHZXJtYW5zIGlzIGEgY2hhcmFjdGVyaXN0aWMgdGhhdCBzZWVtcyBjb21tb24gdG8gbW9zdCBNZWRpdGVycmFuZWFuIHNpdGVzOyJ9LHsiU3RhcnRUaW1lIjoyNTIuNTEsIkVuZFRpbWUiOjI1OC4yOCwiVmFsdWUiOiJidXQgYXMgeWV0IHRoZXJlIGlzIG5vIG92ZXJ3aGVsbWluZ2x5IHNwZWNpYWxpemVkIHBhdHJvbmFnZS4ifSx7IlN0YXJ0VGltZSI6MjU4LjI4LCJFbmRUaW1lIjoyNjEuNzcsIlZhbHVlIjoiTm90aWNlcyBmb3JiaWRkaW5nIHRoZSBvcGVuLWFpciBkcnlpbmcgb2YgY2xvdGhlcywifSx7IlN0YXJ0VGltZSI6MjYxLjc3LCJFbmRUaW1lIjoyNjUuMywiVmFsdWUiOiJvciB0aGUgdXNlIG9mIHdhdGVyIHBvaW50cyBmb3IgY2FyIHdhc2hpbmcsIn0seyJTdGFydFRpbWUiOjI2NS4zLCJFbmRUaW1lIjoyNzcuOTksIlZhbHVlIjoib3IgdGhvc2UgaW52aXRpbmcgJ291ciBjYW1waW5nIGZyaWVuZHMnIHRvIGEgZGFuY2Ugb3IgYSBib2F0IHRyaXAgYXJlIHByaW50ZWQgbm90IG9ubHkgaW4gRnJlbmNoIG9yIEl0YWxpYW4gb3IgU3BhbmlzaCwgYnV0IGFsc28gaW4gRW5nbGlzaCwgR2VybWFuIGFuZCBEdXRjaC4ifSx7IlN0YXJ0VGltZSI6Mjc3Ljk5LCJFbmRUaW1lIjoyODMuMTMsIlZhbHVlIjoiQXQgbWVhbCB0aW1lcyB0aGUgb2RvdXIgb2Ygc2F1ZXJrcmF1dCB2aWVzIHdpdGggdGhhdCBvZiBnYXJsaWMuIn0seyJTdGFydFRpbWUiOjI4My4xMywiRW5kVGltZSI6Mjg5LjczLCJWYWx1ZSI6IlRoZSBGcmVuY2htYW4ncyBicmVha2Zhc3QgY29mZmVlIGNvbXBldGVzIHdpdGggdGhlIEVuZ2xpc2htYW4ncyBiYWNvbiBhbmQgZWdncy4ifSx7IlN0YXJ0VGltZSI6Mjg5LjczLCJFbmRUaW1lIjoyOTguMTUsIlZhbHVlIjoiV2hldGhlciB0aGUgcmVtYXJrYWJsZSBncm93dGggb2Ygb3JnYW5pemVkIGNhbXBpbmcgbWVhbnMgdGhlIGV2ZW50dWFsIGRlYXRoIG9mIHRoZSBtb3JlIGluZGVwZW5kZW50IGtpbmQgaXMgaGFyZCB0byBzYXkuIn0seyJTdGFydFRpbWUiOjI5OC4xNSwiRW5kVGltZSI6MzA0LjA5LCJWYWx1ZSI6Ik11bmljaXBhbGl0aWVzIG5hdHVyYWxseSB3YW50IHRvIHNlY3VyZSB0aGUgY2FtcGVycycgc2l0ZSBmZWVzIGFuZCBvdGhlciBjdXN0b20uIn0seyJTdGFydFRpbWUiOjMwNC4wOSwiRW5kVGltZSI6MzEyLjE1LCJWYWx1ZSI6IlBvbGljZSBhcmUgd2FyeSBvZiBpdGluZXJhbnRzIHdobyBjYW5ub3QgYmUgdHJhY2VkIHRvIGEgcmVjb2duaXplZCBjYW1wIGJvdW5kYXJ5IG9yIHRvIGZvdXIgd2FsbHMuIn0seyJTdGFydFRpbWUiOjMxMi4xNSwiRW5kVGltZSI6MzIzLjA0LCJWYWx1ZSI6IkJ1dCBtb3N0IHByb2JhYmx5IGl0IHdpbGwgYWxsIGRlcGVuZCB1cG9uIGNhbXBlcnMgdGhlbXNlbHZlczogaG93IG1hbnkgaGVhdGggZmlyZXMgdGhleSBjYXVzZTsgaG93IG11Y2ggbGl0dGVyIHRoZXkgbGVhdmU7In0seyJTdGFydFRpbWUiOjMyMy4wNCwiRW5kVGltZSI6MzMxLjQ4LCJWYWx1ZSI6ImluIHNob3J0LCB3aGV0aGVyIG9yIG5vdCB0aGV5IHdob2xseSBhbGllbmF0ZSBsYW5kb3duZXJzIGFuZCB0aG9zZSB3aG8gbGl2ZSBpbiB0aGUgY291bnRyeXNpZGUuIn0seyJTdGFydFRpbWUiOjMzMS40OCwiRW5kVGltZSI6MzkzMS40OCwiVmFsdWUiOiJPbmx5IGdvb2Qgc2NvdXRpbmcgaXMgbGlrZWx5IHRvIHByZXNlcnZlIHRoZSBmcmVlZG9tcyBzbyBkZWFyIHRvIHRoZSBoZWFydCBvZiB0aGUgZXRlcm5hbCBCb3kgU2NvdXQuIn0seyJTdGFydFRpbWUiOjg2NDAwLjAsIkVuZFRpbWUiOjg2NDAwLjAsIlZhbHVlIjoi6L+Z5Liq5paH5Lu25p2l6IeqWW91WmFjay5jb23jgILor7fkuI3opoHmioTooq3mnKzlkKzlipvljp/mlofvvIHor7fkuI3opoHnm5fnlKjmiJHnmoTlirPliqjmiJDmnpzvvIzmioTooq3ogIXlhajlrrbkuI3lvpflpb3mrbvvvIEifSx7IlN0YXJ0VGltZSI6ODY0MDAuMCwiRW5kVGltZSI6ODY0MDAuMCwiVmFsdWUiOiJUaGlzIGZpbGUgaXMgZnJvbSBZb3VaYWNrLmNvbS5QbGVhc2UgZG9uJ3QgY29weSB0aGlzIHRyYW5zY3JpcHRpb24hIFBsZWFzZSBkb24ndCBzdGVhbCBteSB3b3JrIUdvZCBkYW1uIHRoZSBwbGFnaWFyaXN0ISJ9XQ==";
+
+       ;
+       function  setlyrics(index){
+
+
+             let kcid =  $(".kcind_"+index).data("kcid");
+             let kc = $(".tlHearingId").val();
+
+             requestData("/Hearing/HearingConent",{kc:kc,id:kcid}).then((data) => {
+                
+                     $('#lyricstwo').html("").data('gcindex', index);
+                    // let decodedStr = atob(data.datacontent);
+                    // 使用 UTF-8 字符集解码
+                    //let decoder = new TextDecoder('utf-8');
+                    //let decodedText = decoder.decode(new Uint8Array([...decodedStr].map(c => c.charCodeAt(0))));
+                    // 尝试将解码后的字符串解析为 JSON
+                    //let mlArray = JSON.parse(decodedText);
+                     setgc(data.list);
+
+            }).catch((error) => {
+               czjieguo(error.msg, 1);
+            });
+
+
+
+
+
+        }
+
+        $(document).ready(function() {
+
+
+
+
+
+            // 选择一个静态的父元素，比如body
+            $('body').on('click', '.openPlaylist', function() {
+                 alert('播放列表按钮被点击了！');
+            });
+
+          let gctop =  $('#lyricstwo').offset().top;
+          let audiotop =  $('.bbffqq').offset().top;
+
+
+
+             // 获取视窗的高度  
+        let viewportHeight = window.innerHeight-250;  
+
+
+        if(!isMobile)
+        {
+
+          $('.plplaylist').slimScroll({
+            height: viewportHeight+150
+         });
+        }
+
+
+       //  let elem = document.getElementById('main');
+
+       //鼠标按下
+        //elem.addEventListener('mousedown', (event) => {
+        //   // alert("按下了");
+        //    if (audio.data.isgz) {
+        //        audio.setgz(false);
+        //    }
+        //});
+
+        //////鼠标抬起
+        //elem.addEventListener('mouseup', (event) => {
+        //    //alert("抬起了");
+        //    if (!audio.data.isgz) {
+        //        audio.setgz(true);
+        //    }
+        //});
+
+        ////显示当前触摸点的信息
+        //elem.addEventListener('touchstart', (event) => {
+        //    if (audio.data.isgz) {
+        //        audio.setgz(false);
+        //    }
+        //});
+        //// 显示结束触摸的点的信息
+        //elem.addEventListener('touchend', (event) => {
+        //    if (!audio.data.isgz) {
+        //        audio.setgz(true);
+        //    }
+        //});
+        //// 显示移动触摸点的信息
+        //elem.addEventListener('touchmove', (event) => {
+        //    if (audio.data.isgz) {
+        //        audio.setgz(false);
+        //    } 
+        //});
+        //// 显示中断触摸的点的信息
+        //elem.addEventListener('touchcancel', (event) => {
+        //    if (!audio.data.isgz) {
+        //        audio.setgz(true);
+        //    }
+        //});
+
+            play(0);
+       });
+
+    </script>
+
+
+
+

@@ -1,0 +1,1082 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .express-area-box .dzzt .active {
+        border-bottom: 2px solid red;
+    }
+
+    .zdyys {
+        color: #b5b5c3;
+    }
+
+    .czjh .nav-pills > li > .nav-link.active {
+        border-top-color: #0052cc;
+        background-color: #0052cc !important;
+        color: #ffffff;
+    }
+     .kcdetail {
+            height: 0;
+            overflow: hidden;
+            transition: height 0.5s ease; /* 添加过渡效果 */
+        }
+          .zs{
+        color:#f03744;
+            font-weight: 600;
+    }
+</style>
+
+<script src="~/scripts/bootstrap.js"></script>
+
+
+ <!-- 客户端，0为电脑1为手机，默认电脑 -->
+<input type="hidden" class="kehuduan" value="0" />
+<input type="hidden" class="wxid" value="@ViewData["wxid"]" />
+<input type="hidden" class="wxpagename" value="@ViewData["wxpagename"]" />
+
+
+<input type="hidden" id="gg_isenaudio" value="0" />
+<input type="hidden" id="gg_isusaudio" value="0" />
+<audio id="GG_Speech_EN" ></audio>
+<audio id="GG_Speech_US"></audio>
+
+
+<input type="hidden" class="txordctwo" value="1" />
+
+<input type="hidden" class="wordisup" value="false" />
+<input type="hidden" class="iscollectvlue" value='False' />
+
+<input type="hidden" id="setcourseId" value="" />
+<input type="hidden" id="courseOperation" value="1" />
+
+@if (Convert.ToString(ViewData["wxpagename"])==""){
+    @await Html.PartialAsync("Header")
+}
+
+@*烟花动画容器*@
+<div class="hide">
+<div class="fireworks" id="fireworks"><div class="particle" style="--tx: 78.34155574857607; --ty: -16.952618972916078; --s: 4.004356327737524; background: rgb(255, 0, 0); animation-delay: 0.396903s;"></div><div class="particle" style="--tx: -74.47166003148837; --ty: 30.041640949622312; --s: 9.75721635349341; background: rgb(0, 255, 0); animation-delay: 0.0380142s;"></div><div class="particle" style="--tx: 75.26045839381399; --ty: 28.456445890657307; --s: 10.443217834405022; background: rgb(255, 0, 255); animation-delay: 0.356354s;"></div><div class="particle" style="--tx: 76.7943538050838; --ty: 25.492739994972656; --s: 3.5340575812477244; background: rgb(0, 255, 0); animation-delay: 0.327461s;"></div><div class="particle" style="--tx: -72.26943465850763; --ty: -35.114211180314896; --s: 7.267093911179856; background: rgb(255, 119, 0); animation-delay: 0.0496061s;"></div><div class="particle" style="--tx: -71.39657557142432; --ty: 37.92160547818578; --s: 4.434337222206029; background: rgb(0, 255, 255); animation-delay: 0.421219s;"></div><div class="particle" style="--tx: 69.91902038883735; --ty: -40.15724699609439; --s: 8.263449563800396; background: rgb(0, 0, 255); animation-delay: 0.368767s;"></div><div class="particle" style="--tx: 16.199088471477804; --ty: -78.78501462319247; --s: 4.416106745398222; background: rgb(255, 0, 255); animation-delay: 0.352794s; box-shadow: rgb(255, 0, 255) 0px 0px 10px;"></div><div class="particle" style="--tx: 30.051815673075193; --ty: -74.78430168154948; --s: 7.346649990210512; background: rgb(0, 255, 0); animation-delay: 0.277448s;"></div><div class="particle" style="--tx: 51.232979192368205; --ty: 62.565789237195894; --s: 9.297468364755112; background: rgb(0, 0, 255); animation-delay: 0.103428s;"></div><div class="particle" style="--tx: 73.26893232889272; --ty: 33.756031373121296; --s: 10.653964336014987; background: rgb(0, 0, 255); animation-delay: 0.0399435s;"></div><div class="particle" style="--tx: 1.3555622525748363; --ty: -80.19732927390953; --s: 6.957561058553081; background: rgb(255, 0, 0); animation-delay: 0.311397s;"></div><div class="particle" style="--tx: 79.92529742206379; --ty: -4.163585370037827; --s: 7.44366214909811; background: rgb(255, 119, 0); animation-delay: 0.150088s; box-shadow: rgb(255, 119, 0) 0px 0px 10px;"></div><div class="particle" style="--tx: 35.535323984883036; --ty: 72.61365773000253; --s: 3.8582142653195692; background: rgb(0, 0, 255); animation-delay: 0.013758s; box-shadow: rgb(0, 0, 255) 0px 0px 10px;"></div><div class="particle" style="--tx: 77.62839570545101; --ty: -22.626706606383408; --s: 9.316772362297204; background: rgb(255, 255, 0); animation-delay: 0.219335s;"></div><div class="particle" style="--tx: -27.20309926543365; --ty: 75.76258831251776; --s: 9.900175025057425; background: rgb(255, 119, 0); animation-delay: 0.0814365s;"></div><div class="particle" style="--tx: -76.43192880853714; --ty: -25.85567779333572; --s: 9.232867143718614; background: rgb(255, 119, 0); animation-delay: 0.226468s; box-shadow: rgb(255, 119, 0) 0px 0px 10px;"></div><div class="particle" style="--tx: -36.874718428009466; --ty: 71.56987564158807; --s: 3.266778801310501; background: rgb(255, 255, 0); animation-delay: 0.0989767s; box-shadow: rgb(255, 255, 0) 0px 0px 10px;"></div><div class="particle" style="--tx: 73.46126700702601; --ty: 34.08773772870377; --s: 6.095123822362689; background: rgb(255, 0, 0); animation-delay: 0.0493688s; box-shadow: rgb(255, 0, 0) 0px 0px 10px;"></div><div class="particle" style="--tx: -30.417956727285766; --ty: -74.84585464333249; --s: 3.193785175750829; background: rgb(0, 255, 0); animation-delay: 0.341116s;"></div><div class="particle" style="--tx: -79.85041473591563; --ty: -6.544034673135448; --s: 10.901974088356443; background: rgb(255, 119, 0); animation-delay: 0.0633566s;"></div><div class="particle" style="--tx: -71.99198069049771; --ty: -35.51644744153847; --s: 4.01691765295082; background: rgb(255, 255, 0); animation-delay: 0.354597s;"></div><div class="particle" style="--tx: -69.74600769265491; --ty: 40.03838832219952; --s: 9.426979827620965; background: rgb(255, 0, 0); animation-delay: 0.179912s;"></div><div class="particle" style="--tx: 43.9791025165656; --ty: 67.7274438590541; --s: 3.2110595060199163; background: rgb(255, 119, 0); animation-delay: 0.33868s;"></div><div class="particle" style="--tx: -69.32051550597883; --ty: -40.91511538533327; --s: 5.412395142335036; background: rgb(0, 0, 255); animation-delay: 0.270616s;"></div><div class="particle" style="--tx: -78.93002673162196; --ty: 18.037480965471428; --s: 9.591110537978832; background: rgb(255, 0, 255); animation-delay: 0.224938s;"></div><div class="particle" style="--tx: 35.1743341059244; --ty: 72.37740734710995; --s: 6.4643738102383175; background: rgb(255, 0, 255); animation-delay: 0.341928s;"></div><div class="particle" style="--tx: -9.848284986545636; --ty: -79.83385639762626; --s: 8.971243342519301; background: rgb(0, 0, 255); animation-delay: 0.298544s;"></div><div class="particle" style="--tx: 11.36686530575156; --ty: -79.39987879120841; --s: 3.2621154494521836; background: rgb(255, 0, 0); animation-delay: 0.251441s; box-shadow: rgb(255, 0, 0) 0px 0px 10px;"></div><div class="particle" style="--tx: -74.58825859331722; --ty: 29.665270294531197; --s: 3.387214875171768; background: rgb(255, 119, 0); animation-delay: 0.0231099s;"></div></div>
+</div>
+<div class="container aaazzz" style="padding:0px;">
+    <main role="main" class="pb-3 showheight">
+      <div class="wrapper ">
+         
+         
+          <!-- 加载样式，暂时不用 -->
+         <div style="display:none;" class="multinav-scroll" id="loader"></div>
+         <div class="container-full" >
+             <div id="main"></div>
+             <div id="dqhome"></div>
+             @*<div id="dqCategoryList"></div>*@
+             <div id="dqMyCategoryList"></div>
+             <div id="dqExamList"></div>
+             <div id="dqMy"></div>
+         </div>
+        
+
+
+
+
+            <footer class="main-footer footer">
+                <div class="pull-right d-none d-sm-inline-block">
+                 
+                </div>
+                <span>© 2025 <a href="#">杨天龙</a>.蜀ICP备2025171624号-1</span>
+            </footer>
+
+
+      </div>
+    </main>
+</div>
+
+
+
+<div class="modal center-modal fade" id="cxdcdetail" tabindex="-1" style="z-index:99999998;">
+
+    <div class="modal-dialog max-w-800" style="font-kerning: normal;text-rendering: geometricPrecision;text-rendering: optimizeLegibility;-webkit-font-smoothing: subpixel-antialiased; -webkit-font-smoothing: antialiased;">
+        <div class="modal-content bg-lighter" style="padding: 10px 0px 0px 0px;pointer-events: auto;">
+            <div style="padding: 5px 15px 0px 15px; display: flex; justify-content: space-between;">
+                <h5 class="modal-title"><span class="fw-bold"></span>单词详情</h5>
+                <button type="button" class="btn-close text-mute" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div style="" class="m-10" id="querydcdetailshow">
+
+            </div>
+          <div id="adddcb"  style ="display:none">
+            <div class="flex " style="display:flex; flex-wrap: wrap; justify-content: space-between;padding:5px 15px 15px 5px">
+                 <button type="button" class="btn btn-primary mx-10" onclick="addtodcb()" >添加到生词本</button>
+                </div>
+         </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<!-- 导入发货模板 -->
+<div class="modal center-modal fade" id="mima-tk" tabindex="-1">
+    <div class="modal-dialog max-w-400">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">修改密码</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div>
+                <input type="hidden" class="employeeeID" />
+                <div class="box-body">
+                    <div class="row justify-content-center ">
+                        <div class="my-10">
+                            <div class="nav-tabs-left mx-15">
+                                <label for="example-text-input" class="  min-w-70 w-80   col-form-label">原密码</label>
+                                <input type="password" id="originalPwd" class="form-control  min-w-150" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center ">
+                        <div class=" my-10">
+                            <div class="nav-tabs-left mx-15">
+                                <label for="example-text-input" class="  min-w-70  w-80  col-form-label">新密码</label>
+                                <input type="password" id="newPwd1" class="form-control  min-w-150" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center ">
+                        <div class=" my-10">
+                            <div class="nav-tabs-left mx-15">
+                                <label for="example-text-input" class="  min-w-70  w-80  col-form-label">确认密码</label>
+                                <input type="password" id="newPwd2" class="form-control  min-w-150" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                </div>
+            </div>
+            <div class="modal-footer modal-footer-uniform">
+                <button type="button" class="btn btn-danger gbck" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary float-end" onclick="SavePwd()">保存</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal modal-right fade" id="modal-right" tabindex="-1" style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">设置</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mt-20" style="margin-left: 10px; margin-right: 30px;">
+                    <label for="basic_checkbox_2">护眼模式</label>
+                    <div class="box-controls pull-right">
+                        <label class="switch switch-border switch-primary">
+                            <input type="checkbox" id="basic_checkbox_2" >
+                            <span class="switch-indicator"></span>
+                            <span class="switch-description"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mt-20 qpmskg" data-provide="fullscreen" style="margin-left: 10px; margin-right: 30px;">
+                    <label for="qpmokg">全屏模式</label>
+                    <div class="box-controls pull-right">
+                        <label class="switch switch-border switch-primary">
+                            <input type="checkbox" id="qpmokg" >
+                            <span class="switch-indicator"></span>
+                            <span class="switch-description"></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="mt-20" style="margin-left: 10px; margin-right: 30px;">
+                    <label for="zdfy">自动发音</label>
+                    <div class="box-controls pull-right">
+                        <label class="switch switch-border switch-primary">
+                            <input type="checkbox" id="zdfy" checked="">
+                            <span class="switch-indicator"></span>
+                            <span class="switch-description"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="mt-20" style="margin-left: 10px; margin-right: 30px;">
+                    <label for="ycfy">隐藏翻译</label>
+
+                    <div class="box-controls pull-right">
+                        <label class="switch switch-border switch-primary">
+                            <input type="checkbox" id="ycfy">
+                            <span class="switch-indicator"></span>
+                            <span class="switch-description"></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="mt-20" style="margin-left: 10px; margin-right: 30px;">
+                    <label for="yyk">首选口音</label>
+                    <select id="yyk" class="form-control min-w-80 w-120">
+                        <option value="Speech_EN">英式发音</option>
+                        <option value="Speech_US">美式发音</option>
+                    </select>
+                </div>
+              
+
+
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+<script src="~/scripts/vendors.min.js"></script>
+<script src="~/scripts/template.js?v=1219991"></script>
+<script src="~/scripts/updata.js?v=22221113"></script>
+<script>
+    //显示功能区
+    $(".gnqan").show();
+
+     
+
+
+    window.addEventListener('resize', updateAvailableHeight);
+    function updateAvailableHeight() { 
+        
+          var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+       if(!isMobile)
+        {
+            $('.aaazzz').slimScroll({
+            height: windowHeight
+         });
+        }
+   }  
+
+
+   $(document).ready(function() {
+
+        updateAvailableHeight(); 
+
+        var wxid =  parseInt($(".wxid").val());
+
+        var wxpagename = $(".wxpagename").val();
+      //  alert("wxid="+wxid+"wxpagename="+wxpagename);
+       if(wxpagename!=""){
+          // tbtab(0);
+           showpage("main");
+            if(wxpagename=="learnEnglishTable"){
+               
+                requestUrlHtml('/Course/learnEnglishTable?kc='+wxid, "","main");
+            }
+            else  if(wxpagename=="ExamContentTable"){
+               requestUrlHtml('/Exam/ExamContentTable?id='+wxid, "","main");
+            }
+            else  if(wxpagename=="HearingLX"){
+               requestUrlHtml('/Hearing/HearingLX?kc='+wxid, "","main");
+            } 
+       }else{
+
+         var url = window.location.href; 
+         var url2 = window.location.origin+"/";
+         if(url==url2){
+              tbtab(1);
+              Home($(".homebtn"),isMobile?1:0);
+         }
+         else if(isMobile){
+               tbtab(1);
+               Home($(".homebtn"),isMobile?1:0);
+         }
+       }
+
+       //账户信息
+        requestData("/Home/GetUiserInfo","").then((data) => {
+                    if (data.success) {
+                       let day = data.day;
+                       let hour = data.hour;
+                       let minute = data.minute;
+
+                      let text="";
+
+                      if (day <= 7)
+                       {
+                           $(".gqys").removeClass("text-info").removeClass("fa-users").addClass("text-danger").addClass("fa-warning");
+                           $(".gqtb").addClass("text-danger");
+
+                       }
+                       else{
+                           $(".gqys").removeClass("text-danger").removeClass("fa-warning").addClass("text-info").addClass("fa-users");
+                           $(".gqtb").removeClass("text-danger");
+                       }
+
+
+                         if (day > 0)
+                           {
+                                    text="还剩" +day+"天";                                                            
+                           }
+                           else if (hour > 0)
+                           {
+                                   text="还剩" +hour+"小时";                                                                 
+                           }
+                           else if (minute > 0)
+                           {
+                                    text="还剩" +minute+"分钟";                                                                         
+                           }
+                           else
+                           {
+                                     text="(以过期)";                                                                       
+                           }
+                            $(".gqsj").text(text);
+                    }
+                    else {
+                        czjieguo(data.msg, 1);
+                    }
+
+            }).catch((error) => {
+               czjieguo(error.msg, 1);
+            });
+
+
+
+
+      });
+
+
+     function ModifyPassword(UserID) {
+
+        $("#originalPwd").val("");
+        $("#newPwd1").val("");
+        $("#newPwd2").val("");
+    }
+
+     function SavePwd() {
+
+        var oldPwd = $("#originalPwd").val();
+        var newPwd1 = $("#newPwd1").val();
+        var newPwd2 = $("#newPwd2").val();
+
+        if ($.trim(oldPwd) == "") {
+            layer.tips('原始密码不能为空！', '#originalPwd');
+            return false;
+        }
+
+        if ($.trim(newPwd1) == "") {
+            layer.tips('新密码不能为空！', '#newPwd1');
+            return false;
+        }
+
+        if ($.trim(newPwd2) == "") {
+            layer.tips('新密码不能为空！', '#newPwd2');
+            return false;
+        }
+
+        if (newPwd1 != newPwd2) {
+            layer.tips('两次密码输入不一致！', '#newPwd2');
+            return false;
+        }
+
+
+
+          requestData("/Login/ModifyPassword",{OldPwd: oldPwd, NewPwd: newPwd2}).then((data) => {
+                     if (data.success) {
+                         $('.gbck').click();
+                         czjieguo("修改成功，请使用新密码重新登录。", 0);
+
+                         setTimeout(function() {  
+                             var baseUrl = window.location.protocol + "//" + window.location.host + "/Login/Login";
+                             window.location.href = baseUrl;
+                          }, 2000); // 2000毫秒 = 2秒
+
+                      }
+                     else {
+                         czjieguo(data.msg, 1);
+                     }
+
+            }).catch((error) => {
+               czjieguo(error.msg, 1);
+            });
+
+
+    }
+
+ function   LoginOut(){
+              swal({
+            title: "确定退出当前登录账号？",
+            type: "warning",
+            showCancelButton: true,
+            cancelButtonText: "取消",
+            confirmButtonColor: "#DD6B55",
+            confirmButtonText: "退出",
+            closeOnConfirm: false
+        }, function () {
+
+             var baseUrl = window.location.protocol + "//" + window.location.host+"/Login/Login";   
+            window.location.href = baseUrl; 
+
+        });
+
+ }
+
+    function qkdc(){
+        $(".cxdc").val("");
+         $('.qxan').addClass('hide');
+    }
+   function addtodcb() {
+         var en = $(".cxdc").val().trim().toLowerCase();
+          let courseId = localStorage.getItem('courseId');
+
+        var layerIndexv = layer.open({
+            type: 1, //page层
+            area: ['300px', '70px'],
+            title: '',
+            shade: 0.1, //遮罩透明度
+            moveType: 0, //拖拽风格，0是默认，1是传统拖动
+            shift: -1, //0-6的动画形式，-1不开启
+            closeBtn: 0,
+            content: '<div id="xinglailoading" style="text-align: center; line-height:70px;"><img title="操作中" alt="操作中" src="../Content/img/sunjing_loading2.gif" />&nbsp;&nbsp;操作中，请稍等... ...</div>'
+        });
+        $('.btn-close').click();
+
+
+          requestData("/Course/SaveCoursecontent",{ courseId: courseId, en: en, cn: '' }).then((data) => {
+                    layer.close(layerIndexv);
+                    if (data.success) {
+                        czjieguo("操作成功！", 0);
+                       $(".cxdc").val("");
+                        suaxinMyCategoryList(1);
+                    }
+                    else {
+                        czjieguo(data.msg, 1);
+                    }
+
+                }).catch((error) => {
+                   czjieguo(error.msg, 1);
+            });
+
+
+    }
+    
+
+   async  function bfdctwo(language,word,value,dom){
+        var ind=  $(dom).children(".xhbtn").index(".xhbtn");
+        $(".xhbtn:eq("+(ind==0?1:0)+")").removeClass("xunhuanbofank").addClass("xunhuanbofang");
+       
+        let isxh = $(dom).children(".xhbtn").hasClass('xunhuanbofank');
+
+
+       isxunhuanbf = isxh;
+       let dqisbf = $(dom).children(".pronounce").hasClass('audioClick');
+        $(".dcxqdbf").removeClass('audioClick');
+       if(dqisbf&&!isxh){
+          bgaduitbf();
+          return false;
+       }
+       
+       
+
+       $(dom).children(".pronounce").addClass('audioClick');
+       
+      
+      
+         //暂时注释，避免没有音频，取查询的都用audio播放
+         let isenaudio =  $("#gg_isenaudio").val();
+         let isusaudio =  $("#gg_isusaudio").val();
+         let dqisaudio = language=="Speech_EN"?isenaudio:isusaudio;
+         var key = language+word;
+         var audio = audioMap[key];  
+
+         //手机端查询的时候，用h5方式播放
+         let ish5paly = isMobile&&$("#iscx").val()==1;
+      
+        if (!audio  && !ish5paly) {  
+            
+            // setAudioMap(key,value);
+            if(dqisaudio==1)
+            {
+               
+                 await loadSound(key,value);
+            }
+           
+          }
+         
+
+          if(dqisaudio==1 && !ish5paly){
+            
+               playAudio(key);
+          }else{
+              let type = language=="Speech_EN"?1:0;
+              let newSrc = 'http://dict.youdao.com/dictvoice?type='+type+'&audio='+word;
+               changeAudioSource('GG_'+language,newSrc)
+          }
+
+    }
+
+
+    function dccx(dom){
+
+        var dc = $(".cxdc").val().trim().toLowerCase();
+        if(dc==""){
+
+           return false;
+      }
+      else{
+
+           $("#adddcb").hide();
+        
+        //单词查询
+        lexiconDeatil(dc,true)
+
+      }
+    }
+
+
+
+    function WordExist(){
+
+        var en = $(".cxdc").val().trim().toLowerCase();
+
+          let kc = localStorage.getItem('courseId');
+
+
+            requestData("/Word/WordExist",{  kc: kc, en: en }).then((data) => {
+                    $("#gg_isenaudio").val(data.isenaudio);
+                $("#gg_isusaudio").val(data.isusaudio);
+                if (data.data) {
+                    $("#adddcb").show();
+                    
+                }
+                else {
+                   $("#adddcb").hide();
+                   
+                }
+
+            }).catch((error) => {
+               czjieguo(error.msg, 1);
+            });
+
+    }
+
+    function lexiconDeatil(dc,iscx){
+
+       
+             $("#querydcdetailshow").html("");
+             $("#dcdetailshow").html("");
+       
+
+
+          requestUrlHtml("/Word/lexiconDeatil", {
+            word: dc,
+            iscx:iscx
+        }, iscx?"querydcdetailshow":"dcdetailshow");
+    }
+
+              //修改为在document级别监听，以便更灵活地控制事件冒泡
+    $(document).on('click', '.kctitle', function (event) {
+
+
+        var target = event.target;
+        if ($(target).hasClass('box-btn-slide')) {
+            // 如果直接点击的是.box-btn-slide，则不执行阻止冒泡，因为这是期望的行为
+            return;
+        }
+
+        // 执行点击操作，这里尝试模拟点击，但需谨慎处理循环调用问题
+        var slideBtn = $(this).find(".box-btn-slide");
+        var simulatedEvent = new MouseEvent('click', {
+            bubbles: true, // 控制事件是否冒泡，默认为true
+            cancelable: true,
+            view: window
+        });
+
+        // 触发模拟的点击事件
+        if(slideBtn.length>0)
+        {
+            slideBtn[0].dispatchEvent(simulatedEvent);
+        }
+
+    });
+
+       //修改
+    function deleteCourse(id, name,event) {
+
+        event.stopPropagation();
+            swal({
+                title: "确定删除词典?",
+                text: '删除课程【 ' + name + ' 】将清空该课程的单词和学习进度',
+                showCancelButton: true,
+                cancelButtonText: '取消',
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确定",
+
+                closeOnConfirm: false
+            }, function () {
+
+
+                deleteKC(id);
+       
+            });
+    }
+
+    function deleteCourseTwo(id, name,event) {
+
+        event.stopPropagation();
+            swal({
+                title: "确定移除课程?",
+                text: '将课程【 ' + name + ' 】在学习列表中移除,将保留学习进度',
+                showCancelButton: true,
+                cancelButtonText: '取消',
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确定",
+
+                closeOnConfirm: false
+            }, function () {
+
+
+                deleteKC(id);
+
+            });
+    }
+
+    function suaxinMyCategoryList(type=1){
+         $('#dqMyCategoryList').empty();
+         MyCategoryListHome(type);
+    }
+
+      function addmykc(id, name,event) {
+
+        event.stopPropagation();
+            swal({
+                title: "确定添加课程?",
+                text: '将课程【 ' + name + ' 】添加到学习列表',
+                showCancelButton: true,
+                cancelButtonText: '取消',
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确定",
+
+                closeOnConfirm: false
+            }, function () {
+
+
+                 requestData("/Course/InsertMyCourse",{ setcourseId: id }).then((data) => {
+                    if (data.success) {
+                            czjieguo("添加成功！", 0);
+                           suaxinMyCategoryList(1);
+                        }
+                        else {
+                            czjieguo("添加失败，请稍后重新添加！", 1);
+                        }
+                }).catch((error) => {
+                   czjieguo(error.msg, 1);
+            });
+
+
+
+            });
+    }
+
+    function deleteKC(id){
+           requestData("/Course/deleteCourse",{ setcourseId: id }).then((data) => {
+                    if (data.success) {
+                            czjieguo("操作成功！", 0);
+                             suaxinMyCategoryList(1);
+                        }
+                        else {
+                            czjieguo("操作失败！", 1);
+                        }
+                }).catch((error) => {
+                   czjieguo(error.msg, 1);
+            });
+    }
+
+      function addexam(id, count,name,event) {
+          event.stopPropagation();
+        $("#examcount").val("");
+        $("#setcourseId").val(id);
+        $(".kcnametitle").text("课程 [ "+name+" ] ");
+    }
+
+
+  function addcourse(id, type, name,event) {
+       event.stopPropagation();
+        $("#courseOperation").val(type);
+        $("#setcourseId").val(id);
+        if (type == 1) {
+            $(".cktype").text("添加");
+            $("#insercoursename").val("");
+        }
+        else {
+            $(".cktype").text("修改");
+            $("#insercoursename").val(name);
+        }
+    }
+
+
+    function SaveCourse() {
+        var type =  $("#courseOperation").val();
+        var setcourseId = $("#setcourseId").val();
+        var insercoursename = $("#insercoursename").val();
+
+        var layerIndexv = layer.open({
+            type: 1, //page层
+            area: ['300px', '70px'],
+            title: '',
+            shade: 0.1, //遮罩透明度
+            moveType: 0, //拖拽风格，0是默认，1是传统拖动
+            shift: -1, //0-6的动画形式，-1不开启
+            closeBtn: 0,
+            content: '<div id="xinglailoading" style="text-align: center; line-height:70px;"><img title="操作中" alt="操作中" src="../Content/img/sunjing_loading2.gif" />&nbsp;&nbsp;操作中，请稍等... ...</div>'
+        });
+        $('.gbck').click();
+
+           requestData("/Course/SaveCourse",{ setcourseId: setcourseId, insercoursename: insercoursename, type: type }).then((data) => {
+                         layer.close(layerIndexv);
+                         if (data.success) {
+                             czjieguo("操作成功！", 0);
+                            suaxinMyCategoryList(1);
+                         }
+                         else {
+                             czjieguo(data.msg, 1);
+                         }
+
+                         }).catch((error) => {
+                         czjieguo(error.msg, 1);
+            });
+
+    }
+
+    function SaveExam() {
+       
+        var examcount = $("#examcount").val();
+        var limittime = $("#limittime").val();
+
+        var layerIndexv = layer.open({
+            type: 1, //page层
+            area: ['300px', '70px'],
+            title: '',
+            shade: 0.1, //遮罩透明度
+            moveType: 0, //拖拽风格，0是默认，1是传统拖动
+            shift: -1, //0-6的动画形式，-1不开启
+            closeBtn: 0,
+            content: '<div id="xinglailoading" style="text-align: center; line-height:70px;"><img title="操作中" alt="操作中" src="../Content/img/sunjing_loading2.gif" />&nbsp;&nbsp;操作中，请稍等... ...</div>'
+        });
+        $('.gbck').click();
+
+           requestData("/Exam/SaveExam",{ examcount: examcount ,limittime:limittime}).then((data) => {
+                         layer.close(layerIndexv);
+                         if (data.success) {
+                             czjieguo(data.msg, 0);
+                            //CategoryList();
+                            //刷新试题列表
+                            
+                                  refreshdata("dqExamList");
+                         }
+                         else {
+                             czjieguo(data.msg, 1);
+                         }
+
+                         }).catch((error) => {
+                         czjieguo(error.msg, 1);
+            });
+
+    }
+
+    function sethash(rul){
+
+      setTimeout(function() {
+          
+         if (typeof upData === 'function') {
+            upData();
+          }
+       }, 0);
+
+        if(!isMobile){
+             window.history.pushState({}, "");
+             location.hash = "#" + rul;
+        }
+       
+    }
+
+   var czkecen = 0;
+
+  function openCourse(courseId, courseName, isup) {
+      czkecen = courseId;
+          var baseUrl = window.location.protocol + "/" + window.location.host+"/#/Course/learnEnglishTable?kc="+courseId;   
+           // window.location.href = baseUrl; 
+         
+          // window.parent.postMessage({data: 'Hello from H5!'}, '*');
+          // alert("发送消息后");
+//window.postMessage({  
+//  data: 'Hello from H5'  
+//}, '*');
+
+// wx.miniProgram.redirectTo({ url: '/pages/document/kecen/kecen?pagecur='+courseId })
+ //wx.miniProgram.navigateTo({ url: '/pages/document/kecen/kecen?pagecur='+courseId });
+
+  //根据选项设置按钮样式
+      // let type = getParameterByName('type');
+     let type =  $(".txordc").val();
+
+       let rula = type==1?'/Course/learnEnglishTable?kc='+courseId : '/Hearing/HearingLX?kc='+courseId ;
+       sethash(rula);
+        if(!isMobile){
+             $(".dcsearch").hide();
+       
+             edittitle(courseName,type==1?"learnEnglishTable":"HearingLX");
+             showpage("main");
+            requestUrlHtml(rula, "","main");
+       
+        }
+        else{
+           let wxurl = type==1?'/pages/document/kecen/kecen?page=learnEnglishTable&id='+courseId :'/pages/document/kecen/kecen?page=HearingLX&id='+courseId
+            wx.miniProgram.navigateTo({ url:wxurl });
+       
+        }    
+
+
+    }
+
+    
+    function avativys(dom){
+        
+          $(dom).removeClass('text-muted').addClass('text-primary');  
+          $(dom).siblings().removeClass('text-primary').addClass('text-muted'); 
+     }
+
+     function kctypeset(type){
+          if(type==1){
+                $(".xuexidancio").removeClass("text-primary").addClass("bg-primary");
+                $(".lianxitinlio").removeClass("bg-primary").addClass("text-primary");
+               
+            }
+            if(type==2){
+                 $(".xuexidancio").removeClass("bg-primary").addClass("text-primary");
+                $(".lianxitinlio").removeClass("text-primary").addClass("bg-primary");
+               
+            }
+     }
+
+         function kctypesettwo(type){
+          if(type==1){
+                $(".xuexidanciotwo").removeClass("text-primary").addClass("bg-primary");
+                $(".lianxitinliotwo").removeClass("bg-primary").addClass("text-primary");
+               
+            }
+            if(type==2){
+                 $(".xuexidanciotwo").removeClass("bg-primary").addClass("text-primary");
+                $(".lianxitinliotwo").removeClass("text-primary").addClass("bg-primary");
+               
+            }
+     }
+
+     function getjxkc(){
+        let type =  $(".txordc").val();
+        setCategoryType(type)
+     }
+
+    function setCategoryType(type){
+        $(".txordctwo").val(type);
+        CategoryList();
+    }
+
+    function CategoryList(){
+        
+         tbtab(1);
+         $(".dcsearch").show();
+         let type = $(".txordctwo").val();
+         kctypesettwo(type);
+         sethash("/Course/CategoryList?type="+type);
+         showpage("main");
+          edittitle("精选课程","CategoryList");
+        
+          requestUrlHtml("/Course/CategoryList?type="+type, "", "main");
+          
+    }
+
+    
+
+    function MyCategoryList(dom,ismoble,type){
+        
+         tbtab(1);
+        if(ismoble==1){
+            avativys(dom)
+        }
+         
+        $(".dcsearch").show();
+       
+         if (typeof updatemycategory === 'function') {
+                  updatemycategory();
+       }
+          
+         sethash("/Course/MyCategoryList?type="+type);
+        
+         showpage("dqMyCategoryList");
+          edittitle("课程列表","MyCategoryList");
+           if ($('#dqMyCategoryList').children().length == 0) {
+               requestUrlHtml("/Course/MyCategoryList?type="+type, "", "dqMyCategoryList");
+           }
+           else{
+                       //更新主页的
+                      setTimeout(function() {
+                         if (typeof homexxxq === 'function') {
+                             homexxxq();
+                         }
+                      }, 0);
+           }
+           
+    }
+
+     function My(dom,type){
+        
+         tbtab(1);
+        if(type==1){
+            avativys(dom)
+        }
+         
+
+         //if (typeof updatemycategory === 'function') {
+         //         updatemycategory();
+         //     }
+
+              
+         sethash("/Home/My");
+         
+           showpage("dqMy");
+           edittitle("个人中心","My");
+           if ($('#dqMy').children().length == 0) {
+          requestUrlHtml("/Home/My", "", "dqMy");
+           }
+           
+    }
+
+    function Privacy(dom,type){
+         tbtab(1);
+          if(type==1){
+            avativys(dom)
+        }
+
+        
+      
+         $(".dcsearch").show();
+
+          if (typeof updateexam === 'function') {
+                 updateexam();
+              }
+
+              
+         sethash("/Exam/ExamList");
+         
+         showpage("dqExamList");
+           edittitle("试题列表","ExamList");
+          if ($('#dqExamList').children().length == 0) {
+                requestUrlHtml("/Exam/ExamList", "", "dqExamList");
+          }
+          else{
+                
+          }
+          
+
+    }
+
+
+
+    function gdtys(){
+         // var windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+         //var height = $(".aaazzz").height();
+         //if(height>windowHeight){
+         //    $(".aaazzz").slimScroll({
+         //     height: (windowHeight-80)+'px'
+         //    });
+         //}
+    }
+
+    function Home(dom,type){
+         tbtab(1);
+          if(type==1){
+            avativys(dom)
+        }
+         
+            
+
+          $(".dcsearch").show();
+           sethash("/Home/Home");
+           showpage("dqhome");
+            edittitle("记忆助手","Home");
+           if ($('#dqhome').children().length == 0) {
+              requestUrlHtml("/Home/Home", "", "dqhome");
+           }
+           else{
+              
+              setTimeout(function() {  
+                 if (typeof settjsujutwo === 'function') {
+                    settjsujutwo();
+                  }
+               }, 0);
+           }
+
+          
+    }
+   
+     function MyCategoryListHome(type =1){
+         
+         kctypeset(type);
+         $(".txordc").val(type);
+        MyCategoryList($(".kcbtnc"),isMobile?1:0,type);
+     }
+    
+     function HearingLX(){
+          showpage("main");
+         requestUrlHtml("/Hearing/HearingLX", "", "main");
+     }
+
+ function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, '\\$&');
+    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+//进度校准
+     function CalibrationV2() {
+
+                    var layerIndexv = layer.open({
+                        type: 1, //page层
+                        area: ['300px', '70px'],
+                        title: '',
+                        shade: 0.1, //遮罩透明度
+                        moveType: 0, //拖拽风格，0是默认，1是传统拖动
+                        shift: -1, //0-6的动画形式，-1不开启
+                        closeBtn: 0,
+                        content: '<div id="xinglailoading" style="text-align: center; line-height:70px;"><img title="操作中" alt="操作中" src="../Content/img/sunjing_loading2.gif" />&nbsp;&nbsp;操作中，请稍等... ...</div>'
+                    });
+
+                      requestData("/Word/Calibration",{}).then((data) => {
+                            layer.close(layerIndexv);
+                            if (data.success) {
+                               
+                                //刷新数据
+                                
+                                       if (typeof updatemycategory === 'function') {
+                                               czkecen =0;
+                                              updatemycategory(true);
+                                       }
+                                            czjieguo("校准成功！", 0);
+                            }
+                            else {
+                                czjieguo(data.msg, 1);
+                            }
+
+                    }).catch((error) => {
+                       czjieguo(error.msg, 1);
+                    });
+
+
+                }
+   
+</script>

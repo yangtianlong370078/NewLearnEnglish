@@ -1,0 +1,97 @@
+﻿@{
+    Layout = null;
+}
+
+
+  <div class="container-full">
+  
+    <section class="content ydorpcys" >
+
+      <div class="row py-10">
+          <div class="col-12">
+
+					   <a href="#" class="box pb-0 mb-0">
+								<div class="box-body">
+									<div class="d-flex align-items-center">
+										<div  class="me-15 bg-lightest h-50 w-50 l-h-50 rounded-circle text-center overflow-hidden">
+													<img src="../images/avatar/avatar-4.png" class="h-50 align-self-end" alt="">
+												</div>
+										<div class="ms-15">											
+											<h5 class="mb-0">ytl心蓝</h5>
+											<p class="text-fade fs-12 mb-0">.....</p>
+										</div>
+									</div>
+									
+								</div>
+							</a>
+
+         </div>
+        </div>
+
+		<div  class="row pb-10">
+			<div class="col-12 ">
+				<div class="box">
+					
+					<div class="box-body p-0">
+					  <div class="media-list media-list-hover media-list-divided">
+
+						<a class="media media-single" href="#" >
+						  <i class="mdi m-0 p-0 mdi mdi-qrcode"></i>
+						  <span class="title">分享</span>
+						 <i class="icon-Angle-right   fs-20  m-0 p-0"><span class="path1"></span><span class="path2"></span></i>
+						</a>
+
+						<a class="media media-single" href="#" onclick="HearingLX()">
+						  <i class="mdi m-0 p-0 mdi mdi-qrcode"></i>
+						  <span class="title">听力（bate）</span>
+						 <i class="icon-Angle-right   fs-20  m-0 p-0"><span class="path1"></span><span class="path2"></span></i>
+						</a>
+
+						<a class="media media-single"  data-bs-toggle="modal" data-bs-target="#modal-right"   href="#" >
+						  <i class="mdi m-0 p-0 mdi mdi-settings"></i>
+						  <span class="title">设置</span>
+						 <i class="icon-Angle-right   fs-20  m-0 p-0"><span class="path1"></span><span class="path2"></span></i>
+						</a>
+
+
+						<a class="media media-single" href="#"   data-bs-toggle="modal" data-bs-target="#mima-tk" onclick="ModifyPassword('')">
+						  <i class="mdi m-0 p-0 mdi-lock-open"></i>
+						  <span class="title">修改密码 </span>
+						  <i class="icon-Angle-right   fs-20  m-0 p-0"><span class="path1"></span><span class="path2"></span></i>
+						</a>
+
+						<a class="media media-single" href="#" onclick="LoginOut()">
+						  <i class="mdi m-0 p-0 mdi-logout-variant"></i>
+						  <span class="title">切换账号</span>
+						 <i class="icon-Angle-right   fs-20  m-0 p-0"><span class="path1"></span><span class="path2"></span></i>
+						</a>
+
+						
+
+					  </div>
+				   </div>
+				</div>
+			  </div>
+		</div>
+
+    </section>
+
+    <!-- /.content -->
+  </div>
+  <script>
+
+	  if (window.location.hash=='#/Home/My' ) {
+		  
+	      avativys($(".mybtnc"));
+       }
+
+
+		$(document).ready(function () {
+			edittitle("个人中心","My");
+		 setTimeout(function() {  
+						  lazydata("dqMy");
+					  }, 200); 
+
+		});
+
+  </script>

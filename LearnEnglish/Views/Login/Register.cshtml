@@ -1,0 +1,211 @@
+﻿@{
+   
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="loader hide"></div>
+<div class="container h-p100 p-10" style="position:relative;z-index:1;">
+    <div class="row align-items-center justify-content-md-center h-p100">
+
+        <div class="col-12 ">
+            <div class="row justify-content-center g-0 ">
+                <div class="col-lg-5 col-md-5  col-12">
+                    <div class="bg-white rounded10 shadow-lg">
+                        <div class="content-top-agile p-20 pb-0">
+                            <h2 class="text-primary">记忆助手</h2>
+                            <p class="mb-0">立即注册为新用户</p>
+                        </div>
+                        <div class="p-40">
+                            <div>
+                                <div class="form-group">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-transparent"><i class="ti-user"></i></span>
+                                        <input type="text" id="ReLoginID" class="form-control ps-15 bg-transparent" placeholder="输入账号">
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-transparent"><i class="ti-mobile"></i></span>
+                                            <input type="text" id="RePhone"  class="form-control ps-15 bg-transparent" placeholder="输入手机号码">
+                                        </div>
+                                 </div>
+                                  <div class="form-group">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text bg-transparent"><i class="ti-user"></i></span>
+                                            <input type="text" id="ReName"  class="form-control ps-15 bg-transparent" placeholder="输入昵称">
+                                        </div>
+                                 </div>
+                                <div class="form-group">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-transparent"><i class="ti-lock"></i></span>
+                                        <input type="password" id="RePassWord"  class="form-control ps-15 bg-transparent" placeholder="输入密码">
+                                       
+                                    </div>
+                                </div>
+                                 <div class="form-group">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-transparent"><i class="ti-lock"></i></span>
+                                        <input type="password" id="RePassWordTwo"  class="form-control ps-15 bg-transparent" placeholder="再次输入密码">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                          <div class="checkbox">
+                                            <input type="checkbox" id="basic_checkbox_1">
+                                            <label for="basic_checkbox_1">我同意 <a href="#"><b>用户协议</b></a></label>
+                                          </div>
+                                    </div>
+                                    <!-- /.col -->
+                                    <div class="col-12 text-center">
+                                        <button onclick="register()" class="btn btn-info margin-top-10"><i class="fa fa-spin fa-refresh" style="display:none;"></i>&nbsp; 注册</button>
+                                    </div>
+                                    <!-- /.col -->
+                                </div>
+                            </div>
+
+
+                            <div class="text-center">
+                                    <p class="mt-15 mb-0">已有账号? <a asp-area="" asp-controller="Login" asp-action="Login" class="text-warning ms-5">点击登录</a></p>
+                                </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+ <script>
+
+
+
+function register() {
+
+
+
+    //登陆名
+    var loginid = $.trim($('#ReLoginID').val());
+    if (loginid == "" || loginid == "undefined") {
+        $.message({
+            message: "用户名不能为空",
+            type: 'error',
+            duration: 2000,
+            center: true,
+        });
+        return;
+    }
+     var name = $.trim($('#ReName').val());
+    if (name == "" || name == "undefined") {
+        $.message({
+            message: "昵称不能为空",
+            type: 'error',
+            duration: 2000,
+            center: true,
+        });
+        return;
+    }
+
+      var phone = $.trim($('#RePhone').val());
+    if (phone == "" || phone == "undefined") {
+        $.message({
+            message: "手机号码不能为空",
+            type: 'error',
+            duration: 2000,
+            center: true,
+        });
+        return;
+    }
+
+    //密码
+    var password = $.trim($('#RePassWord').val());
+    if (password == "" || password == "undefined") {
+        $.message({
+            message: "密码不能为空",
+            type: 'error',
+            duration: 2000,
+            center: true,
+        });
+        return;
+    }
+
+     //密码
+    var passwordtwo = $.trim($('#RePassWordTwo').val());
+    if (passwordtwo == "" || passwordtwo == "undefined") {
+        $.message({
+            message: "确认密码不能为空",
+            type: 'error',
+            duration: 2000,
+            center: true,
+        });
+        return;
+    }
+
+    if (password != passwordtwo){
+        $('#RePassWord').val("");
+        $('#RePassWordTwo').val("");
+         $.message({
+            message: "两次密码输入不一致，请重新输入",
+            type: 'error',
+            duration: 2000,
+            center: true,
+        });
+        return;
+    }
+
+    $(".fa-refresh").show();
+
+    //验证完成，请求后台登陆
+    $.ajax({
+        url: "/Login/SetRegister",
+        data: { loginID: loginid, password: password, phone: phone,name:name},
+        dataType: "json",
+        type: "POST",
+        success: function (data) {
+
+            if (!data.success) {
+                $(".fa-refresh").hide();
+                $.message({
+                    message: data.msg,
+                    type: 'error',
+                    duration: 2000,
+                    center: true,
+                });
+                return;
+            }
+            if (data.success) {
+             
+                $.message({
+                    message: "注册成功，现在就去学习吧！",
+                    type: 'success',
+                    center: true,
+                });
+              var baseUrl = window.location.protocol + "//" + window.location.host+"/Login/Login";   
+              window.location.href = baseUrl;  
+
+            } else {
+                $(".fa-refresh").hide();
+                $.message({
+                    message: data.msg,
+                    type: 'error',
+                    duration: 2000,
+                    center: true,
+                });
+
+            }
+        }, error: function (e) {
+            $(".fa-refresh").hide();
+            $.message({
+                message: "程序内部错误",
+                type: 'error',
+                duration: 2000,
+                center: true,
+            });
+            $("#loader").hide();
+        }
+    });
+}
+
+ </script>                                   

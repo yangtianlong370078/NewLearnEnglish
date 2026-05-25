@@ -1,0 +1,206 @@
+﻿@{
+    Layout = null;
+}
+
+<input type="hidden" class="txordc" value="@ViewData["type"]" />
+
+<div class="container-full">
+    @*
+    @await Html.PartialAsync("Search")*@
+    <!-- Content Header (Page header) -->
+    <!-- Main content -->
+    <section class="content ydorpcys">
+
+        <ul class="nav" style="margin-left:4px; ">
+
+            <li class=" nav-item me-10 mt-10" onclick="xxmoshiqh(1)"> <btn class="btn @string.Format("{0}",Convert.ToInt32(ViewData["type"])==1?"bg-primary":"text-primary")  xuexidancio" data-bs-toggle="tab" aria-expanded="false">学单词</btn> </li>
+            <li class="nav-item me-10 mt-10" onclick="xxmoshiqh(2)"> <btn class="btn @string.Format("{0}",Convert.ToInt32(ViewData["type"])==2?"bg-primary":"text-primary")  lianxitinlio" data-bs-toggle="tab" aria-expanded="false">练听力</btn> </li>
+            <li class="nav-item me-10 mt-10" onclick="CalibrationV2()" style="position: absolute;right: 10px;"> <btn class="btn bg-success">进度校准</btn> </li>
+
+        </ul>
+
+        <div class="row  " id="mycategoryContent">
+        </div>
+    </section>
+    <!-- /.content -->
+</div>
+<div class="modal center-modal fade" id="addcourse" tabindex="-1">
+    <div class="modal-dialog max-w-600">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span class="cktype">
+                    </span>课程
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div>
+                
+                <div class="box-body">
+                    <div class="row justify-content-center ">
+                        <div class="my-10">
+                            <div class="nav-tabs-left mx-15">
+                                <label for="insercoursename" class="  min-w-100 w-120   col-form-label">
+                                    课程名称
+                                    <span style="color:red;">*</span>
+                                </label>
+                                <input type="text" id="insercoursename" name="inserten" class="form-control  min-w-200" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer modal-footer-uniform">
+                <button type="button" class="btn btn-danger gbck" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary float-end" onclick="SaveCourse()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script>
+
+
+
+         if (window.location.href.indexOf('Course/MyCategoryList') !== -1 ) {
+         avativys($(".kcbtnc"));
+         }
+
+
+        function downcf(){
+          $('.dropdown > *').removeClass('show');
+          $('.dropdown > a').attr('aria-expanded', 'false');
+        }
+        function opcaidan(event){
+            event.stopPropagation();
+        }
+
+
+       async function xxxq(){
+
+             requestData("/Statistics/QueryLearnCount","").then((data) => {
+                 
+                      $(".bzdc").text(data.bzcount);
+                      $(".tjdc").text(data.count);
+                      $(".username").text(data.username);
+              }).catch((error) => {
+                 czjieguo(error.msg, 1);
+              });
+        }
+
+
+
+
+
+
+
+        async function getmycatearoy(){
+
+             requestData("/Course/MyCategorys",{ id: czkecen}).then((data) => {
+
+                   for(let i=0; i<data.data.length; i++) {
+
+                        let  item = data.data[i];
+                        let wcbfb =  $(".wcbfb_"+item.courseId);
+                        let wcqk =   $(".wcqk_"+item.courseId);
+                       let donecount =  wcqk.data("donecount");
+                       if(item.doneCount!=donecount){
+                           $(".percentage_"+item.courseId).text("%"+item.doneCount);
+                           $(wcbfb).attr('aria-valuenow', Number(item.percentage)).css('width', (item.percentage)+'%');
+                       }
+
+                       let textstr = "";
+                       if(item.doneCount==0){
+                            $(".xxjdt_"+item.courseId).hide();
+                           textstr = "单词："+item.wordsCount;
+                       }
+                       else{
+                           $(".xxjdt_"+item.courseId).show();
+                            textstr = "单词："+(item.wordsCount+item.doneCount)+'/'+item.doneCount+"&nbsp;&nbsp;完成: "+(item.percentage)+'%';
+                       }
+                       $(wcqk).data('donecount', item.doneCount).html(textstr);
+
+                     }
+
+                     czkecen = 0;
+              }).catch((error) => {
+
+              });
+        }
+
+     async function updatemycategory(isup=false){
+
+          edittitle("我的课程","MyCategoryList");
+
+           if (czkecen != 0||isup) {
+
+                setTimeout(function() {
+                    getmycatearoy();
+                }, 0);
+
+               setTimeout(function() {
+                     xxxq();
+                }, 0);
+
+
+
+           }else{
+              // alert("课程无需更新："+czkecen);
+           }
+      }
+
+      function xxmoshiqh(type){
+
+          kctypeset(type);
+          $(".txordc").val(type);
+           edittitle("我的课程","MyCategoryList");
+           sethash("/Course/MyCategoryList?type="+type);
+          $("#mycategoryContent").html("").append("<div class=\"spinner\"></div>");
+          requestUrlHtml("/Course/MyCategoryContent", {type:type },"mycategoryContent");
+      }
+
+    $(document).ready(function() {
+
+         
+         let type =  $(".txordc").val();
+         xxmoshiqh(type);
+
+                $(".dropdown-menu,.todo-list,.border-gainsboro").on({
+
+                   mouseleave: function() {
+                      downcf();
+                   }
+               });
+
+               $(".zzbbpp").on({
+                     mouseenter: function() {
+                         downcf();
+                          //$(this).click();
+                          $(this).addClass('show');
+                          $(this).next().addClass('show').attr('aria-expanded', 'true');
+                         //$(this).children().addClass('show');
+                        // $(this).children("a").attr('aria-expanded', 'true');
+                     },
+                     mouseleave: function() {
+                         // 鼠标移出时执行的代码
+                        // console.log("鼠标移出了元素");
+                         // 示例：恢复元素原始背景色
+                        // $(this).css("background-color", "");
+                     }
+             });
+
+              
+             
+                 setTimeout(function() {
+                           lazydata("dqMyCategoryList");
+                        }, 200);
+      });
+
+
+      //
+
+</script>

@@ -1,0 +1,21 @@
+﻿@model UserErrorViewModel 
+
+@{  
+    ViewData["Title"] = "User Error";  
+}  
+
+
+<h1 class="text-danger">@Model.Msg</h1>  
+<h2 class="text-danger">请联系管理员处理</h2>  
+
+<p>@Model.Type</p>  
+
+<button onclick="cxlogin()" class="btn-primary btn">重新登录</button>
+
+<script>
+    function cxlogin(){
+         var baseUrl = window.location.protocol + "//" + window.location.host + "/Login/Login";
+                     window.location.href = baseUrl;
+    }
+
+</script>

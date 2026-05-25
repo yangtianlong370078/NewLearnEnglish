@@ -1,0 +1,247 @@
+﻿@{
+    Layout = null;
+}
+
+@using LearnEnglish.Models.Dtos
+@model List<LearnEnglish.Models.Dtos.CategoryInfo>
+<style>.expanded{}</style>
+@*@await Html.PartialAsync("Search")*@
+  <div class="container-full pt-10">
+
+                    
+
+    <section class="content ydorpcys" >
+        <ul class="nav" style="margin-left:4px;">
+                        <li class=" nav-item me-10 mb-10" onclick="setCategoryType(1)"> <btn  class="btn  bg-primary xuexidanciotwo" data-bs-toggle="tab" aria-expanded="false">学单词</btn> </li>
+                        <li class="nav-item me-10 mb-10" onclick="setCategoryType(2)"> <btn  class="btn text-primary lianxitinliotwo" data-bs-toggle="tab" aria-expanded="false">练听力</btn> </li>
+
+        </ul>
+      <div class="row">
+          @if (Model != null)
+            {
+                var index = 0; 
+                foreach (CategoryInfo item in Model)
+                {
+                        <div>
+                          <div class="box bgtype " style="margin-bottom: 10px;">
+                            <div class="box-header with-border kctitle" style="border-bottom: 0px solid rgba(72, 94, 144, 0.16);cursor: pointer;">
+                                @{
+                                    index++;
+                                }
+                              <h4 class="box-title">@item.name</h4>
+                              <ul class="box-controls pull-right">
+                                <li>
+                                  <a class="box-btn-slide" href="#">
+                                  </a>
+                                </li>
+                                <li>@item.courseInfos.Count()</li>
+                                
+                                    @if (item.courseInfos.Any(a=>a.ismycourse))
+                                    {
+                                        <li>
+                                          <small class="badge bg-success" style="margin-right:10px;">学习中</small>
+                                        </li>
+                                    }</ul>
+                            </div>
+                            <div class="box-body  p-0" style="display: none; ">
+                                      <ul class="todo-list p-10 pb-0" style="">
+                                  @foreach (var itemsub in item.courseInfos)
+                                    {
+                                        <li class="  @string.Format(" {0} ",itemsub.ismycourse?"border-success-zq":"border-gainsboro")  nrsty example p-0  mb-10 " style="cursor: pointer;border-radius: 10px !important;">
+                                           <div class = "p-10" style="display:flex;justify-content: space-between;position:relative;z-index:99;">
+                                          <div style="display:flex; align-items: baseline;">
+                                                            <span class="handle" style="display:flex;min-width: 14px; justify-content: space-between;margin: 0px 0px 0px 5px;">  <i class="fa fa-ellipsis-v"></i><i class="fa fa-ellipsis-v me-5"> </i> </span>
+                                                <a href="#" >
+                                                     <div><span class="text-line" style="font-size:16px;">@itemsub.courseName</span></div>
+                                                </a>
+                                               
+                                          </div>
+                                          <div class="tools" style="display:block;min-width: fit-content;">
+                                                    @if (!itemsub.ismycourse)
+                                                {
+                                                         <i class="fa fa-plus text-primary p-5 me-0"  onclick="addmykc(@itemsub.courseId,'@itemsub.courseName',event)"></i>
+                                                } 
+                                          </div>
+                                         </div>
+                                            @if (Convert.ToDouble(itemsub.Percentage) > 0)
+                                            {
+                                                <div style="padding: 0px 15px 15px 15px;position:relative;z-index:99;">
+                                                                  <div class="progress progress-xs" style="margin-bottom: 0;">
+                                                    <div class="progress-bar progress-bar-primary" role="progressbar" aria-valuenow="@itemsub.Percentage" aria-valuemin="0" aria-valuemax="100" style="width: @string.Format(" {0}% ",itemsub.Percentage);">
+                                                      <span class="sr-only">@string.Format("{0}%",itemsub.Percentage)</span>
+                                                    </div>
+                                                  </div>
+                                                </div>
+                                            }
+
+
+                                            <div class=" text-muted  pb-10 px-15 my-0  @string.Format(" {0} ",itemsub.ismycourse?"":" ") btsr-0 bter-0" style="display:flex !important;border-radius: 10px;justify-content: space-between;position:relative;z-index:99;">
+                                                                        <div class="fs-12 " style="font-style: italic;">@Html.Raw(string.Format("单词: {0}", itemsub.DoneCount == 0 ? $"{itemsub.WordsCount}" : $"{itemsub.WordsCount+itemsub.DoneCount}/{itemsub.DoneCount} &nbsp;&nbsp;完成: {itemsub.Percentage}%"))</div>
+                                                <div class="fs-12 hide">2.5万人学习中</div>
+                                           </div>
+
+                                        </li>
+                                                 
+                                  } </ul>
+                            </div>
+                            <!-- /.box-body -->
+                          </div>
+                        </div>
+                }
+            }</div>
+    </section>
+    <!-- /.content -->
+  </div>
+ 
+  <script>
+
+
+
+      if (window.location.href.indexOf('Course/CategoryList') !== -1 ) {
+       avativys($(".kcbtnc"));
+      }
+         
+      edittitle("精选课程","CategoryList");
+      $(document).ready(function() {
+          gdtys();
+
+          var ind = 0;
+
+            setTimeout(function() {  
+                          lazydata("main");
+                      }, 200); 
+
+
+        //根据选项设置按钮样式
+        //var type = getParameterByName('type');
+         let type =  $(".txordctwo").val();
+        kctypesettwo(type);
+
+      $('.kctitle').on('click',
+      function(e) {
+          var distanceToBottom =0;
+          
+          if (e.target.nodeType === Node.ELEMENT_NODE) {  
+        // 获取点击的元素  
+        let element = e.target;  
+
+        // 使用 getBoundingClientRect() 获取元素的位置信息  
+        let rect = element.getBoundingClientRect();  
+
+        // 获取视窗的高度  
+        let viewportHeight = window.innerHeight;  
+
+        // 计算元素底部距离浏览器底部的距离  
+         distanceToBottom = viewportHeight - rect.bottom;  
+
+           
+      }  
+
+
+        // 假设.expandable-content是你要展开的内容
+        var $expandableContent = $(this).next();
+        var clickOffsetTop = e.pageY - window.pageYOffset;
+
+        let isexpanded = $expandableContent.is(":hidden")
+     
+      
+        let isbottom = isNearBottom($(this));
+         
+        // 如果内容展开并且元素靠近底部
+        if (isexpanded && isbottom ) {
+          // 滚动到元素位置
+       //   scrollToElement($(this));
+
+            var newScrollTop = Math.max(0, $expandableContent.offset().top - clickOffsetTop + $expandableContent.outerHeight() /* 减去元素高度以避免内容被遮挡 */);
+           
+          // 滚动到元素位置
+          if(ind == 1){
+               ind = 0;
+              // scrollToElement($(this));
+             // scrollToElementtwo(newScrollTop);
+             
+             setTimeout(function(){
+                 
+              @*   var scrollTop = $expandableContent.offset().top - (window.innerHeight - $expandableContent.outerHeight());
+                  $('.aaazzz').animate({  
+                     scrollTop:   scrollTop
+              }, 'slow');*@
+
+
+              // 获取元素的位置  
+    var elementPosition = $expandableContent[0].getBoundingClientRect().top + window.scrollY;  
+    // 获取窗口的高度  
+    var windowHeight = window.innerHeight;  
+    // 计算需要滚动的距离  
+    var scrollDistance = elementPosition - (windowHeight - $expandableContent[0].offsetHeight);  
+    
+    //当前元素的高度
+    let ht =  $expandableContent.height();
+  //当前滚动条位置
+    let gdth = isMobile?$('html').scrollTop():$('.aaazzz').scrollTop();
+
+ gdth = isMobile?gdth+150:gdth+100;
+    if(isMobile){
+         $('html').animate({  
+             scrollTop:  (gdth+ht)-distanceToBottom
+      }, 200);
+    }else{
+        $('.aaazzz').animate({  
+             scrollTop:  (gdth+ht)-distanceToBottom
+      }, 200);
+    }
+      
+
+
+    // 使用window.scrollTo方法平滑滚动到指定位置 
+     @*$('.aaazzz').animate({  
+                     scrollTop:   scrollDistance
+              }, 'slow');*@
+
+    @*  $('.aaazzz').scrollTo({  
+        top: scrollDistance,  
+        behavior: 'smooth'  
+    }); *@ 
+
+
+
+             },300);
+
+   
+
+          }
+            else{
+            ind++;
+        }
+        }
+        else{
+            ind = 0;
+        }
+        
+
+      });
+
+      function isNearBottom($element) {
+        var rect = $element[0].getBoundingClientRect();
+        var screenHeight = window.innerHeight || document.documentElement.clientHeight;
+        return rect.bottom > screenHeight - screenHeight * 0.2; // 例如，距离底部20%以内认为是“靠近底部”
+      }
+
+      function scrollToElement($element) {
+        $('html, body, .aaazzz').animate({
+          scrollTop: $element.offset().top - 250 // 可以根据需要调整滚动距离
+        },
+        300); // 滚动动画的持续时间，这里设置为500毫秒
+      }
+
+      function scrollToElementtwo(newScrollTop) {
+        $('html, body, .aaazzz').animate({
+          scrollTop: newScrollTop
+        },
+        300); // 滚动动画的持续时间，这里设置为500毫秒
+      }
+     
+    });
+
+
+    </script>

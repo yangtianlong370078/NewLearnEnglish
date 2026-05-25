@@ -1,0 +1,329 @@
+﻿
+@{
+    Layout = null;
+}
+@using LearnEnglish.Models.Dtos
+
+<style>
+     .ysys {
+        display: flex;
+        align-items: center;
+        vertical-align: middle;
+        font-size: 1.714rem;
+        height: 45px;
+        text-align: center;
+        width: 45px;
+        line-height: 28px;
+        justify-content: center;
+    }
+
+</style>
+
+@model PagedList<LearnEnglish.Models.Dtos.ExamOutDto>
+@if (Model != null && Model.Count > 0)
+{
+                    <div class="controls dcsearch ydorpcys  py-10" >
+                           <div class="form-group form-group-feedback form-group-feedback-right" style="margin-bottom: 0px;z-index: 100;">
+                                <div class="position-relative">
+                                       <div class="main-header container" style="position: relative !important;border-radius: 10px !important;">
+                                            <div class="app-menu">
+                                                <div class="search-bx " style="max-width:100%">
+                                                    <div class="input-group bgtype" style="border-radius: 10px;">
+                                                        <input type="search" class="form-control cxsj" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;height:50px;" placeholder="查询试题" aria-label="查询试题" value="@ViewData["word"]"  aria-invalid="false">
+                                                      <div class="input-group-append">
+                                                            <button class="btn" type="button" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;display: flex; align-items: center;" id="button-addon3" onclick="sjcx()"  ><i class="ti-search"></i></button>
+                                                      </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                      </div>
+                                </div>
+                            </div>
+                <div class="help-block"></div>
+            </div>
+
+
+    <div class="container-full">
+        <!-- Content Header (Page header) -->
+        <!-- Main content -->
+             <section class="content ydorpcys pb-20"  >
+                <div class="row"  style="margin:0px">
+
+                @if (Model != null)
+                {
+                    foreach (ExamOutDto item in Model)
+                    {
+                        <div class="nrsty example  mb-10 ">
+                                        <div class="box-body" style="padding:10px !important;position:relative;z-index:99;">
+                                            <div class="d-flex align-items-center justify-content-between">
+                                                            <div class="d-flex align-items-center" onclick="openExam(@item.id,'@item.name')">
+                                                    <div class=" p-0 m-0" style="display:flex;flex-direction: column;min-width:80px;"  >
+
+                                            @{
+
+
+                                                var zy = "text-muted";
+                                                if (item.ZyCount.isyk)
+                                                {
+                                                    if (item.ZyScore >= 60 && item.ZyScore < 90)
+                                                    {
+                                                        zy = "text-warning";
+                                                    }
+                                                    if (item.ZyScore >= 90)
+                                                    {
+                                                        zy = "text-success";
+                                                    }
+                                                    if (item.ZyScore < 60)
+                                                    {
+                                                        zy = "text-danger";
+                                                    }
+                                                 }
+
+                                                var yz = "text-muted";
+                                                if (item.YzCount.isyk)
+                                                {
+                                                    if (item.YzScore >= 60 && item.YzScore < 90)
+                                                    {
+                                                        yz = "text-warning";
+                                                    }
+                                                    if (item.YzScore >= 90)
+                                                    {
+                                                        yz = "text-success";
+                                                    }
+                                                    if (item.YzScore < 60)
+                                                    {
+                                                        yz = "text-danger";
+                                                    }
+                                                }
+
+                                                var tx = "text-muted";
+                                                if (item.TxCount.isyk)
+                                                {
+                                                    if (item.TxScore >= 60 && item.TxScore < 90)
+                                                    {
+                                                        tx = "text-warning";
+                                                    }
+                                                    if (item.TxScore >= 90)
+                                                    {
+                                                        tx = "text-success";
+                                                    }
+                                                    if (item.TxScore < 60)
+                                                    {
+                                                        tx = "text-danger";
+                                                    }
+                                                }
+                                            }
+
+                                                                                   <span class="@zy zyscore_@item.id" style="text-align:left">中英：@(item.ZyCount.isyk ? $"{item.ZyScore}" : "待考")</span>
+                                                                                   <span class="@yz yzscore_@item.id" style="text-align:left">英中：@(item.YzCount.isyk ? $"{item.YzScore}" : "待考")</span>
+                                                                                   <span class="@tx txscore_@item.id" style="text-align:left">听写：@(item.TxCount.isyk ? $"{item.TxScore}" : "待考")</span>
+                                                      </div>
+                                                                           <span class="bullet bullet-bar bg-primary align-self-stretch" style="min-width: 4px;"></span>
+                                                                                        <div class="d-flex flex-column fw-500 ms-10">
+                                                                                                        <a href="#" class="text-dark hover-primary mb-1 fs-16">@item.name</a>
+                                                                                            <span class="text-fade">@item.createdate</span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div style="display:flex;flex-direction: column;" >
+                                                                                <button type="button" onclick="DeleteExam(@item.id)" class="waves-effect waves-circle btn btn-circle btn-danger-light btn-xs m-10"><i class="icon-Close "><span class="path1"></span><span class="path2"></span></i></button>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                    }
+                }
+            </div>
+                 <div class="flexbox mdataTables_wrapper  dt-bootstrap4 no-footer  fanye mt-10" style="width:100%;">
+                <div style="">
+                    @Html.Raw(Model.BuildHtml())
+                </div>
+            </div>
+        </section>
+
+
+
+        <!-- /.content -->
+    </div>
+}
+else
+{
+        <div class="text-left box my-20 p-20 text-muted">
+            <span>还没有试题，请先去创建吧~</span>
+        </div>
+}
+
+
+
+
+
+
+
+
+<script>
+
+    if (window.location.href.indexOf('Exam/ExamList') !== -1 ) {
+     avativys($(".stbtnc"));
+    }
+     edittitle("试题列表","ExamList");
+
+
+   async function getexam(){
+
+         requestData("/Exam/GetExam",{ examid: czexamId}).then((data) => {
+
+             
+                      let  item = data.data;
+                      let zyscore =  $(".zyscore_"+item.id);
+                      let yzscore =   $(".yzscore_"+item.id);
+                      let txscore =   $(".txscore_"+item.id);
+
+                  
+                    let zy ="text-muted";
+                    if(item.zyCount.isyk){
+                          if(item.zyScore>=60&&item.zyScore<90){
+                               zy = "text-warning";
+                           }
+                           if(item.zyScore>=90){
+                               zy = "text-success";
+                           }
+                            if(item.zyScore<60){
+                               zy = "text-danger";
+                           }
+                    }
+
+                    let yz ="text-muted";
+                    if(item.yzCount.isyk){
+                          if(item.yzScore>=60&&item.yzScore<90){
+                               yz = "text-warning";
+                           }
+                           if(item.yzScore>=90){
+                               yz = "text-success";
+                           }
+                            if(item.yzScore<60){
+                               yz = "text-danger";
+                           }
+                    }
+
+                    let tx ="text-muted";
+                    if(item.txCount.isyk){
+                          if(item.txScore>=60&&item.txScore<90){
+                               tx = "text-warning";
+                           }
+                           if(item.txScore>=90){
+                               tx = "text-success";
+                           }
+                             if(item.txScore<60){
+                               tx = "text-danger";
+                           }
+                    }
+
+                    let zytext = "中英："+ (item.zyCount.isyk ? item.zyScore : "待考");
+                    let yztext = "英中："+ (item.yzCount.isyk ? item.yzScore : "待考");
+                    let txtext = "听写："+ (item.txCount.isyk ? item.txScore : "待考");
+
+                    $(zyscore).removeClass("text-muted").removeClass("text-success").removeClass("text-danger").removeClass("text-warning").addClass(zy).text(zytext);
+                    $(yzscore).removeClass("text-muted").removeClass("text-success").removeClass("text-danger").removeClass("text-warning").addClass(yz).text(yztext);
+                    $(txscore).removeClass("text-muted").removeClass("text-success").removeClass("text-danger").removeClass("text-warning").addClass(tx).text(txtext);
+
+               czexamId = 0;
+            }).catch((error) => {
+
+            });
+
+    }
+
+
+
+   async function updateexam(){
+       
+      edittitle("试题列表","ExamList");
+         if (czexamId != 0) {
+
+              setTimeout(function() {  
+                  getexam();
+              }, 0); 
+
+         }else{
+           
+         }
+    }
+
+
+    var czexamId = 0;
+
+    function openExam(ExamId, ExamName) {
+         czexamId = ExamId;
+          if(!isMobile){
+
+               edittitle(ExamName,"ExamContentTable");
+
+               sethash('/Exam/ExamContentTable?id='+ExamId);
+               showpage("main");
+               requestUrlHtml('/Exam/ExamContentTable?id='+ExamId, "","main");
+          
+          }
+          else{
+               wx.miniProgram.navigateTo({ url: '/pages/document/kecen/kecen?page=ExamContentTable&id='+ExamId });
+          }
+    }
+
+    function ExamFlushTable(pageIndex){
+
+         var word =  $(".cxsj").val().trim().toLowerCase();
+        requestUrlHtml("/Exam/ExamList", {index:pageIndex,word:word}, "main");
+    }
+
+   function sjcx(){
+        ExamFlushTable(1)
+    }
+
+   $('.cxsj').on('keydown',
+    function(event) {
+      if (event.key === 'Enter') {
+        sjcx();
+      }
+    });
+
+
+
+  function DeleteExam(examId){
+    event.stopPropagation();
+            swal({
+                title: "删除试卷",
+                text: '删除试卷并清空本试卷考试成绩？',
+                showCancelButton: true,
+                cancelButtonText: '取消',
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确定",
+
+                closeOnConfirm: false
+            }, function () {
+
+
+            if(examId>0){
+                 requestData("/Exam/DeleteExam",{ examid: examId }).then((data) => {
+                  if (data.success) {
+                      czjieguo("操作成功！", 0);
+                      location.reload(true);
+                  }
+                  else {
+                      czjieguo(data.msg, 1);
+                  }
+
+          }).catch((error) => {
+             czjieguo(error.msg, 1);
+          });
+;
+             }
+
+            });
+}
+
+$(document).ready(function() {
+
+     setTimeout(function() {  
+            lazydata("dqExamList");
+     }, 200); 
+       
+    });
+</script>

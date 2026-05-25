@@ -1,0 +1,83 @@
+﻿
+@{
+    Layout = null;
+}
+
+
+
+@using LearnEnglish.Models.Dtos
+@model MyCategoryInfo
+
+
+      
+      @if (Model != null)
+            {
+         
+          <div class="col-12  mt-10">
+            <div class="box bgtype " style="margin-bottom: 0px;">
+              <div class="box-header  py-15 with-border kctitle" style="border-bottom: 0px solid rgba(72, 94, 144, 0.16);cursor: pointer;display: flex; justify-content: space-between;align-items: center;">
+                <h4 class="box-title ">精选课程</h4>
+                <div>
+                  <button type="button" onclick="getjxkc()" class="waves-effect waves-light btn btn-sm  btn-info  ">更多课程</button>
+                </div>
+              </div>
+            <div class="box-body   p-10 pb-0" style=" ">
+                @foreach (CategoryInfo item in Model.CategoryInfos)
+                            {
+                    <div class="mx-20 mb-5">
+                      <span class="badge badge-sm badge-dot badge-info me-5"></span>@item.name</div>
+                                @foreach (var itemsub in item.courseInfos)
+                                {
+                        <div class=" @string.Format(" {0} ",itemsub.DoneCount > 0?"border-gainsboro ":"border-gainsboro ") nrsty example mb-10" style="cursor: pointer;border-radius: 10px !important;" onclick="openCourse(@itemsub.courseId,'@itemsub.courseName','@string.Format(" {0} ",item.name == "我的词典 "?true:false)')">
+                          <div class="ribbon hide  bqtp mt-5 fs-12 ribbon-info @string.Format(" {0} ",itemsub.DoneCount > 0?"bg-success ":"bg-info ")">@string.Format("{0}", itemsub.DoneCount == 0 ? $"{itemsub.WordsCount}" : $"{itemsub.WordsCount+itemsub.DoneCount}/{itemsub.DoneCount} 完成: {itemsub.Percentage}%")</div>
+                          <div class="p-10" style="display:flex;justify-content: space-between;position: relative;z-index: 99;">
+                            <div style="display:flex; align-items: baseline;">
+                              <span class="handle" style="display:flex;min-width: 14px; justify-content: space-between;margin: 0px 0px 0px 5px;">
+                                <i class="fa fa-ellipsis-v">
+                                </i>
+                                <i class="fa fa-ellipsis-v me-5">
+                                </i>
+                              </span>
+                              <a href="#">
+                                <div>
+                                  <span class="text-line" style="font-size:16px;">@itemsub.courseName</span>
+                                </div>
+                              </a>
+                            </div>
+                            <div class="tools" style="display:block;min-width: fit-content;">
+                              <div class="dropdown">
+                                <a class="px-10 pt-5 zzbbpp" href="#" onclick="opcaidan(event)" onmousedown="downcf()" data-bs-toggle="dropdown" aria-expanded="false">
+                                  <i class="ti-more-alt">
+                                  </i>
+                                </a>
+                                <div class="dropdown-menu dropdown-menu-end " style="position: absolute; inset: 0px auto auto 0px; margin: 0px; transform: translate3d(-106px, 21px, 0px);" data-popper-placement="bottom-end">
+                                   
+                                     <a class="dropdown-item" onclick="deleteCourseTwo(@itemsub.courseId,'@itemsub.courseName',event)">  <i class="fa fa fa-reply-all"></i>移除课程</a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                            <div class="xxjdt_@string.Format("{0}",itemsub.courseId)" style="padding: 0px 15px 15px 15px; @string.Format("{0}",Convert.ToDouble(itemsub.Percentage) > 0?"":"display:none;")position: relative;z-index: 99;">
+                                <div class="progress progress-xs" style="margin-bottom: 0;">
+                                 <div class="progress-bar progress-bar-info  wcbfb_@string.Format("{0}",itemsub.courseId)" role="progressbar" aria-valuenow="@itemsub.Percentage" aria-valuemin="0" aria-valuemax="100" style="width: @string.Format(" {0}% ",itemsub.Percentage);">
+                                                    <span class="sr-only  percentage_@string.Format("{0}",itemsub.courseId)">@string.Format("{0}%",itemsub.Percentage)</span>
+                                  </div>
+                                </div>
+                              </div>
+                            <div class=" text-muted pb-10 px-15 my-0  @string.Format(" {0} ",itemsub.DoneCount > 0?" ":" ") btsr-0 bter-0" style="display:flex !important;border-radius: 10px;justify-content: space-between;position: relative;z-index: 99;">
+                                                                <div class="fs-12  wcqk_@string.Format("{0}",itemsub.courseId)" data-donecount="@itemsub.DoneCount" style="font-style: italic;">@Html.Raw(string.Format("单词: {0}", itemsub.DoneCount == 0 ? $"{itemsub.WordsCount}" : $"{itemsub.WordsCount+itemsub.DoneCount}/{itemsub.DoneCount} &nbsp;&nbsp;完成: {itemsub.Percentage}%"))</div>
+                            <div class="fs-12 hide">2.5万人学习中</div>
+                          </div>
+                        </div>
+                                }              
+                                }
+                                
+                </div>
+              <!-- /.box-body -->
+            </div>
+          </div>
+          <div style="height:100px;">
+          </div>
+            }
+            

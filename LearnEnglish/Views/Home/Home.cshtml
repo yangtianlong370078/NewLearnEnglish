@@ -1,0 +1,1187 @@
+﻿@{
+    Layout = null;
+}
+
+
+<style>
+
+
+
+
+    :root {
+    /*  --bd-color: rgba(200, 200, 200, 0.4); */
+    --bd-color: rgba(255, 255, 255, 0.6);
+    --tit-color: #737373;
+    --fill-color: rgb(55, 61, 63);
+    }
+
+
+    body.dark-skin {
+    /* --bd-color: rgba(100, 100, 100, 0.4); */
+    --bd-color: rgba(255, 255, 255, 0.6);
+    --tit-color: #ffffff;
+    --fill-color: rgb(255, 255, 255);
+    }
+
+    .border-gainsboro {
+    /*  border: 1px solid var(--bd-color) !important;
+
+    background: rgba(255, 255, 255, 0.15); */
+    }
+
+    .fc-day-number {
+    padding: 0px !important;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    }
+
+
+
+    .fc-day {
+    background: transparent;
+    }
+
+    .rwrqys {
+    border-radius: 10px;
+    padding: 10px;
+    }
+
+    .btmxiaoguo {
+    filter: grayscale(40%);
+    opacity: 0.3;
+    }
+
+    .btmxiaoguo .fc-title {
+    /* color:black !important;*/
+    }
+
+    .apexcharts-text {
+    fill: var(--fill-color);
+    }
+
+    .ysysye {
+    display: flex !important;
+    justify-content: center !important;
+    }
+
+    .expanded {
+    }
+
+    .fc-next-button {
+
+    display: flex;
+    align-items: center !important;
+    padding: 0px 10px;
+    }
+
+    .jeindiv {
+    border-radius: 0px;
+    line-height: 23px !important;
+    font-size: 16px !important;
+    padding:10px 5px 10px 5px;
+    }
+
+    .jeindiv2 {
+    border-radius: 0px;
+    line-height: 23px !important;
+    font-size: 16px !important;
+    padding:10px 5px 10px 5px;
+    }
+
+    .fc-prev-button {
+    display: flex;
+    align-items: center !important;
+    padding: 0px 10px;
+    }
+
+    .divmore {
+    padding: 0px !important;
+    cursor: pointer;
+    color: var(--tit-color);
+    height: 30px;
+    border-bottom: 2px solid #4d7bc9 !important;
+    }
+
+    .button-disabled {
+    pointer-events: none;
+    cursor: not-allowed;
+    opacity: 0.8;
+    filter: grayscale(80%);
+    }
+
+    .text-danger1 {
+    color: #ff562f;
+    }
+
+    .text-mute1 {
+    color: gray;
+    }
+
+    .text-success1 {
+    color: #04a08b;
+    }
+
+    .text-warning1 {
+    color: #ff9920;
+    }
+
+    .button-disabledtwo {
+    pointer-events: none !important;
+    opacity: 1 !important;
+    }
+
+    .counttypestyle{
+    display: flex;
+    align-items: center !important;
+    padding: 0px 10px;
+    }
+
+     /* 九宫格容器 */
+        .grid-container {
+            display: flex;
+            flex-wrap: wrap; /* 允许项目换行 */
+            width: 250px; /* 容器总宽度 */
+            height: 150px; /* 容器总高度 */
+            margin: 10px;
+            padding: 0;
+        }
+
+        /* 九宫格中的每个格子 */
+        .grid-item {
+            flex: 1 0 33.333%; /* 每个项目占据1/3宽度 */
+            height: 33.333%; /* 每个项目占据1/3高度 */
+            box-sizing: border-box; /* 确保边框不影响尺寸计算 */
+            list-style: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+       
+
+</style>
+
+
+
+
+<div class="container-full">
+    @await Html.PartialAsync("Search")
+    <!-- Content Header (Page header) -->
+    <!-- Main content -->
+    <section class="content ydorpcys">
+
+        <div class="row pb-20">
+            <div class="col-12">
+
+                <div class="box bg-gradient-primary xxjdbanner   mb-10">
+                    <div class="box-body d-flex zdybk px-0 py-0">
+                        <div class="flex-grow-1 p-20 flex-grow-1 bg-img dask-bg bg-none-md" style="background-position: right bottom; background-size: auto 100%; background-image: url(../images/svg-icon/color-svg/custom-15.svg)">
+                            <div class="row">
+                                <div class="col-12 text-white col-xl-7">
+                                    <h2>欢迎回来， <strong class="username"></strong> ！</h2>
+                                    <div class="xxjdmsg">
+                                        <p class="text-white my-10 fs-16">
+                                            您在本周学习新单词 <strong class="text-warning bzdc">0</strong> 个。
+                                        </p>
+                                        <p class="text-white my-10 fs-16">
+                                            已累积掌握单词 <strong class="text-warning tjdc">0</strong> 个 ！
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-12 col-xl-4" style="display: flex;  align-items: center;justify-content: center;">
+                                    <div class="gndhpcorsj">
+                                        <button type="button" class="m-5 waves-effect waves-light w-p100 btn btn-primary-light  qxxbtnys" onclick="suaxinMyCategoryList(1)" style="white-space: nowrap;min-width: 150px;">学单词</button>
+                                        <button type="button" class="m-5 waves-effect waves-light w-p100 btn btn-primary-light  qxxbtnys" onclick="suaxinMyCategoryList(2)" style="white-space: nowrap;min-width: 150px;">练听力</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-12">
+                <div class="navv  bgtype" style="--rr: 10px;width: auto;">
+                    <div  style="display: flex;justify-content: space-between;">
+
+
+                        <div class="datamun mmtj"> </div>
+
+                        <div class="fc-toolbar yytj hide">
+                            <div class="fc-left"   >
+                                <div class="btn-group">
+                                    <button type="button" onclick="countyear(-1)" class=" btn btn-primary counttypestyle" >
+                                        <span class="fc-icon fc-icon-left-single-arrow"></span>
+                                    </button>
+                                    <div data-bs-toggle="dropdown" onclick="selectyy()">
+                                        <h2 class="jeindiv2 btn btn-primary" >@DateTime.Now.Year 年</h2> 
+                                    </div>
+
+                                    <div class="dropdown-menu " style="">
+                                         <div style="">
+                                            <ul class="grid-container nianselect">
+                                                        
+                                             </ul>
+
+                                            <div>
+                                                <button class="btn btn-sm m-10 btn-primary" onclick="selectedyy(@DateTime.Now.Year)" style="">本年</button>
+                                            </div>
+                                         </div>
+
+                                      
+                                    </div>
+
+                                    <button type="button" onclick="countyear(1)" class=" btn btn-primary counttypestyle" >
+                                        <span class="fc-icon fc-icon-right-single-arrow"></span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            
+
+                        </div>
+
+
+
+                        <div style="">
+
+                            <ul class="navv  bgtype m-10  " style="padding:5px; display: flex;">
+                                <li style="cursor: pointer;" onclick="tjzt(1)">
+                                    <div style="--rr:25px;--yy: 10px;--yyw:1px;"  class=" nrsty border-primary-zq  example  p-10  yuetj" aria-expanded="false">
+                                        <span class="p-10 xsbrsbtn" style="position: relative;z-index: 1;">月统计</span>
+                                    </div>
+                                </li>
+                                <li style="cursor: pointer;" onclick="tjzt(2)">
+                                    <div style="--rr:25px;--yy: 10px;--yyw:1px;" class="example p-10 niantj" aria-expanded="false">
+                                        <span class="p-10 xsbrsbtn" style="position: relative;z-index: 1;">年统计</span>
+                                    </div>
+                                </li>
+                            </ul>
+
+                        </div>
+                    </div>
+                    <div>
+                        <div class="row  pt-0 pb-5 px-5 m-0 mmtj" >
+                            <div class="col-12 col-lg-6 " style="margin: 0px;padding: 5px;">
+                                <div>
+                                    <div class="box-body  navv  bgtype min-h-360 p-10 ribbon-box zzz " style="display: flex;justify-content: center;align-items: center; margin:0px;width:auto;">
+                                        <div class="ribbon-two ribbon-two-primary "><span class="rwzttag"></span></div>
+                                        <button class="btn btn-sm btn-primary byrwxg" data-bs-toggle="modal" data-bs-target="#addxxtask" style="position: absolute; top: 10px; right: 10px;z-index:1;display:none;">重设任务</button>
+                                        <div style="width: 100%;">
+
+                                            <div id="revenue7" class="text-dark "></div>
+                                            <div class="row" style="justify-content: center;">
+                                                <div class="col-6 sjjddiv">
+                                                    <div class="d-flex align-items-center mt-0   mb-20" style="justify-content: center;">
+                                                        <div class="me-15 bg-danger-light h-50 w-50 waves-circle l-h-60  text-center">
+                                                            <i class="icon-Time-schedule fs-24"><span class="path1"></span><span class="path2"></span></i>
+                                                        </div>
+                                                        <div class="d-flex flex-column fw-500">
+                                                            <a href="#" class="text-dark hover-danger mb-1 fs-16">时间已过</a>
+                                                            <span class="text-fade sjjd">0</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6 xxjddiv">
+                                                    <div class="d-flex align-items-center mt-0   mb-20" style="justify-content: center;">
+                                                        <div class="me-15 bg-success-light h-50 w-50 waves-circle l-h-60  text-center">
+                                                            <i class="icon-Flag fs-24"><span class="path1"></span><span class="path2"></span></i>
+                                                        </div>
+                                                        <div class="d-flex flex-column fw-500 rwwcqktwo">
+                                                            <a href="#" class="text-dark hover-success mb-1 fs-16">任务完成</a>
+                                                            <span class="text-fade xxjd">0</span>
+                                                        </div>
+
+                                                        <button type="button" class="btn btn-primary rwzttwo " data-bs-toggle="modal" data-date="@DateTime.Now.Date" data-type="1" data-bs-target="#addxxtask" style="z-index:1;display:none;">创建任务</button>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-6 text-center bjrwdiv" style="display:none;">
+
+                                                    <button type="button" class="btn mb-20 btn-primary rwzt " data-bs-toggle="modal" data-date="@DateTime.Now.Date" data-type="1" data-bs-target="#addxxtask" style="z-index:1;">创建任务</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
+                            <div class="col-lg-6 col-12 " style="margin: 0px;padding: 5px;">
+
+                                <div>
+                                    <div class="box-body navv  bgtype p-0 m-0 ">
+                                        <div id="calendar" class="dask evt-cal min-h-360"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </div>
+                        <div class="row  pt-0 pb-5 px-5 m-0 yytj hide">
+
+                            <div class="col-12 " style="margin: 0px;padding: 5px;">
+
+                                <div class="box-body  navv p-0 bgtype" style="width: auto;">
+
+                                    <div class="box-body p-0">
+                                        <ul class="list-inline text-center mt-40">
+
+                                            <li>
+                                                <h5><i class="fa fa-circle me-5 text-info"></i>新学单词</h5>
+                                            </li>
+                                            <li class="ms-20">
+                                                <h5><i class="fa fa-circle me-5 text-success"></i>任务单词</h5>
+                                            </li>
+                                        </ul>
+                                        <div id="bar-chart" data-yy="0"></div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- /.content -->
+</div>
+
+
+<div class="modal center-modal fade" id="addxxtask" tabindex="-1">
+    <div class="modal-dialog max-w-600">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <span class="rwtypename">
+                    </span>任务
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div>
+
+                <div class="box-body">
+                    <div class="row justify-content-center ">
+                        <div class="my-10">
+                            <div class="nav-tabs-left mx-15">
+                                <label for="taskcount" class=" w-100   col-form-label">
+                                    单词数量
+                                    <span style="color:red;">*</span>
+                                </label>
+                                <input type="hidden" id="taskid" value="0" />
+                                <input type="text" id="taskcount" name="inserten" onkeyup="this.value=this.value.replace(/[^\d]/g,'')" value="" class="form-control inputbdcolor min-w-200" placeholder="输入任务单词数量">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row justify-content-center ">
+                        <div class="my-10">
+                            <div class="nav-tabs-left mx-15">
+                                <label for="taskcount" class=" w-100   col-form-label">排除周末</label>
+
+                                <div style="display: flex;align-items: center;width: 100%;">
+                                    <div class="me-50">
+                                        <input type="checkbox" id="md_checkbox_zl" class="filled-in chk-col-primary">
+                                        <label for="md_checkbox_zl" style="height: auto; line-height: normal;">周六</label>
+                                    </div>
+                                    <div class="me-50">
+                                        <input type="checkbox" id="md_checkbox_zr" class="filled-in chk-col-primary">
+                                        <label for="md_checkbox_zr" style="height: auto; line-height: normal;">周日</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+            <div class="modal-footer modal-footer-uniform">
+                <button type="button" class="btn btn-danger gbck" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary float-end" onclick="SaveLearntask()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="~/assets/vendor_components/apexcharts-bundle/dist/apexcharts.js?v=661116116"></script>
+<script src="~/scripts/pages/chat-popup.js?v=661111313"></script>
+<script src="~/assets/vendor_components/moment/min/moment.min.js?v=6611111333"></script>
+<script src="~/assets/vendor_components/fullcalendar/fullcalendar.js?v=6616116111290091133"></script>
+
+
+<script src="~/scripts/pages/calendar.js?v=6211662212"></script>
+
+<link href="~/css/jedate.css?=88111115" rel="stylesheet" />
+<script src="~/scripts/pages/jedate.js?v=222111133199"></script>
+
+<script src="~/scripts/pages/widgets.js?v=38911930"></script>
+
+
+@* <script src="~/assets/vendor_components/c3/d3.min.js"></script>
+<script src="~/assets/vendor_components/c3/c3.min.js"></script>
+<script src="~/scripts/pages/c3-data.js?v=99322"></script>
+ *@
+<script src="~/assets/vendor_components/raphael/raphael.min.js"></script>
+<script src="~/assets/vendor_components/morris.js/morris.min.js"></script>
+<script src="~/scripts/pages/widget-morris-charts.js?v=55192232229992223"></script>
+<script>
+      if (window.location.href.indexOf('Home/Home') !== -1 ) {
+           avativys($(".homebtn"));
+      }
+           //公共数据池
+        var categorydatas=[];
+
+            // 全局变量存储图表实例和原始数据
+     var barChart=null;
+     var chartData = []; // 存储当前数据
+
+
+      function tjzt(zt) {
+
+                if(zt==1){
+                     $(".yuetj").addClass("nrsty").addClass("border-primary-zq");
+                     $(".niantj").removeClass("nrsty").removeClass("border-primary-zq");
+
+                     $(".mmtj").removeClass("hide");
+                      $(".yytj").addClass("hide");
+                     // settjsujutwo();
+                       let rq = $(".fc-center").text();
+                       let newrq = parseCustomDate(rq, 0);
+                     settjsuju(newrq)
+                      // if(!isMobile){
+                      //      $(".zzz").height($(".rwrqys").height());
+                      // }
+                }
+                if(zt==2){
+                     $(".yuetj").removeClass("nrsty").removeClass("border-primary-zq");
+                     $(".niantj").addClass("nrsty").addClass("border-primary-zq");
+
+                       $(".mmtj").addClass("hide");
+                      $(".yytj").removeClass("hide");
+
+                      let yy = parseInt($(".jeindiv2").text());
+                      StatisticsYear(new Date().getFullYear());
+                }
+            }
+
+            function selectedyy(yy){
+                 StatisticsYear(yy);
+            }
+
+            function selectyy(){
+                debugger
+                let yy = parseInt($(".jeindiv2").text());
+                yy-=4;
+                let htmlstr="";
+                for (let i = 0; i < 9; i++)
+                {
+                    let xz = i==4?'nrsty border-primary-zq':'';
+                     htmlstr +=` <li class="grid-item" style="cursor: pointer;" onclick="selectedyy(${yy+i})">
+                             <div style="--rr:25px;--yy: 10px;--yyw:1px;" class="example p-10 ${xz}" aria-expanded="false">
+                               <span class="p-10 xsbrsbtn" style="position: relative;z-index: 1;">${yy+i}</span>
+                         </div>
+                     </li>`
+                
+                }
+                $(".nianselect").html(htmlstr);
+            }
+
+            function countyear(year){
+               let yy = parseInt($(".jeindiv2").text());
+               yy+=year;
+               StatisticsYear(yy);
+            }
+
+        function SaveLearntask() {
+
+            var type = $('.rwzt').data('type');
+            var date =  $(".rwzt").data('date');
+            var taskcount = $("#taskcount").val().trim();
+            var iszl = $("#md_checkbox_zl").prop("checked");
+            var iszr = $("#md_checkbox_zr").prop("checked");
+            var weekend = 0;
+           if(iszl&&!iszr){
+               weekend = 1;
+           }else if(!iszl&&iszr){
+               weekend = 2;
+           }else if(iszl&&iszr){
+               weekend = 3;
+           }
+            if(taskcount==''){
+                taskcount=0;
+            }
+
+             var layerIndexv = layer.open({
+                 type: 1, //page层
+                 area: ['300px', '70px'],
+                 title: '',
+                 shade: 0.1, //遮罩透明度
+                 moveType: 0, //拖拽风格，0是默认，1是传统拖动
+                 shift: -1, //0-6的动画形式，-1不开启
+                 closeBtn: 0,
+                 content: '<div id="xinglailoading" style="text-align: center; line-height:70px;"><img title="操作中" alt="操作中" src="../Content/img/sunjing_loading2.gif" />&nbsp;&nbsp;操作中，请稍等... ...</div>'
+             });
+             $('.gbck').click();
+
+                requestData("/Statistics/SaveLearntask",{ id: 0, count: taskcount,date:date, type: type ,weekend:weekend}).then((data) => {
+                              layer.close(layerIndexv);
+                              if (data.success) {
+
+                                      setTimeout(function() {
+                                         if (typeof settjsujutwo === 'function') {
+                                            settjsujutwo();
+                                          }
+                                       }, 0);
+
+                                  czjieguo("操作成功！", 0);
+
+                              }
+                              else {
+                                  czjieguo(data.msg, 1);
+                              }
+
+                              }).catch((error) => {
+                              czjieguo(error.msg, 1);
+                 });
+         }
+
+
+
+
+           function nytz(type){
+               if(type==1){
+                   $("#calendar .fc-header-toolbar .fc-left .btn-group .fc-corner-left").click();
+               }
+               if(type==2){
+                   $("#calendar .fc-header-toolbar .fc-left .btn-group .fc-corner-right").click();
+               }
+           }
+
+           function homexxxq(){
+
+                requestData("/Statistics/QueryLearnCount","").then((data) => {
+
+                         $(".bzdc").text(data.bzcount);
+                         $(".tjdc").text(data.count);
+                         $(".username").text(data.username);
+                 }).catch((error) => {
+                    czjieguo(error.msg, 1);
+                 });
+           }
+
+           function homedowncf(){
+             $('.dropdown > *').removeClass('show');
+             $('.dropdown > a').attr('aria-expanded', 'false');
+           }
+           function opcaidan(event){
+               event.stopPropagation();
+           }
+
+     function stringToMonthDate(str, defaultDay = '01') {
+         const [year, month] = str.split('-').map(Number);
+         return new Date(year, month - 1, defaultDay); // 注意：月份在Date中是0-based的
+     }
+     function parseCustomDate(dateString,mon) {
+         const parts = dateString.match(/(\d{4})年(\d{1,2})月/);
+         if (parts) {
+             let year = parseInt(parts[1], 10);
+             let month = parseInt(parts[2], 10)- 1; ; // 注意月份需要减1
+             let day = 1; // 由于只有年和月，我们假设天为1
+
+             month += mon;
+             let date = new Date(year, month, day);
+             return date;
+         } else {
+             return null;
+         }
+     }
+
+      $(".dropdown-menu,.todo-list,.border-gainsboro").on({
+         mouseleave: function() {
+            homedowncf();
+         }
+     });
+
+     function settjsuju(date){
+
+         if(!isMobile){
+                $(".zzz").height($(".rwrqys").height());
+              }
+
+               
+
+
+  
+
+             $('.fc-content-skeleton thead td').each(function (index) {
+
+                 if ($(this).hasClass('fc-other-month')) {
+                     var isbh = $('.fc-content-skeleton table tbody tr td:eq(' + index + ')').hasClass('fc-event-container')
+                     if (isbh) {
+                         //$('.fc-content-skeleton table tbody tr td:eq(' + index + ')').addClass('btmxiaoguo');
+                          $('.fc-content-skeleton table tbody tr td:eq(' + index + ')').html("");
+                     }
+                 }
+             });
+
+
+             let year = date.getFullYear();
+
+             //跨年刷新年统计控件
+             let yearbd = parseInt( $("#bar-chart").attr("data-yy"));
+             if(year!=yearbd)
+             {
+
+                     if ($('#bar-chart').is(':visible')) {
+                            setTimeout(() => {
+                            //   StatisticsYear(year)
+                          },0);
+                      } else {
+                          //console.log('元素是不可见的');
+                      }
+
+
+             }
+
+
+              let month = date.getMonth() +1;
+
+               let result = categorydatas.find(item => item.year === year && item.month === month);
+
+
+
+               let value1 = 0;
+               let value2 = 0;
+               let Count = 0;    //学习数量
+               let taxkcount = 0;//任务数量
+               let datedaytype = 0;//0为当前月；-1为已过去时间；1为还未到时间
+               if (result != undefined) {
+                   Count = result.totalcount;
+                  let totalcount =  result.totalcount;
+
+                  if(result.task!=null&&result.task!=undefined){
+                      taxkcount =  result.task.count;
+                  }
+                  if(taxkcount>0){
+                       value2 = totalcount/taxkcount*100;
+                  }
+               }
+
+               //==============================================
+               let dqdata = new Date();
+               let dy = dqdata.getFullYear();
+               let dm = dqdata.getMonth()+1;
+               let dd = dqdata.getDate();
+
+               if(dy>year||(dy==year&&dm>month)){
+                   value1=100;
+                   datedaytype = -1;
+               }else if(dy==year&&dm==month){
+                     var newdate = new Date(dy,dm - 1, 1);
+                     // 设置newdate为下个月的第一天（月份从0开始，所以加1）
+                     newdate.setMonth(newdate.getMonth() + 1);
+                     // 设置日期为0以获取当前月份的最后一天
+                     newdate.setDate(0);
+                     // 此时newdate是当前月份的最后一天
+                     var lastDayOfMonth = newdate.getDate();
+
+                   value1 =  dd/lastDayOfMonth*100;
+               }else if(dy<year||(dy==year&&dm<month)){
+                   datedaytype = 1;
+                }
+
+                $(".rwtjtitle").text($(".fc-center").text());
+
+             let CountText =  taxkcount>0?(taxkcount+'/'+Count):Count;
+
+             var datatate =taxkcount==0?[Math.floor(value1)]: [Math.floor(value1), Math.floor(value2)];
+
+              updateSeriesAndTotal(datatate, CountText);
+
+              $(".sjjd").text(Math.floor(value1)+"%");
+              $(".xxjd").text(Math.floor(value2)+"%");
+
+
+
+
+
+               $('.apexcharts-radialbar-area').on('mouseleave', function() {
+                    schfyy();
+              });
+
+               //$(".rwzttag").removeClass("button-disabled");
+               $(".rwzttag").parent().removeClass("ribbon-two-primary").removeClass("ribbon-two-dark").removeClass("ribbon-two-info").removeClass("ribbon-two-warning").removeClass("ribbon-two-success").removeClass("button-disabled");
+               $(".byrwxg").hide();
+              var text = "";
+              var tstext = "";
+
+              var sjjddiv = true;
+              var xxjddiv = true;
+              var bjrwdiv = false;
+
+              $("#taskcount").val("");
+
+
+              if(result!=undefined&&result.task!=undefined){
+                  if(result.task.weekend==0){
+                   $("#md_checkbox_zl").prop("checked",false);
+                   $("#md_checkbox_zr").prop("checked",false);
+                    }
+                     if(result.task.weekend==1){
+                         $("#md_checkbox_zl").prop("checked",true);
+                         $("#md_checkbox_zr").prop("checked",false);
+                    }
+                     if(result.task.weekend==2){
+                         $("#md_checkbox_zl").prop("checked",false);
+                         $("#md_checkbox_zr").prop("checked",true);
+                    }
+                     if(result.task.weekend==3){
+                         $("#md_checkbox_zl").prop("checked",true);
+                         $("#md_checkbox_zr").prop("checked",true);
+                    }
+               }
+
+                $(".rwzttwo").hide();
+
+              if (taxkcount > 0) {
+
+                  $(".rwwcqktwo").removeClass("hide");
+
+                  if (datedaytype == -1) {
+                      text = "已结束";
+                      tstext = "已结束";
+                     // $(".rwzttag").addClass("button-disabled");
+
+                       if(Math.floor(value1)>Math.floor(value2)){
+                         $(".rwzttag").parent().removeClass("ribbon-two-dark").removeClass("ribbon-two-info").removeClass("ribbon-two-success").addClass("ribbon-two-warning").addClass("button-disabled");
+
+                          $(".byrwxg").removeClass("btn-primary").removeClass("bg-success").removeClass("btn-success").removeClass("btn-warning").addClass("btn-warning").addClass("bg-warning").text("未完成");
+                       }
+                       else{
+                            $(".rwzttag").parent().removeClass("ribbon-two-dark").removeClass("ribbon-two-info").removeClass("ribbon-two-warning").addClass("ribbon-two-success").addClass("button-disabled");
+                            $(".byrwxg").removeClass("btn-primary").removeClass("bg-warning").removeClass("btn-success").removeClass("btn-warning").addClass("btn-success").addClass("bg-success").text("已完成");
+                       }
+
+                         $(".byrwxg").show().prop('disabled', true).addClass("button-disabledtwo");
+                  }
+                  else if(datedaytype == 0){
+                        text = "修改任务";
+                        tstext = "进行中";
+                       $(".byrwxg").show().prop('disabled', false).removeClass("button-disabledtwo").removeClass("bg-warning").removeClass("bg-success").removeClass("btn-primary").removeClass("btn-success").removeClass("btn-warning").addClass("btn-primary").text("重设任务");
+                       $(".rwtypename").text("修改");
+                       $(".rwzt").data('type', 2);
+                       $("#taskcount").val(taxkcount);
+
+                       //banner显示
+                       $(".xxjdmsg").html("");
+                        var xxjdmsg1 = '<p class="text-white my-10 fs-16">您本月已学习新单词 <strong class="text-warning ">'+Count+'</strong> ；本月目标 <strong class="text-warning ">'+taxkcount+'</strong>。</p>';
+                         var xxjdmsg2='';
+
+                       if(Math.floor(value1)>Math.floor(value2)){
+                            $(".rwzttag").parent().removeClass("ribbon-two-dark").removeClass("ribbon-two-info").removeClass("ribbon-two-success").addClass("ribbon-two-warning");
+                           $(".qxxbtnys").removeClass("btn-primary-light").addClass("btn-warning-light");
+                           $(".xxjdbanner").removeClass("bg-gradient-primary").addClass("bg-gradient-warning");
+                           xxjdmsg1 = '<p class="text-white my-10 fs-16">您本月已学习新单词 <strong class="text-white ">'+Count+'</strong> ；本月目标 <strong class="text-white ">'+taxkcount+'</strong>。</p>';
+
+                           if(dd==1)
+                           {
+                                xxjdmsg2 = '<p class="text-white my-10 fs-16">今天是本月第 <strong class="text-warning ">'+dd+'</strong> 天，快去学习吧 ！</p>';
+                           }
+                           else{
+                                xxjdmsg2 = '<p class="text-white my-10 fs-16">学习进度已落后，快去学习吧 ！</p>';
+                           }
+
+                       }else{
+                            $(".rwzttag").parent().removeClass("ribbon-two-dark").removeClass("ribbon-two-info").removeClass("ribbon-two-warning").addClass("ribbon-two-success");
+                           $(".qxxbtnys").removeClass("btn-warning-light").addClass("btn-primary-light");
+                            $(".xxjdbanner").removeClass("bg-gradient-warning").addClass("bg-gradient-primary");
+                           xxjdmsg2 = '<p class="text-white my-10 fs-16">学习进度良好，请继续保持 ！</p>';
+                       }
+
+
+
+                      $(".xxjdmsg").append(xxjdmsg1).append(xxjdmsg2);
+
+
+
+                  }
+                  else  if(datedaytype == 1){
+                       sjjddiv = false;
+                       xxjddiv = false;
+                       bjrwdiv = true;
+                        text = "修改任务";
+                        tstext = "未开始";
+                       $(".rwtypename").text("修改");
+                       $(".rwzt").data('type', 2);
+                       $("#taskcount").val(taxkcount);
+                        $(".rwzttag").parent().removeClass("ribbon-two-dark").removeClass("ribbon-two-warning").removeClass("ribbon-two-success").removeClass("ribbon-two-info").addClass("ribbon-two-primary");
+
+                  }
+
+              }
+              else {
+
+                   $(".rwwcqktwo").addClass("hide");
+                   $(".rwzt").hide();
+                  xxjddiv = false;
+
+                    tstext = "无任务";
+                  if (datedaytype == -1) {
+                       $(".rwzttag").parent().removeClass("ribbon-two-warning").removeClass("ribbon-two-success").removeClass("ribbon-two-dark").addClass("button-disabled").addClass("ribbon-two-info");
+                      text = "无任务";
+                     // $(".rwzttag").addClass("button-disabled");
+                  }else if(datedaytype == 0)
+                  {
+                        $(".rwzttag").parent().removeClass("ribbon-two-warning").removeClass("ribbon-two-success").removeClass("button-disabled").removeClass("ribbon-two-dark").addClass("ribbon-two-info");
+                        xxjddiv = true;
+                       sjjddiv = true;
+                       bjrwdiv = false;
+                       text = "创建任务";
+                       $(".rwtypename").text("创建");
+                       $(".rwzt").data('type', 1).show();
+
+                        $(".rwzttwo").show();
+
+
+                        $(".xxjdmsg").html('<p class="text-white my-10 fs-16">您在本周学习新单词 <strong class="text-warning bzdc">0</strong> 个。</p><p class="text-white my-10 fs-16">已累积掌握单词 <strong class="text-warning tjdc">0</strong> 个 ！</p>');
+
+                  $(".xxjdbanner").removeClass("bg-gradient-warning").addClass("bg-gradient-primary");
+
+                  //更新主页的
+                  setTimeout(function() {
+                     if (typeof homexxxq === 'function') {
+                         homexxxq();
+                     }
+                  }, 0);
+                  }
+                  else if(datedaytype == 1){
+                       $(".rwzttag").parent().removeClass("ribbon-two-warning").removeClass("ribbon-two-success").removeClass("button-disabled").removeClass("ribbon-two-dark").addClass("ribbon-two-info");
+                      sjjddiv = false;
+                      bjrwdiv = true;
+                       text = "创建任务";
+                       $(".rwtypename").text("创建");
+                       $(".rwzt").data('type', 1).show();
+                  }
+
+
+              }
+
+              if(xxjddiv){
+                  $(".xxjddiv").show();
+              }else{
+                  $(".xxjddiv").hide();
+              }
+                if(sjjddiv){
+                    $(".sjjddiv").show();
+              }else{
+                  $(".sjjddiv").hide();
+              }
+                if(bjrwdiv){
+                    $(".bjrwdiv").show();
+              }else{
+                  $(".bjrwdiv").hide();
+              }
+
+
+
+              $(".rwzt").data('date', year+'-'+month+'-01');
+              $(".rwzttag").text(tstext);
+              $(".rwzt").text(text);
+
+               
+     }
+
+     //统计控件的颜色复原
+     function schfyy(){
+          $('.apexcharts-text').css( "fill","var(--fill-color)");
+     }
+
+
+     function StatisticsYear(year){
+
+          $(".jeindiv2").text(year+" 年");
+         $("#bar-chart").attr("data-yy",year);
+
+          chartData = [];
+         for(var i=1;i<=12;i++)
+         {
+            let result = categorydatas.find(item =>item.year === year && item.month === i);
+
+                 let value2 = 0;
+                 let Count = 0;    //学习数量
+                 let taxkcount = 0;//任务数量
+                 let datedaytype = 0;//0为当前月；-1为已过去时间；1为还未到时间
+                 if (result != undefined) {
+                     Count = result.totalcount;
+                     let totalcount = result.totalcount;
+
+                     if (result.task != null && result.task != undefined) {
+                         taxkcount = result.task.count;
+                     }
+                     if (taxkcount > 0) {
+                         value2 = totalcount / taxkcount * 100;
+                     }
+                 }
+                 chartData.push({
+                     y: i+'月',
+                     a: Count,
+                     b: taxkcount
+                 });
+        }
+
+
+        initChart(year);
+
+     }
+
+
+         // 初始化图表函数
+     function initChart(dy) {
+
+
+         // 计算初始颜色
+        // calculateColors();
+
+         if(barChart==null){
+         // 创建图表
+         barChart = Morris.Bar({
+             element: 'bar-chart',
+           //  data: chartData,
+             xkey: 'y',
+             ykeys: ['a', 'b'],
+             labels: ['A', 'B'],
+             barColors: ['#00baff', '#04a08b'],
+             hideHover: 'auto',
+             gridLineColor: '#eef0f2',
+              barSizeRatio: 0.4, // 减小柱子宽度比例
+              barGap: 1,         // 增加柱子间距
+             resize: true,
+             parseTime: false,
+             gridTextFamily: "'Microsoft YaHei', sans-serif",
+           //   xLabelAngle: 360,
+                 
+         });
+
+          if(chartData.length>0){
+                      updateChartData(chartData,dy);
+                }
+
+          }
+          else{
+               if(chartData.length>0){
+                     updateChartData(chartData,dy);
+               }
+
+          }
+     }
+
+    function customHover(index, options, content, row) {
+
+
+
+        let jg = "";
+        let xx = "";
+        let rw = "";
+        let wc="";
+        let a =  row.isyeartask?row.a-1:row.a;
+        let b =  row.isyeartask?row.b-1:row.b;
+        if(row.status==1){
+             if(row.b-1>0){
+               jg = "未开始";
+                rw = `<div>任务单词: ${b}</div>`;
+             }
+             else{
+                 jg = "无任务";
+             }
+        }
+        else{
+            if(row.b-1>0){
+                if(row.jg<100){
+                    jg = "未完成";
+                }else{
+                    jg = "已完成";
+                }
+                  xx = `<div>新学单词: ${a}</div> `;
+                  rw = `<div>任务单词: ${b}</div>`;
+                  wc=`<div class="jg-value">完成情况: ${row.jg}%</div>`;
+             }
+             else{
+                 jg = "无任务";
+                 xx = `<div>新学单词: ${a}</div> `;
+             }
+        }
+
+
+         return `<div class="custom-tooltip">
+             <div class="tooltip-title">${row.y} (${jg})</div>
+             ${xx}
+             ${rw}
+             ${wc}
+         </div>`;
+     }
+
+         // 计算每个数据点的颜色
+     function calculateColors(yy) {
+         let date=new Date();
+          let dy =  date.getFullYear();
+          let dm = date.getMonth();
+          dm+=1;
+
+          const totalA = chartData.reduce((sum, item) => sum + item.a, 0);
+          const totalB = chartData.reduce((sum, item) => sum + item.b, 0);
+         chartData.forEach(item => {
+             const jg = item.b === 0 ? 0 : Math.round(item.a / item.b * 100);
+             item.jg = jg;
+             item.yy=yy;
+             let mm = parseInt(item.y,10);
+             item.status = yy>dy||(yy==dy&&mm>dm)?1:0;
+             item.isyeartask = totalA>0||totalB>0;
+
+             if(yy>dy||(yy==dy&&mm>dm)||item.b === 0)
+             {
+                  item.textColor = 'grey';
+             }
+             else{
+                  if (jg === 0) {
+                 item.textColor = '#ff562f'; // 红色
+             } else if (jg < 100) {
+                 item.textColor = '#ff9920'; // 黄色
+             } else {
+                 item.textColor = '#04a08b'; // 绿色
+             }
+             }
+
+             //用于显示，避免显示0啥也不显示，在鼠标悬浮窗的时候-1
+             if(totalA>0||totalB>0)
+             {
+                 item.a=item.a+1;
+                 item.b=item.b+1;
+             }
+         });
+     }
+         // 应用文本颜色到图表
+     function applyTextColors() {
+         setTimeout(() => {
+
+             const svg = document.querySelector('#bar-chart svg');
+             if (!svg) return;
+
+             // const monthLabels = svg.querySelectorAll('.morris-categories-axis text tspan');
+             // monthLabels.forEach((label, index) => {
+             //     const dataItem = chartData[index];
+             //     if (dataItem) {
+             //         label.style.fill = dataItem.textColor;
+             //         label.style.fontWeight = 'bold';
+             //         label.setAttribute('data-jg', `${dataItem.jg}%`);
+             //     }
+             // });
+
+              // 方法1：通过文本内容匹配（最可靠）
+             const allTexts = svg.querySelectorAll('text');
+             allTexts.forEach(text => {
+                 const monthText = text.textContent.trim();
+                 const dataItem = chartData.find(d => d.y === monthText);
+
+                 if (dataItem) {
+                     text.style.fill = dataItem.textColor;
+                     if(dataItem.textColor!="grey")
+                     {
+                          text.style.fontWeight = 'bold';
+                     }
+
+                     text.style.fontSize = '12px';
+                     text.setAttribute('data-jg', dataItem.jg + '%');
+                 }
+             });
+
+
+         }, 500);
+     }
+
+
+         // 更新图表数据
+     function updateChartData(newData,isdy) {
+         // 1. 更新全局数据
+         chartData = newData;
+
+         // 2. 重新计算颜色
+         calculateColors(isdy);
+
+         // 3. 更新图表
+         if (barChart && barChart.setData) {
+             // 使用 setData 方法更新数据
+             barChart.setData(chartData);
+             // 手动触发颜色更新
+             applyTextColors();
+         } else {
+             // 如果 setData 不可用，重建图表
+             $('#bar-chart').empty();
+             initChart();
+         }
+
+         // 4. 处理窗口缩放
+         $(window).trigger('resize');
+     }
+
+
+
+     function settjsujutwo(){
+           requestData("/Statistics/StatisticsLearnCountTwo","").then((data) => {
+
+                         if (data.success) {
+
+                             categorydatas = data.categorys;
+                             updateCalendarWithDataTwo(data.categorys);
+
+                             //初始化数据
+                            // StatisticsYear(new Date().getFullYear());
+
+
+                           setTimeout(function() {
+                               lazydata("dqhome");
+                           }, 200);
+
+                          }
+                          else {
+
+                          }
+                     }).catch((error) => {
+                        czjieguo(error.msg, 1);
+                 });
+     }
+
+
+
+
+           $(document).ready(function() {
+
+          
+
+
+               settjsujutwo(new Date(),0);
+
+               $(document).on('click', function(event) {
+
+                   if (!$(event.target).closest('.apexcharts-radialbar-area').length) {
+                    schfyy();
+                 }
+
+              });
+
+
+         });
+
+
+
+
+</script>

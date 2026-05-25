@@ -1,0 +1,206 @@
+﻿@{
+   
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div id="loader hide"></div>
+<div class="container h-p100 p-10" style="position:relative;z-index:1;">
+    <div class="row align-items-center justify-content-md-center h-p100">
+
+        <div class="col-12 ">
+            <div class="row justify-content-center g-0 ">
+                <div class="col-lg-5 col-md-5  col-12">
+                    <div class="bg-white rounded10 shadow-lg">
+                        <div class="content-top-agile p-20 pb-0">
+                            <h2 class="text-primary">记忆助手</h2>
+                            <p class="mb-0">轻松、高效学单词！</p>
+                        </div>
+                        <div class="p-40">
+                            <div>
+                                <div class="form-group">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-transparent"><i class="ti-user"></i></span>
+                                        <input type="text" id="txtLoginID" class="form-control ps-15 bg-transparent" placeholder="输入账号">
+                                        <input type="hidden" id="newError" value="@ViewBag.Error" />
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text bg-transparent"><i class="ti-lock"></i></span>
+                                        <input type="text" id="txtPassWord" onkeyup="inputchan(this)" class="form-control ps-15 bg-transparent" placeholder="输入密码">
+                                        <input type="hidden" id="newPassWord" value="" />
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                         <div class="fog-pwd text-end">
+                                            <a href="javascript:void(0)" class="hover-warning"><i class="ion ion-locked"></i> 忘记密码?</a><br>
+                                          </div>
+                                    </div>
+                                    <!-- /.col -->
+                                    <div class="col-12 text-center">
+                                        <button onclick="loginnew()" class="btn btn-danger mt-10"><i class="fa fa-spin fa-refresh" style="display:none;"></i>&nbsp; 登录</button>
+                                    </div>
+                                    <!-- /.col -->
+                                </div>
+                            </div>
+
+
+                            <div class="text-center">
+                                    <p class="mt-15 mb-0">还没有账号? <a  asp-area="" asp-controller="Login" asp-action="Register" class="text-warning ms-5">点击注册</a></p>
+                                </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Vendor JS -->
+
+<script>
+    
+    localStorage.removeItem('jwtToken');
+    localStorage.removeItem('courseId');
+    localStorage.removeItem('userId');
+
+function inputchan(dom) {
+    var aa = $(dom).val();
+    var mima = $("#newPassWord").val();
+
+    if (aa.length > mima.length) {
+        var bb = aa.substr(aa.length - 1, 1)
+        $("#newPassWord").val(mima + bb);
+    }
+    else {
+
+        mima = mima.substr(0, aa.length)
+        $("#newPassWord").val(mima);
+
+    }
+    let nowValue = '';//转换为圆点
+    for (let i = 0; i < aa.length; ++i) {
+        nowValue += '•';
+    }
+    $(dom).val(nowValue);
+
+}
+
+
+function loginnew() {
+   
+
+
+    //登陆名
+    var loginid = $.trim($('#txtLoginID').val());
+    if (loginid == "" || loginid == "undefined") {
+        $.message({
+            message: "用户名不能为空",
+            type: 'error',
+            duration: 2000,
+            center: true,
+        });
+        return;
+    }
+    //密码
+    var password = $.trim($('#newPassWord').val());
+    if (password == "" || password == "undefined") {
+        $.message({
+            message: "密码不能为空",
+            type: 'error',
+            duration: 2000,
+            center: true,
+        });
+        return;
+    }
+
+    $(".fa-refresh").show();
+
+    //验证完成，请求后台登陆
+    $.ajax({
+        url: "/Login/LoginResult",
+        data: { loginID: loginid, password: password, sb: isMobile},
+        dataType: "json",
+        type: "POST",
+        success: function (data) {
+              
+            if (!data.success) {
+                $(".fa-refresh").hide();
+                $.message({
+                    message: data.msg,
+                    type: 'error',
+                    duration: 2000,
+                    center: true,
+                });
+                return;
+            }
+            if (data.success) {
+              var jwttoken =  data.token;
+               localStorage.setItem('jwtToken', data.token);
+               localStorage.setItem('courseId', data.user.courseId);
+               localStorage.setItem('userId', data.user.id);
+
+                $.message({
+                    message: "登录成功，正在进入系统...",
+                    type: 'success',
+                    center: true,
+                });
+
+              var baseUrl = window.location.protocol + "//" + window.location.host+"/#/Home/Home";   
+              window.location.href = baseUrl;  
+              
+            } else {
+                $(".fa-refresh").hide();
+                $.message({
+                    message: data.msg,
+                    type: 'error',
+                    duration: 2000,
+                    center: true,
+                });
+
+            }
+        }, error: function (e) {
+            $(".fa-refresh").hide();
+            $.message({
+                message: "程序内部错误",
+                type: 'error',
+                duration: 2000,
+                center: true,
+            });
+            $("#loader").hide();
+        }
+    });
+}
+
+function getMainDomain() {  
+    var host = window.location.host; // 获取完整的host，包括域名和端口（如果有）  
+    var parts = host.split('.'); // 按点号分割  
+
+    // 通常，域名会有两部分或更多（如 "example.com" 或 "subdomain.example.com"）  
+    // 我们需要获取最后两部分作为主域名  
+    if (parts.length > 2) {  
+        return parts.slice(-2).join('.');  
+    } else {  
+        // 如果只有一部分（如 IP 地址或本地开发环境），则直接返回整个host  
+        return host;  
+    }  
+}  
+    $(function () {
+        $(document).keydown(function (event) {
+            if (event.keyCode == 13) {
+                loginnew();
+            }
+        });
+
+        $("#txtLoginID").val("");
+        $("#txtPassWord").val("");
+
+
+
+
+    })
+</script>

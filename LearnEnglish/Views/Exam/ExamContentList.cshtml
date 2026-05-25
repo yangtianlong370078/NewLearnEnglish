@@ -1,0 +1,237 @@
+﻿@{
+    Layout = null;
+}
+
+@using LearnEnglish.Models.Dtos
+<!-- Style-->
+
+@model List<LearnEnglish.Models.Dtos.ExamContentOutDto>
+
+
+
+<div>
+
+    <input type="hidden" class="modellist" value="@Model.Count" />
+
+    @if (Model != null && Model.Count> 0)
+    {
+           <div class="row wbpd" >
+
+            @foreach (ExamContentOutDto item in Model)
+            {
+                var isexam = Convert.ToBoolean(ViewData["isexam"]);
+
+                var bd = "border-gainsboro";
+                var textcl = "";
+                if (item.isok != null && isexam)
+                {
+                    bd = item.isok.Value ? "border-success-zq" : "border-danger-zq";
+                    textcl = item.isok.Value ? "text-success" : "text-danger";
+                }
+
+
+                          <div class="col-6 col-md-4 col-xl-2  wyg nbpd" >
+
+                            <div class="  border-gainsboro text-center  ksnr @bd nrsty example p-10" style="cursor: pointer;--yy:16px;"
+                         data-isenaudio="@item.isenaudio" 
+                                  data-isusaudio="@item.isusaudio"
+                                  data-value="@item.value" 
+                                  data-en="@item.en" 
+                                  data-id="@item.id">
+                        <div class="box-body  bbsr-0 bber-0 sp" style="padding:6px;display:flex;justify-content: space-between;font-size:16px;position: relative;z-index: 99;">
+                                                          <span style="text-align: left; line-height: 1.7rem;" class="wb @textcl">@item.name</span>
+                                                          <span style="display:none;height: 1.7rem" class="fa fa-fw fa-circle-o djs"></span>
+                                                          <span style="display:none;height: 1.7rem" class="glyphicon glyphicon-ok ok"></span>
+                                                          <span style="display:none;height: 1.7rem" class="glyphicon glyphicon-remove no"></span>
+                                                          <span class="pronounce lb"   style="display:none;height: 1.7rem;width:20px;height:20px;background-size:20px 20px;"></span>
+                                         </div>
+
+                        <p style="text-align: left; padding:0px 6px 5px 6px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;display:none;position: relative;z-index: 99;" class="mb-0 fs-18 ksspy sq">@string.Format("{0}", item.value == "" ? "-" : item.value)</p>
+
+
+                        <input class="form-control mt-5 fs-16 sq inputbdcolor" data-value="@item.value" data-id="@item.id" data-en="@item.en" value="@item.answer" style="flex-basis: 0; flex-grow: 1;   line-height: 1.5;  font-size: 1.16rem;position: relative;z-index: 99;" type="text" />
+
+                               </div>
+                            </div>
+
+             
+             }
+
+           </div>
+
+    }
+    else
+    {
+                <div class="text-left bgtype box my-20 p-20 text-muted">
+                    <span>没有了~</span>
+                </div>
+    }
+
+
+</div>
+
+
+<script>
+
+         avativys($(".stbtnc"));
+
+     // 清除之前的定时器
+      if (countdownTimeout !== null) {
+          clearTimeout(countdownTimeout);
+          countdownTimeout = null;
+      }
+  
+    $(document).ready(function () {
+     
+        let fenshu = '@string.Format("{0}",Convert.ToInt32(Convert.ToDouble(Model.Where(a => a.isok.HasValue && a.isok.Value).Count()) / Convert.ToDouble(Model.Count) * 100))';
+       var isexam = '@Convert.ToBoolean(ViewData["isexam"])';
+        szfenshu(isexam=='True'?fenshu:0);
+
+       $("input.sq").prop("disabled", true);
+        $(".ksdjs").text("");
+
+         setTimeout(() => {
+            //清理Howl对象
+          cleanupAudioMap();
+        }, 0);
+
+       if(isexam=='True'){
+           $(".cxks").show();
+            $(".ksks").hide();
+             $(".ksspy").show();
+             $(".ksdfkg").show();
+            
+
+       }else{
+             $(".ksks").show();
+            $(".cxks").hide();
+             $(".ksspy").hide();
+             $(".ksdfkg").hide();
+            
+           var kstype = $("#kstype").val();
+          if(kstype==3){
+
+            $('.wb').hide();
+                $('.ok').hide();
+                $('.no').hide();
+                $('.lb').hide();
+
+                $('.djs').show();
+
+                $(".ksspy").hide();
+                $("input.sq").prop("disabled", true);
+
+                 $("input.sq").val("");
+                $(".ksnr").removeClass("border-success-zq").removeClass("border-danger-zq").addClass("border-gainsboro");
+                $(".sp").removeClass("text-danger").removeClass("text-success");
+
+           }
+           else{
+
+           }
+       }
+
+          setTimeout(() => {
+            //清理Howl对象
+          cleanupAudioMap();
+
+                      //缓存数据
+        $('.ksnr').each(function () {
+
+            //var id = $(this).data("id");
+            //var en = $(this).data("en");
+            //var no = $(this).data("no");
+            //if (id != 0) {
+            //    oldMap.set(id, no);
+            //    upMap.set(id, no);
+            //    isupMap.set(id, false);
+            //}
+
+            
+
+        });
+
+         }, 0);
+
+
+
+    $('.sq').on({
+        'focus': function() {
+
+            $(this).parent().addClass('pull-up-active');
+        },
+        'blur': function() {
+
+             $(this).parent().removeClass('pull-up-active');
+        }
+       });
+
+         $('.sq').on('keydown', function (event) {
+             //计分方式
+             var jffs = $('input[name="dfjsradio"]:checked').val(); 
+             var kstype = $("#kstype").val();
+            if (kstype<3) {
+                if (event.key === ' ' && !event.ctrlKey && !event.altKey && !event.metaKey) { // 检测是否仅按下空格键
+
+                    event.preventDefault(); // 阻止空格键的默认行为
+
+                    var customValue = $(this).data("value").trim();
+                    var value = $(this).val().trim();
+                    var isok = false;
+
+                    if (value.length >= 1) {
+                        isok = kstype == 2 ? customValue.indexOf(value) !== -1: customValue.toLowerCase() === value.toLowerCase() ;
+                    }
+
+                    if (isok) {
+                        if(jffs==2){
+                              $(this).closest(".ksnr").removeClass("border-gainsboro").removeClass("border-danger-zq").addClass("border-success-zq");
+                              $(this).closest(".ksnr").children(".sp").removeClass("text-danger").addClass("text-success");
+                        }
+                       else {
+                             $(this).closest(".ksnr").removeClass("border-danger-no").addClass("border-success-no");
+                             $(this).closest(".ksnr").children(".sp").removeClass("text-danger-no").addClass("text-success-no");
+                       }
+
+                    } else {
+                        if(jffs==2){
+                             $(this).closest(".ksnr").removeClass("border-gainsboro").removeClass("border-success-zq").addClass("border-danger-zq");
+                             $(this).closest(".ksnr").children(".sp").removeClass("text-success").addClass("text-danger");
+                        }
+                        else{
+                             $(this).closest(".ksnr").removeClass("border-success-no").addClass("border-danger-no");
+                             $(this).closest(".ksnr").children(".sp").removeClass("text-success-no").addClass("text-danger-no");
+                        }
+                    }
+
+                    let nextFocusableElement = $(this).nextAll(':input:not([type="hidden"]):visible:first');
+                    if (!nextFocusableElement.length) {
+                        nextFocusableElement = $(this).closest(".wyg").next().find(':input:not([type="hidden"]):visible:first');
+                    }
+
+                     if(jffs==2){
+                        //实时计算得分
+                        shishitonjidf();
+                     }
+
+                    if (nextFocusableElement.length) {
+                        nextFocusableElement.focus();
+                    }
+                    else {
+                      //这儿表示结束了，考试模式不做任何处理
+                      //  upData();
+                    }
+                   
+                }
+              
+
+            } else {
+                if (event.key === ' ' && !event.ctrlKey && !event.altKey && !event.metaKey) {
+                    event.preventDefault();
+                }
+            }
+
+        });
+
+    });
+</script>

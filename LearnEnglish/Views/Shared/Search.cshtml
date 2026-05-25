@@ -1,0 +1,56 @@
+﻿
+@{
+    Layout = null;
+}
+
+<div class="controls dcsearch ydorpcys py-10" >
+    <div class="form-group form-group-feedback form-group-feedback-right" style="margin-bottom: 0px;z-index: 100;">
+      <div class="position-relative">
+        <div class="main-header container" style="position: relative !important;border-radius: 10px !important;">
+          <div class="app-menu">
+            <div class="search-bx " style="max-width:100%">
+              <div class="input-group bgtype" style="border-radius: 10px;">
+                <input type="search" class="form-control cxdc" style="border-top-left-radius: 10px; border-bottom-left-radius: 10px;height:50px;" placeholder="查询单词" aria-label="查询单词" aria-invalid="false">
+                <div class="input-group-append">
+                  <button class="btn cxdcbtn" type="button" style="border-top-right-radius: 10px; border-bottom-right-radius: 10px;display: flex; align-items: center;" id="button-addon3" data-bs-toggle="" onclick="dccx(this)" data-bs-target="#cxdcdetail">
+                    <i class="ti-search"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="help-block">
+    </div>
+  </div>
+
+<script>
+
+     $(document).ready(function() {
+     $('.cxdc').on('input',
+      function() {
+
+        // 这里是当 input 内容变化时执行的代码  
+        var length = $(this).val().length;
+
+        if (length == 0) {
+          $(".cxdcbtn").attr('data-bs-toggle', '');
+        } else {
+          $(".cxdcbtn").attr('data-bs-toggle', 'modal');
+        }
+
+        // 执行其他你需要的操作...  
+      });
+
+    });
+
+
+  $('.cxdc').on('keydown',
+    function(event) {
+      if (event.key === 'Enter') {
+        $(".cxdcbtn").click();
+      }
+    });
+</script>

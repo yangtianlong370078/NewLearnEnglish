@@ -1,0 +1,174 @@
+﻿
+@{
+    Layout = null;
+}
+
+
+<header class="pcheader" style="z-index: 999; position: fixed; width: 100%;">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow mb-3" style="min-height:52px;max-height:52px;height:52px;padding:0px !important;margin:0px !important;">
+            <div class="container-fluid bgtitle bb-1" style="z-index:999;">
+                <a class="apptitle p-0 m-0" style="z-index:9999;display: flex; margin-right:20px  !important;align-items: center;height:40px" onclick="Home(this,0)"><i class="fa fa-home p-0 m-0 fs-22"></i></a>
+                <div class="gnanty collapsed" style="z-index:9999;align-items: center; display: flex;height:40px;" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                   <a class="icon-Layout-grid fs-22"><span class="path1"></span><span class="path2"></span></a>
+                </div>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" >
+                    <ul class="navbar-nav flex-grow-1">
+
+
+                         <li class="nav-itemnav-item" style="cursor: pointer;height: 40px;align-items: center;display:flex;"  onclick="MyCategoryList(this,0)">
+                            <a class="py-5" style="display:flex;margin-right:20px;align-items: center;"  > <i class="icon-Book fs-20 "><span class="path1 "></span><span class="path2"></span></i>
+                               @* <span class="ms-5 yddshowname" style="display:none;">我的课程</span> *@   
+                            </a>
+                        </li>
+                        <li class="nav-itemnav-item" style="cursor: pointer;height: 40px;align-items: center;display:flex;"  onclick="Privacy(this,0)">
+                            <a style="display:flex;margin-right:20px;align-items: center;"  >   <i class="fa fa-fw fa-file-text fs-16"><span class="path1"></span><span class="path2"></span></i>
+                                @*<span class="ms-5 yddshowname" style="display:none;">试题列表</span>  *@
+                            </a>
+                        </li>
+                        
+                        <li  class="nav-itemnav-item" >
+                        <ul class="navbar-nav flex-grow-1 pccdys">
+                    <!-- Notifications -->
+                    <li class="nav-item tsgn"  style="">
+                        <a href="#" class="py-5"  data-bs-toggle="dropdown" style="height: 40px;margin-right:20px;display:flex;align-items: center;" title="系统通知">
+                            <i class="icon-Notifications fs-20 gqtb" ><span class="path1"></span><span class="path2"></span></i>
+                             @*<span class="ms-5 yddshowname" style="display:none;">通知消息</span>  *@
+                        </a>
+                        <div class="dropdown-menu animated bounceIn  xxtsys " style="">
+
+                            <div class="header">
+                                <div class="p-20">
+                                    <div class="flexbox">
+                                        <div>
+                                            <h4 class="mb-0 mt-0">通知消息</h4>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <!-- inner menu: contains the actual data -->
+                                <div style="padding:0px;">
+                                    <div style="padding:10px;">
+                                        <a href="#">
+                                            <i class="fa gqys">
+                                                到期时间： <span class="gqsj"></span>
+                                            </i>
+
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+
+                    <!-- User Account-->
+                    <li class="nav-item  tsgn"  style="">
+                        <a href="#" class="py-5" data-bs-toggle="dropdown"  style="height: 40px;margin-right:20px;display:flex;align-items: center;" title="用户设置">
+                            <i class="icon-User fs-20"><span class="path1"></span><span class="path2"></span></i>
+                         @*   <span class="ms-5 yddshowname" style="display:none;">个人中心</span>  *@
+                        </a>
+                        <div class="dropdown-menu animated flipInX grzxys" style=" z-index: 100;">
+                            <div class="user-body">
+                                @*<a class="dropdown-item" href="#"><i class="ti-user text-muted me-2"></i> 个人信息</a>*@
+                                <a class="dropdown-item" data-bs-toggle="modal" data-bs-target="#mima-tk" onclick="ModifyPassword('')" href="#"><i class="ti-lock text-muted me-2"></i> 修改密码</a>
+                                @*<a class="dropdown-item" href="#"><i class="ti-settings text-muted me-2"></i> 设置中心</a>*@
+                                <div class="dropdown-divider"></div>
+                                <a onclick="LoginOut()" class="dropdown-item" href="#"><i class="ti-wallet text-muted me-2"></i> 切换账号</a>
+                            </div>
+                        </div>
+                    </li>
+
+
+                     <li class="nav-item  tsgn"  style="">
+                        <a href="#" class="py-5" data-bs-toggle="modal" data-bs-target="#modal-right"  style="height: 40px;margin-right:20px;display:flex;align-items: center;" title="用户设置">
+                            <i   class="icon-Settings fs-20"><span class="path1"></span><span class="path2"></span></i>
+                           @* <span class="ms-5 yddshowname" style="display:none;">用户设置</span>*@
+                        </a>
+                       
+                    </li>
+                    </ul>
+                    </li>
+
+                 </ul>
+             </div>
+
+
+
+            </div>
+
+             <div class="container-fluid" style="position: absolute; justify-content: center; display: flex; top:0px; width: -webkit-fill-available;min-height:52px;">
+                    <ul class="header-megamenu nav">
+                         <li style="display: flex; align-items: center;font-size:16px;">
+                             <span class="mx-10 dqbtdetail text-bold" style="color:#608acf;z-index:999;"></span>
+                         </li>
+                         <li style="display: flex; align-items: center; ">
+                             <i style="display: none; font-size: 10px; z-index:999;" class="fa fa-fw fa-circle upbs"></i>
+                         </li>
+                   </ul>
+             </div>
+
+        </nav>
+
+</header>
+
+<header class="ydheader ydheaderys bgtitle bt-1" style="z-index: 1000; position: fixed; width: 100%;">
+    <div>
+        <div class="mx-20" style="display:flex;justify-content: space-between;">
+
+            <div class=" text-primary homebtn" style="text-align: center;" onclick="Home(this,1)">
+                 <label style="display:flex;align-items:center;height:24px;">
+                <i class="fa fa-home  p-0 m-0" style="font-size:24px"></i>
+                 </label>
+                 <div style="font-size: 0.75rem;font-weight:600;">
+                     <span for="" >主页</span>
+                 </div>
+            </div>
+
+            <div class="text-muted kcbtnc" style="text-align: center;" onclick="MyCategoryList(this,1)">
+                 <label style="display:flex;align-items:center;height:24px;">
+                <i class="icon-Book" style="font-size: 22px;"><span class="path1 "></span><span class="path2"></span></i>
+                 </label>
+                 <div style="font-size: 0.75rem;font-weight:600;">
+                     <span for="" >课程</span>
+                 </div>
+            </div>
+
+            <div class=" text-muted stbtnc" style="text-align: center;" onclick="Privacy(this,1)">
+                 <label style="display:flex;align-items:center;height:24px;">
+               <i class="fa fa-fw fa-file-text" style="font-size:18px"><span class="path1"></span><span class="path2"></span></i>
+                 </label>
+                 <div style="font-size: 0.75rem;font-weight:600;">
+                     <span for="" >试题</span>
+                 </div>
+            </div>
+
+             <div class=" text-muted mybtnc" style="text-align: center;" onclick="My(this,1)" >
+                 <label style="display:flex;align-items:center;height:24px;">
+               <i class="icon-User" style="font-size: 24px;"><span class="path1"></span><span class="path2"></span></i>
+                 </label>
+                 <div style="font-size: 0.75rem;font-weight:600;">
+                     <span for="" >我</span>
+                 </div>
+            </div>
+
+        </div>
+
+    </div>
+    <div class="bottom-safe-area"></div>
+</header>
+
+
+
+<script>
+   
+
+    
+    $(document).ready(function () {
+           
+
+        });
+
+     
+
+</script>

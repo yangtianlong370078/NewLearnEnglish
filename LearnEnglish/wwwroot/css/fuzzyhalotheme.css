@@ -1,0 +1,241 @@
+/* 背景容器 */
+.glass-light-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+}
+
+/* 光晕通用样式 */
+.light {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.5;
+    mix-blend-mode: screen;
+    will-change: transform; /* 提示浏览器优化动画 */
+}
+
+/* 光晕1：左上 → 右下对角线缓慢移动（避开中心） */
+.light-1 {
+    width: 900px;
+    height: 900px;
+    background: radial-gradient(circle, rgba(255, 105, 180, 0.8) 0%, rgba(255, 105, 180, 0) 70%);
+    animation: path1 30s infinite ease-in-out; /* 进一步减速 */
+}
+
+/* 光晕2：右侧 → 左侧垂直移动（覆盖右侧区域） 
+    .light-2 {
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(75, 0, 130, 0.7) 0%, rgba(75, 0, 130, 0) 70%);
+      animation: path2 35s infinite ease-in-out;
+    }*/
+
+/* 光晕3：底部 → 顶部垂直移动（覆盖下方区域） */
+.light-3 {
+    width: 700px;
+    height: 700px;
+    background: radial-gradient(circle, rgba(0, 255, 255, 0.6) 0%, rgba(0, 255, 255, 0) 70%);
+    animation: path3 32s infinite ease-in-out;
+}
+
+/* 光晕4：中心 → 四角循环（重点覆盖中心区域） */
+.light-4 {
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.5) 0%, rgba(255, 215, 0, 0) 70%);
+    animation: path4 28s infinite ease-in-out;
+}
+
+/* 光晕5：左侧 → 右侧水平移动（覆盖左侧区域） */
+.light-5 {
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(144, 238, 144, 0.6) 0%, rgba(144, 238, 144, 0) 70%);
+    animation: path5 33s infinite ease-in-out;
+}
+
+/* 光晕6：右上 → 左下对角线移动（补充空白区域） */
+.light-6 {
+    width: 550px;
+    height: 550px;
+    background: radial-gradient(circle, rgba(204, 51, 255, 0.6) 0%, rgba(255, 99, 71, 0) 70%);
+    animation: path6 31s infinite ease-in-out;
+}
+
+/* 优化的路径动画：避免聚集，覆盖更多区域 */
+@keyframes path1 {
+    0% {
+        transform: translate(-200px, -200px) scale(1);
+    }
+
+    25% {
+        transform: translate(30vw, 20vh) scale(1.05);
+    }
+
+    50% {
+        transform: translate(60vw, 60vh) scale(1.1);
+    }
+
+    75% {
+        transform: translate(20vw, 70vh) scale(1.05);
+    }
+
+    100% {
+        transform: translate(-200px, -200px) scale(1);
+    }
+}
+
+@keyframes path2 {
+    0% {
+        transform: translate(calc(100vw - 200px), 10vh) scale(1);
+    }
+
+    25% {
+        transform: translate(calc(100vw - 300px), 50vh) scale(1.05);
+    }
+
+    50% {
+        transform: translate(calc(100vw - 200px), 80vh) scale(1.1);
+    }
+
+    75% {
+        transform: translate(calc(100vw - 300px), 30vh) scale(1.05);
+    }
+
+    100% {
+        transform: translate(calc(100vw - 200px), 10vh) scale(1);
+    }
+}
+
+@keyframes path3 {
+    0% {
+        transform: translate(40vw, -200px) scale(1);
+    }
+    /* 顶部中间偏左 */
+    25% {
+        transform: translate(70vw, -100px) scale(1.05);
+    }
+    /* 顶部右侧 */
+    50% {
+        transform: translate(30vw, -150px) scale(1.1);
+    }
+    /* 顶部左侧 */
+    75% {
+        transform: translate(60vw, -50px) scale(1.05);
+    }
+    /* 顶部右侧偏下 */
+    100% {
+        transform: translate(40vw, -200px) scale(1);
+    }
+    /* 回到起点 */
+}
+
+@keyframes path4 {
+    0% {
+        transform: translate(50vw, 50vh) scale(1);
+    }
+
+    25% {
+        transform: translate(30vw, 30vh) scale(1.05);
+    }
+
+    50% {
+        transform: translate(70vw, 40vh) scale(1.1);
+    }
+
+    75% {
+        transform: translate(40vw, 70vh) scale(1.05);
+    }
+
+    100% {
+        transform: translate(50vw, 50vh) scale(1);
+    }
+}
+
+@keyframes path5 {
+    0% {
+        transform: translate(100px, 30vh) scale(1);
+    }
+
+    25% {
+        transform: translate(20vw, 50vh) scale(1.05);
+    }
+
+    50% {
+        transform: translate(100px, 70vh) scale(1.1);
+    }
+
+    75% {
+        transform: translate(30vw, 40vh) scale(1.05);
+    }
+
+    100% {
+        transform: translate(100px, 30vh) scale(1);
+    }
+}
+
+@keyframes path6 {
+    0% {
+        transform: translate(80vw, -100px) scale(1);
+    }
+
+    25% {
+        transform: translate(50vw, 20vh) scale(1.05);
+    }
+
+    50% {
+        transform: translate(20vw, 50vh) scale(1.1);
+    }
+
+    75% {
+        transform: translate(60vw, 30vh) scale(1.05);
+    }
+
+    100% {
+        transform: translate(80vw, -100px) scale(1);
+    }
+}
+
+
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+  
+
+    .light {
+        filter: blur(80px);
+    }
+
+    .light-1 {
+        width: 600px;
+        height: 600px;
+    }
+    <!-- .light-2 {
+        width: 500px;
+        height: 500px;
+    }
+    -->
+    .light-3 {
+        width: 500px;
+        height: 500px;
+    }
+
+    .light-4 {
+        width: 400px;
+        height: 400px;
+    }
+
+    .light-5 {
+        width: 350px;
+        height: 350px;
+    }
+
+    .light-6 {
+        width: 350px;
+        height: 350px;
+    }
+}

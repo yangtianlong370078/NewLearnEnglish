@@ -1,0 +1,432 @@
+﻿@{
+    Layout = null;
+}
+
+@using LearnEnglish.Models.Dtos
+<!-- Style-->
+@model PagedList<LearnEnglish.Models.Dtos.ShowTranslateDto>
+
+
+
+<div>
+
+    <input type="hidden" value="@ViewData["brs"]" class="xzbrs" />
+    <input type="hidden" value="@ViewData["wlj"]" class="xzwlj" />
+    <input type="hidden" value="@ViewData["yzw"]" class="xzyzw" />
+
+
+    @if (Model != null && Model.Count > 0)
+    {
+        @* <div class="dv" style=" display: flex;flex-wrap: wrap;margin:10px;justify-content: center;">*@
+        <div class="row wbpd">
+            @{
+                var tp = Convert.ToInt32(ViewData["tp"]);
+            }
+            @foreach (ShowTranslateDto item in Model)
+            {
+
+
+                <div class="col-6 col-md-4 col-xl-2  wyg nbpd">
+
+                    <div class="  border-gainsboro text-center  nr nrsty example p-10 nr_lexiconid_@item.lexiconId" style="cursor: pointer;--yy:16px;"
+                         data-isenaudio="@item.isenaudio"
+                         data-isusaudio="@item.isusaudio"
+                         data-value="@item.value"
+                         data-en="@item.en"
+                         data-cn="@item.cn"
+                         data-zt="@item.zt"
+                         data-coursecontentid="@item.coursecontentId"
+                         data-lexiconid="@item.lexiconId"
+                         data-isupdate="@item.isUpdate"
+                         data-iscollect="@item.iscollect"
+                         data-zyno="@item.zynumber"
+                         data-yzno="@item.yznumber"
+                         data-txno="@item.txnumber"
+                         data-fyno="@item.fynumber"
+                         data-id="@item.id">
+                        <div style="display:flex;justify-content: space-between;position:relative;z-index:1;" data-bs-toggle="@string.Format("{0}", tp == 4 ? "" : "modal")" data-bs-target="#dcdetail" onclick="bfdc(this)">
+                            <div>
+                                <div class="box-body  bbsr-0 bber-0 sp" style="padding:6px;display:flex;justify-content: space-between;">
+                                    <span style="text-align: left; line-height: 1.7rem;font-weight:bold" class="wb @string.Format("{0}",tp==2||tp==3||tp==10?"fs-18":"fs-16") @string.Format("{0}",tp==4?"hide":"")">@item.name</span>
+                                    @*  <span style="height: 1.7rem" class="fa fa-fw fa-circle-o djs @string.Format("{0}",tp==4?"":"hide")"></span> *@
+                                    @* <i style="height: 1.7rem" class="mdi mdi-stop-circle-outline  djs @string.Format("{0}",tp==4?"":"hide")"></i> *@
+                                    <span style="height: 1.7rem" class="glyphicon glyphicon-ok ok hide"></span>
+                                    <span style="height: 1.7rem" class="glyphicon glyphicon-remove no hide"></span>
+                                    <span class="pronounce lb hide" style="height: 1.7rem;width:20px;height:20px;background-size:20px 20px;"></span>
+                                </div>
+
+                                <p style="text-align: left; padding:0px 6px 5px 6px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;" class="mb-0 text-fade @string.Format("{0}",tp==1?"fs-18":"fs-16")  spy sq  @string.Format("{0}",tp==10&&tp!=4?"":"hide")">@string.Format("{0}", item.value == "" ? "-" : item.value)</p>
+                            </div>
+                            <div style="display: flex;flex-direction: column;">
+
+                                @{
+                                    var zybrightness = "fa-circle-o";
+                                    if (item.zynumber >= 10)
+                                    {
+                                        zybrightness = "fa-circle";
+                                    }
+                                    else if (item.zynumber >= 5 && item.zynumber < 10)
+                                    {
+                                        zybrightness = "fa-adjust";
+                                    }
+
+                                    var yzbrightness = "fa-circle-o";
+                                    if (item.yznumber >= 10)
+                                    {
+                                        yzbrightness = "fa-circle";
+                                    }
+                                    else if (item.yznumber >= 5 && item.yznumber < 10)
+                                    {
+                                        yzbrightness = "fa-adjust";
+                                    }
+
+                                    var txbrightness = "fa-circle-o";
+                                    if (item.txnumber >= 10)
+                                    {
+                                        txbrightness = "fa-circle";
+                                    }
+                                    else if (item.txnumber >= 5 && item.txnumber < 10)
+                                    {
+                                        txbrightness = "fa-adjust";
+                                    }
+
+                                    var fybrightness = "fa-circle-o";
+                                    if (item.fynumber >= 10)
+                                    {
+                                        fybrightness = "fa-circle";
+                                    }
+                                    else if (item.fynumber >= 5 && item.fynumber < 10)
+                                    {
+                                        fybrightness = "fa-adjust";
+                                    }
+                                }
+
+                                <i class="fa @zybrightness zydf @string.Format("{0}",tp==1||tp==10?"":"hide") text-primary" style="line-height: 16px;width:16px;"></i>
+                                <i class="fa @yzbrightness yzdf @string.Format("{0}",tp==2||tp==10?"":"hide") text-success" style="line-height: 16px;width:16px;"></i>
+                                <i class="fa @txbrightness txdf @string.Format("{0}",tp==4||tp==10?"":"hide") text-info" style="line-height: 16px;width:16px;"></i>
+                                <i class="fa @fybrightness fydf @string.Format("{0}",tp==3||tp==10?"":"hide") text-warning" style="line-height: 16px;width:16px;"></i>
+                            </div>
+                        </div>
+
+                        <input class="@string.Format("{0}",(tp==1||tp==2||tp==4)? "":"hide") form-control mt-5 fs-16 sq inputbdcolor " @string.Format("{0}", tp == 4 ? "disabled" : "") data-value="@item.value" data-id="@item.id" data-lexiconid="@item.lexiconId" data-en="@item.en" style="position:relative;flex-basis: 0;z-index:1; flex-grow: 1;line-height: 1.5;font-size: 1.16rem;" type="text" />
+
+                        <div style="justify-content: center;align-items: center;display:flex;position:relative;z-index:1;" class="mb-0 fylx @string.Format("{0}",tp==3?"":"hide")">
+                            <span class="fybtnys icon-Mic fs-24 m-5 p-10 mkf_@item.en" onclick="fykaiguan(this,'@item.en')" style="cursor: pointer;height:44px;width:44px;">
+                                <span class="path1"></span><span class="path2"></span>
+                            </span>
+                            <div class="hide m-5 lyzbtn_@item.en" onclick="shibiefy(this,'@item.en')" style="cursor: pointer;height:44px;align-items: center;display:flex;">
+                                <div class="sound-waves">
+                                    <div class="wave"></div>
+                                    <div class="wave"></div>
+                                    <div class="wave"></div>
+                                    <div class="wave"></div>
+                                    <div class="wave"></div>
+                                </div>
+                            </div>
+                            <span class="hide m-5 shibieing_@item.en" onclick="quxiaocaxun(this,'@item.en')" style="display: flex;height: 44px;align-items: center;"><i class="fa fs-18 fa-spin fa-refresh " style="margin:0px 5px 0px 10px;font-size: 17px;"></i></span>
+                        </div>
+
+                    </div>
+                </div>
+
+            }
+
+        </div>
+
+
+    }
+    else
+    {
+
+        <div class="text-left   my-20 p-20 nrsty  example">
+            <span style="position: relative;z-index: 1;">没有了~</span>
+        </div>
+    }
+
+
+</div>
+
+<div class="flexbox mdataTables_wrapper  dt-bootstrap4 no-footer  fanye" style="width:100%;">
+    <div style="">
+        @Html.Raw(Model.BuildHtml())
+    </div>
+</div>
+
+
+<script>
+     avativys($(".kcbtnc"));
+       //清理数据
+        oldMap.clear();
+        upMap.clear();
+        isupMap.clear();
+        oldMap = new Map();
+        upMap = new Map();
+        isupMap = new Map();
+
+
+    $(document).ready(function () {
+
+          
+
+        gdtys();
+        setTimeout(() => {
+           let tp = $("#tp").val();
+           if(tp !=10)
+           {
+              // $('input.sq').removeClass("hide");
+               showfy();
+           }
+           else{
+              //  $(".spy").removeClass("hide");
+              //  $('input.sq').addClass("hide");
+           }
+
+
+            // var istxmo = $(".txmo").prop("checked");
+            //     if (istxmo){
+            //         txqd(1);
+            //     }
+
+         }, 0);
+
+
+
+          setTimeout(() => {
+            //清理Howl对象
+          cleanupAudioMap();
+
+                      //缓存数据
+        $('.nr').each(function () {
+
+            var id = $(this).data("id");
+            var en = $(this).data("en");
+            let zyno = $(this).data("zyno");
+            let yzno = $(this).data("yzno");
+            let txno = $(this).data("txno");
+            let fyno = $(this).data("fyno");
+
+            let no ={
+                zyno,yzno,txno,fyno
+            }
+            let oldno ={
+                zyno,yzno,txno,fyno
+            }
+
+            let isok ={
+                zyno:false,yzno:false,txno:true,fyno:true
+            }
+
+
+
+            var lexiconid = $(this).data("lexiconid");
+            if (lexiconid != 0) {
+                oldMap.set(lexiconid, oldno);
+                upMap.set(lexiconid, no);
+                isupMap.set(lexiconid, isok);
+            }
+            debugger
+            //添加语音文件
+            //let isenaudio = $(this).data("isenaudio")
+            //let isusaudio = $(this).data("isusaudio")
+            //if(isenaudio==1){
+            //    let key = 'Speech_EN'+en;
+            //    let value = 'https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/Speech_EN/'+en+'.mp3';
+            //    setAudioMap(key,value);
+            //}
+            //if(isusaudio==1){
+            //     let key = 'Speech_US'+en;
+            //    let value = 'https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/Speech_US/'+en+'.mp3';
+            //    setAudioMap(key,value);
+            //}
+
+        });
+
+         }, 0);
+
+
+
+    $('.sq').on({
+        'focus': function() {
+
+            $(this).parent(".nr").addClass('pull-up-active');
+
+        },
+        'blur': function() {
+
+             $(this).parent(".nr").removeClass('pull-up-active');
+        }
+    });
+
+
+
+        $(".xsbrs").text($(".xzbrs").val());
+        $(".xswlj").text($(".xzwlj").val());
+        $(".xsyzw").text($(".xzyzw").val());
+
+
+
+         $('.sq').on('keydown', function (event) {
+
+            var islxmo = $(".lxmo").prop("checked");
+            var istxmo = $(".txmo").prop("checked");
+            if (!istxmo) {
+                if (event.key === ' ' && !event.ctrlKey && !event.altKey && !event.metaKey) { // 检测是否仅按下空格键
+
+                    event.preventDefault(); // 阻止空格键的默认行为
+
+                    var customValue = $(this).data("value").trim();
+                    var value = $(this).val().trim();
+                    var isok = false;
+
+                    var tp = $("#tp").val();
+                    if (value.length >= 1) {
+                        isok = tp == 1 ? customValue.toLowerCase() === value.toLowerCase() : customValue.indexOf(value) !== -1;
+                    }
+
+
+
+                   setTimeout(() => {
+                           jgtx(isok,$(this).closest(".nr"));
+                    }, 0);
+
+
+
+
+                    if (isok) {
+
+                        $(this).closest(".nr").removeClass("border-gainsboro").removeClass("border-danger-zq").addClass("border-success-zq");
+                        $(this).closest(".nr").children(".sp").removeClass("text-danger").addClass("text-success");
+
+                    } else {
+                        $(this).closest(".nr").removeClass("border-gainsboro").removeClass("border-success-zq").addClass("border-danger-zq");
+                        $(this).closest(".nr").children(".sp").removeClass("text-success").addClass("text-danger");
+                    }
+
+
+                    let nextFocusableElement = $(this).nextAll(':input:not([type="hidden"]):visible:first');
+                    if (!nextFocusableElement.length) {
+                        nextFocusableElement = $(this).closest(".wyg").next().find(':input:not([type="hidden"]):visible:first');
+                    }
+
+                    //非练习模式跳入下一个，练习模式清空内容，光标依然停留在自身
+                    if (!islxmo) {
+
+                        //如果没开翻译要计数
+                        var isfy = $(".xsfy").prop("checked");
+                        if (!isfy) {
+                            var id = $(this).data("id");
+                              var lexiconid = $(this).data("lexiconid");
+                            if (lexiconid != 0) {
+                                upbsno(lexiconid, isok);
+                            }
+                        }
+
+                        if (nextFocusableElement.length) {
+                            nextFocusableElement.focus();
+                        }
+                        else {
+                            isup = true;
+                            upData();
+                        }
+                    }
+                    else {
+                        $(this).val("");
+                        $(this).focus();
+                    }
+                }
+
+                // 检测是否按下回车键
+                else if (event.key === 'Enter') {
+                    if (islxmo) {
+
+                        var customValue = $(this).data("value").trim();
+                        var value = $(this).val().trim();
+                        var isok = false;
+
+                        var tp = $("#tp").val();
+                        if (value.length >= 1) {
+                            isok = tp == 1 ? customValue.toLowerCase() === value.toLowerCase() : customValue.indexOf(value) !== -1;
+                        }
+
+                        let dom = $(this).closest(".nr");
+
+                        if (isok) {
+
+                            $(dom).removeClass("border-gainsboro").removeClass("border-danger-zq").addClass("border-success-zq");
+                            $(dom).children(".sp").removeClass("text-danger").addClass("text-success");
+
+                            
+
+                        } else {
+                            $(dom).removeClass("border-gainsboro").removeClass("border-success-zq").addClass("border-danger-zq");
+                            $(dom).children(".sp").removeClass("text-success").addClass("text-danger");
+                        }
+
+
+                        let nextFocusableElement = $(this).nextAll(':input:not([type="hidden"]):visible:first');
+                        if (!nextFocusableElement.length) {
+                            nextFocusableElement = $(this).closest(".wyg").next().find(':input:not([type="hidden"]):visible:first');
+                        }
+                        if (nextFocusableElement.length) {
+                            nextFocusableElement.focus();
+                        }
+
+                    }
+                }
+                else {
+
+                    if (!islxmo) {
+                        //如果没开翻译要计数
+                        var isfy = $(".xsfy").prop("checked");
+                        if (!isfy) {
+                            var value = $(this).val().trim();
+                            var lexiconid = $(this).data("lexiconid");
+                            let valueObj = isupMap.get(lexiconid);
+                            let tp = $("#tp").val();
+                            if(tp==1||tp==2)
+                            {
+                                if (value.length == 1) {
+                                   if (lexiconid != 0) {
+                                        if(tp==1)
+                                        {
+                                            valueObj.zyno=true;
+                                        }
+                                        else if(tp==2){
+                                            valueObj.yzno=true;
+                                        }
+                                        isupMap.set(lexiconid, valueObj);
+                                   }
+                                }
+                            }
+                            else{
+                                if(tp==3)
+                                {
+                                    valueObj.fyno=true;
+                                }
+                                else if(tp==4){
+                                    valueObj.txno=true;
+                                }
+
+                                isupMap.set(lexiconid, valueObj);
+                            }
+
+                        }
+                    }
+                }
+
+            } else {
+                if (event.key === ' ' && !event.ctrlKey && !event.altKey && !event.metaKey) {
+                    event.preventDefault();
+                }
+            }
+
+        });
+
+
+
+
+
+
+    });
+
+</script>

@@ -1,0 +1,321 @@
+﻿@{
+    Layout = null;
+}
+
+@using LearnEnglish.Models.MongoDB
+@using System.Text.RegularExpressions
+<!-- Style-->
+
+@model LearnEnglish.Models.MongoDB.lexicondetail
+
+<style>
+	.textcnyc{
+		filter: blur(3px);
+		cursor: pointer;
+	}
+	/*#cxdcdetail .modal-header{
+		border-bottom:0px !important;
+		padding-bottom: 0px !important;
+	}
+	#cxdcdetail .modal-footer{
+		border-top:0px !important;
+		padding-top: 0px !important;
+	}
+	
+
+	#dcdetail .modal-header{
+		border-bottom:0px !important;
+		padding-bottom: 0px !important;
+	}
+	#dcdetail .modal-footer{
+		border-top:0px !important;
+		padding-top: 0px !important;
+	}*/
+	#dcdetailshow{
+		padding:10px !important;
+	}
+</style>
+
+<input type="hidden" value="@string.Format("{0}",Convert.ToBoolean(ViewData["iscx"])?1:0)" id="iscx">
+@if (Model != null)
+{
+	<div style="flex-grow: 1;">
+		
+
+		<div class="bgtype  border-gainsboro nrsty example" style="">
+			<div class="dcxqdetail " style="overflow: auto;margin-bottom: 0px;height:450px;--yy: 10px;--yyw: 1px;position: relative;z-index:9999999;">
+				<div class="box-header with-border" style="padding:14px 14px 14px 0px;font-weight:600;align-items: center; justify-content: space-between;  display: flex;position: relative;z-index: 99;">
+								<h1 class="box-title" style="letter-spacing: 0.03rem;font-weight:600;margin-left:20px;font-family: 'IBM Plex Sans', 'sans-serif','Gilroy';">@Model.word </h1>
+
+				 <div class="tools" style="font-size:20px;margin:0px;display: flex;align-items: center;">
+					 @if(!Convert.ToBoolean(ViewData["iscx"]))
+					 {
+							<i class="fa fa-spin fa-refresh clz" style="margin:0px 5px 0px 10px;font-size: 17px;display:none;"></i>
+							<i class="fa iscollect  fa-bookmark-o" onclick="setCollect()" style="margin:0px 5px 0px 10px;display:none;"></i>
+
+							<i class="fa fa-edit modifywordbtn" style="margin:2px 5px 0px 10px;" data-bs-toggle="modal" data-bs-target="#modifyword"></i>
+							<i class="fa fa-trash-o deletewordbtn" style="margin:0px 5px 0px 10px; display:none;" onclick="dedc()" data-bs-dismiss="modal"></i>
+					 }
+						 
+                </div>
+			</div>
+					<div  style="display:flex;flex-wrap: wrap;position: relative;z-index: 99;">
+				@{
+					var britishPhonetic = !string.IsNullOrWhiteSpace(Model.britishPhonetic);
+					var americanPhonetic = !string.IsNullOrWhiteSpace(Model.americanPhonetic);
+					var envalue = $"https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/Speech_EN/{Model.word}.mp3";
+					var usvalue = $"https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/Speech_US/{Model.word}.mp3";
+				}
+
+
+				<div class="mt-20 p-10 nrsty example " style="cursor: pointer;font-size:15px;margin-left:20px;--rr: 25px;--yy: 10px;--yyw: 1px;width: max-content;">
+					<span onclick="bfdctwo('Speech_EN','@Model.word.ToLower()','@envalue',this)" class=" ygfayin  " style="position: relative;z-index: 99;align-items: center;display: flex;">
+						<span style="margin-right:6px;">英</span>
+					@if (britishPhonetic)
+					{
+												<span>[ @Model.britishPhonetic ]</span>
+					}
+						<span class="pronounce dcxqdbf ms-5" style="width:20px;height:20px;background-size:24px 24px;border-radius: 25px;display: inline-block;"></span>
+						<span class="xunhuanbofang xhbtn ms-5" style="width:20px;height:20px;background-size:24px 24px;display: inline-block;" onclick="kqxh(this,event,0)"></span>
+							
+							</span>
+				</div>
+
+				<div class="mt-20 mx-20 p-10 nrsty example " style="cursor: pointer;font-size:15px;--rr: 25px;--yy: 10px;--yyw: 1px;width: max-content;">
+					<span onclick="bfdctwo('Speech_US','@Model.word.ToLower()','@usvalue',this)" class=" mgfayin " style="position: relative;z-index: 99;display:flex;align-items: center;">
+														<span  style="margin-right:6px;">美</span>
+					@if (americanPhonetic)
+					{
+														<span>[ @Model.americanPhonetic ]</span>
+					}
+						<span class="pronounce dcxqdbf ms-5" style="width:20px;height:20px;background-size:24px 24px;border-radius: 25px;display: inline-block;"></span>
+						<span class="xunhuanbofang xhbtn ms-5" style="width:20px;height:20px;background-size:24px 24px;display: inline-block;" onclick="kqxh(this,event,1)"></span>
+														</span>
+				</div>
+
+			</div>
+					<div class="box-body" style="padding:1rem 1.5rem 1.5rem 1.5rem;position: relative;z-index: 99;">
+
+
+				<div>
+					@foreach (var item in Model.translation)
+					{
+										<p class="textcn" style=" font-size: 16px;  font-weight: 500; line-height: 24px;">@item </p>
+					}
+
+					@if (Model.frequence>0){
+						 <p><span style=" padding: 6px 10px;  font-size: 12px;" class="badge badge-pill badge-primary-light"> 高考 @Model.frequence 次</span></p>
+					}
+					
+				</div>
+				
+				@if (Model.sampleSentences.Count() > 0)
+				{
+							<p style="margin: 20px 0px 0px 0px;">例句</p>
+					@for (int i = 0; i < Model.sampleSentences.Count(); i++)
+					{
+						var item = Model.sampleSentences[i];
+						<div style="display: flex;align-items: baseline;">
+								 <div class="text-muted" style="font-size:16px;min-width: 20px !important;">@(i + 1)</div>
+							<div style="">
+								@{
+									string pattern = Regex.Escape(Model.word.Trim());
+									string modifiedText = Regex.Replace(item.en, pattern, "<span class='zs'>$&</span>", RegexOptions.IgnoreCase);
+								}
+											<p style="font-family: 'Gilroy'; font-size: 16px;line-height: 1.4;font-weight:500;margin-bottom: 0.3rem;margin-top: 0.5rem;">@Html.Raw(modifiedText)</p>
+								@if (!string.IsNullOrWhiteSpace(item.cn))
+								{
+											 <p class="textcn text-muted" style=" font-size: 14px;line-height: 1.5;margin-bottom: 0.3rem;">@item.cn</p>
+								}
+							</div>
+						</div>
+					}
+				}
+			</div>
+		</div>
+			</div>
+	</div>
+}
+else {
+	<div style="padding:30px;">单词不存在，请检查是否输入错误</div>
+		}
+
+
+<script>
+	  
+
+	  if(dqaudio!=null){
+          dqaudio.stop();
+      }
+
+
+	csh();
+	 function csh(){
+		 let zdfy = $("#zdfy").prop("checked");
+	     if(!zdfy){
+		   bgaduitbf();
+	      }
+	 }
+
+
+	function kqxh(mod,event,index){
+		
+		event.stopPropagation();
+
+			$(".xhbtn:eq("+(index==0?1:0)+")").removeClass("xunhuanbofank").addClass("xunhuanbofang");
+		
+		
+	      if ($(mod).hasClass('xunhuanbofang')) {
+	           $(mod).removeClass("xunhuanbofang").addClass("xunhuanbofank");
+				isxunhuanbf=true;
+			   $(mod).parent().click();
+	      }
+	      else{
+	      	    $(mod).removeClass("xunhuanbofank").addClass("xunhuanbofang");
+				  
+				  //如果正在播放中则关闭
+				  let dqisbf = $(mod).parent().children(".pronounce").hasClass("audioClick");
+				  if(dqisbf){
+					   $(mod).parent().children(".pronounce").removeClass("audioClick")
+						  bgaduitbf();
+
+				  }
+	      }
+		
+	}
+
+	   $("#dcdetail,#cxdcdetail").on('click', function() {
+			var that = this;
+		 setTimeout(function() {
+			   var isdakai = $(that).hasClass("show");
+		   
+			 if(!isdakai)
+			 {
+				bgaduitbf();
+			 }
+	  }, 500); 
+		   
+		});
+
+
+	$(document).ready(function () {
+		
+		if(!isMobile)
+		{
+			$('.dcxqdetail').slimScroll({
+			height: '450'
+		 });
+		}
+		else{
+			$('.dcxqdetail').css("max-height","450px");
+		}
+
+
+		 
+		//重载音频播放
+		   isbfaudio=1;
+
+
+		let zdfy = $("#zdfy").prop("checked");
+			 if(zdfy)
+			 {
+				   let language = $("#yyk").val();
+
+				   if(language =="Speech_EN"){
+					   $(".ygfayin").click();
+				   }else{
+						$(".mgfayin").click();
+				   }
+				 
+			 }
+        
+		
+	
+		$(".textcn").click(function() {
+	        $(".textcn").removeClass("textcnyc");
+        });
+
+		 var ycfy = $("#ycfy").prop("checked");
+		 if(ycfy)
+		 {
+			 $(".textcn").addClass("textcnyc");
+		 }
+		
+	    var wordismy =$(".wordismy").val();
+	    if(wordismy!=undefined){
+	    	if(stringToBoolSmart(wordismy)){
+	           $(".deletewordbtn").show();
+		    }
+		    else{
+		    	$(".deletewordbtn").hide();
+		    }
+		 }
+
+		 //这儿注释了，因为所有单词都可以修改，修改内容保存在用户扩展表
+			// var wordisup =$(".wordisup").val();
+			// if(wordisup!=undefined){
+			// 	if(stringToBoolSmart(wordisup)){
+	     //          		$(".modifywordbtn").show();
+	  //          	}
+	  //          	else{
+	  //          		$(".modifywordbtn").hide();
+	  //          	}
+			// }
+		
+
+			let iscollectvlue=  $(".iscollectvlue").val();
+			
+		   if(iscollectvlue=='True')
+		    {
+			 $(".iscollect").removeClass('fa-bookmark-o').addClass('fa-bookmark');
+		    }
+		    else{
+			 $(".iscollect").removeClass('fa-bookmark').addClass('fa-bookmark-o');
+		    }
+
+
+
+
+		if($("#iscx").val()==1){
+			//验证是否在单词本
+
+			 $(".iscollect").hide();
+		      WordExist();
+		}
+		else{
+
+		  $(".iscollect").show();
+
+		}
+	
+	});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,120 @@
+﻿@{
+    ViewData["Title"] = "Lightweight Speech Recognition";
+    Layout = null;
+}
+
+<div class="container mt-5">
+    <button id="recordButton" class="btn btn-primary">Start Recording</button>
+    <div id="status" class="mt-3 text-info">Ready to record</div>
+    <div id="result" class="mt-3 alert alert-success" style="display:none"></div>
+    <div id="error" class="mt-3 alert alert-danger" style="display:none"></div>
+
+    <!-- 音频播放器（用于调试） -->
+    <audio id="audioPlayer" controls class="mt-3" style=""></audio>
+</div>
+
+
+    <script>
+
+        let mediaRecorder;
+        let audioChunks = [];
+        const recordButton = document.getElementById('recordButton');
+        const statusDiv = document.getElementById('status');
+        const resultDiv = document.getElementById('result');
+        const errorDiv = document.getElementById('error');
+        const audioPlayer = document.getElementById('audioPlayer');
+
+        recordButton.addEventListener('click', async () => {
+            if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+                try {
+                    // 获取麦克风访问权限
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            sampleRate: 16000, // 16kHz采样率
+                            channelCount: 1    // 单声道
+                        }
+                    });
+
+                    // 设置MediaRecorder
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+
+                    // 处理音频数据
+                    mediaRecorder.ondataavailable = e => {
+                        if (e.data.size > 0) {
+                            audioChunks.push(e.data);
+                        }
+                    };
+
+                    // 录音结束后的处理
+                    mediaRecorder.onstop = async () => {
+                        // 创建Blob并上传
+                        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                        await processRecording(audioBlob);
+
+                        // 停止所有轨道（释放麦克风）
+                        stream.getTracks().forEach(track => track.stop());
+                    };
+
+                    // 开始录音
+                    mediaRecorder.start();
+                    recordButton.textContent = "Stop Recording";
+                    recordButton.classList.replace('btn-primary', 'btn-danger');
+                    statusDiv.textContent = "Recording...";
+                    resultDiv.style.display = 'none';
+                    errorDiv.style.display = 'none';
+                } catch (err) {
+                    showError(`Microphone error: ${err.message}`);
+                }
+            } else {
+                // 停止录音
+                mediaRecorder.stop();
+                recordButton.textContent = "Start Recording";
+                recordButton.classList.replace('btn-danger', 'btn-primary');
+                statusDiv.textContent = "Processing...";
+            }
+        });
+
+        async function processRecording(audioBlob) {
+            
+            try {
+                // 创建FormData
+                const formData = new FormData();
+                formData.append('audioFile', audioBlob, 'recording.wav');
+
+                // 上传到服务器
+                const response = await fetch('/Vosk/Recognize', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server responded with ${response.status}`);
+                }
+            debugger
+                // 解析结果
+                   const result = await response.text();
+
+
+               if (result) {
+                   resultDiv.textContent = `Recognition Result: ${result}`;
+                       resultDiv.style.display = 'block';
+                       statusDiv.textContent = "Recognition complete";
+                   } else {
+                       throw new Error("No recognition result found");
+                   }
+
+                // 调试用：播放录制的音频
+                const audioUrl = URL.createObjectURL(audioBlob);
+                audioPlayer.src = audioUrl;
+                audioPlayer.style.display = 'block';
+            } catch (err) {
+                showError(`Recognition failed: ${err.message}`);
+            }
+        }
+
+        function showError(message) {
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            statusDiv.textContent = "Error occurred";
+        }

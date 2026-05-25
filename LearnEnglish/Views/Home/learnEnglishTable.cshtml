@@ -1,0 +1,2360 @@
+﻿@{
+    Layout = null;
+}
+
+<style>
+
+    .pull-up-active {
+        -webkit-transform: translateZ(0) translateY(-4px) scale(1);
+        -moz-transform: translateZ(0) translateY(-4px) scale(1);
+        -ms-transform: translateZ(0) translateY(-4px) scale(1);
+        -o-transform: translateZ(0) translateY(-4px) scale(1);
+        transform: translateZ(0) translateY(-4px) scale(1);
+        /*    -webkit-box-shadow: 0 14px 24px rgba(0, 0, 0, 0.2);
+                                    box-shadow: 0 14px 24px rgba(0, 0, 0, 0.2); */
+        -webkit-box-shadow: 0 8px 16px rgba(31, 38, 135, 0.25), inset 0 0 12px rgba(255, 255, 255, 0.6), inset 0 0 1px rgba(255, 255, 255, 0.8) !important;
+        box-shadow: 0 8px 16px rgba(31, 38, 135, 0.25), inset 0 0 12px rgba(255, 255, 255, 0.3), inset 0 0 1px rgba(255, 255, 255, 0.5) !important;
+        z-index: 999;
+    }
+
+    .gnqyy {
+        -webkit-box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.1);
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.1);
+    }
+
+
+
+    .disabled:hover {
+        cursor: not-allowed;
+    }
+
+    .qhmsdh {
+        transition: transform 0.5s ease;
+    }
+
+    .rotatedh {
+        transform: rotate(-360deg);
+        transition: transform 0.5s ease;
+    }
+
+    .flipdh {
+        transition: transform 0.5s ease;
+        transform: rotateY(360deg);
+    }
+
+
+    .nr {
+        margin-bottom: 1.5rem;
+        position: relative;
+        overflow: visible;
+    }
+
+</style>
+
+@* 切换听写模型，1为本地模型，2为讯飞模型 
+<input type="hidden" value="1" id="modeltype" />*@
+<input type="hidden" value="10" id="tp" />
+
+<script src="~/scripts/jquery.form.js"></script>
+
+
+<input type="hidden" class="wordismy" value="@string.Format("{0}",ViewData["isup"])" />
+
+<input type="hidden" class="lexiconId" />
+
+@*修改或者编辑的时候公用的*@
+<input type="hidden" class="id" />
+
+
+
+@if (Convert.ToInt32(ViewData["kc"]) > 0 || Convert.ToInt32(ViewData["kc"]) == -100)
+{
+    <input type="hidden" class="zt" value="1" />
+   
+        @if (Convert.ToInt32(ViewData["kc"]) != -100)
+        {
+              <div style="display: flex;justify-content: center;" class="mt-20 mb-5 pcheader">
+                  <ul class="navv  bgtype " style="padding:5px; display: flex;">
+                      <li class="  me-10" style="cursor: pointer;" onclick="zt(1)">
+                                  <div class=" px-20 py-10 newstyel bg-primary  xsbrsbtn" style="border-radius:25px;--yy: 10px;--yyw:1px;" aria-expanded="false">
+                              <span style="position: relative;z-index: 1;">不认识<span class="fw-bold ms-5 xsbrs">0</span></span>
+                          </div>
+                      </li>
+                      <li class=" me-10 " style="cursor: pointer;" onclick="zt(2)"> 
+                                  <div style="border-radius:25px;--yy: 10px;--yyw:1px;" class=" text-warning px-20 py-10  xswljbtn" aria-expanded="false">
+                              <span style="position: relative;z-index: 1;">未牢记<span class="fw-bold ms-5 xswlj">0</span></span>
+                              </div>
+                              </li>
+                      <li style="cursor: pointer;" onclick="zt(3)"> 
+                                          <div style="border-radius:25px;--yy: 10px;--yyw:1px;" class=" text-success px-20 py-10  xsyzwbtn" aria-expanded="true">
+                              <span style="position: relative;z-index: 1;">已掌握<span class="fw-bold ms-5 xsyzw">0</span></span>
+                              </div>
+                              </li>
+                  </ul>
+              </div>
+
+
+
+              <header class="ydheader ydheaderys   hide" style="z-index: 1000; position: fixed; width: 100%;">
+                    <div style="display: flex;justify-content: center;" class=" pcheader">
+                <ul class=" nrsty  example " style="padding:5px; display: flex;background: rgba(0, 0, 0, 0.03);--rr:25px;list-style-type: none;width: auto;">
+                    <li class="  me-10" style="cursor: pointer;position: relative;z-index:99;" onclick="zt(1)">
+                                <div class=" px-20 py-10 newstyel bg-primary  xsbrsbtn" style="border-radius:25px;--yy: 10px;--yyw:1px;" aria-expanded="false">
+                                    <span style="position: relative;z-index: 1;">不认识<span class="fw-bold ms-5 xsbrs">0</span></span>
+                                </div>
+                            </li>
+                    <li class=" me-10 " style="cursor: pointer;position: relative;z-index:99;" onclick="zt(2)">
+                                <div style="border-radius:25px;--yy: 10px;--yyw:1px;" class=" text-warning px-20 py-10  xswljbtn" aria-expanded="false">
+                                    <span style="position: relative;z-index: 1;">未牢记<span class="fw-bold ms-5 xswlj">0</span></span>
+                                </div>
+                            </li>
+                    <li style="cursor: pointer;position: relative;z-index:99;" onclick="zt(3)">
+                                <div style="border-radius:25px;--yy: 10px;--yyw:1px;" class=" text-success px-20 py-10  xsyzwbtn" aria-expanded="true">
+                                    <span style="position: relative;z-index: 1;">已掌握<span class="fw-bold ms-5 xsyzw">0</span></span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                              <div class="bottom-safe-area"></div>
+              </header>
+        }
+   
+
+    <div>
+        <div class="navbar-custom-menu r-side ydorpcys  " style="display:flex;overflow-x: auto;justify-content:space-between;">
+
+            @* <div class="text-center pe-5 pt-15 pb-10 mx-5">
+                <label class="ysyse gnbtn nrsty example " style="--rr:100px;display:flex;align-items:center;">
+                    <input type="checkbox" class="qhms" id="qhms" onchange="tpset(this)">
+
+                    <span for="qhms" style="cursor: pointer;position:relative;z-index:99;" class="icon-Shuffle fs-24 p-10 qhmsdh"><span class="path1"></span><span class="path2"></span></span>
+
+                </label>
+                <div class="mt-5" style="font-size: 0.9rem;">
+                    <span for="qhms" class="qhmstext">中 - 英</span>
+                </div>
+            </div> *@
+
+            <div style="display:flex;">
+
+                    <div class="text-center pe-5 pt-15 pb-10 mx-5">
+                        <label class="ysyse newstyel bg-primary-light " style="--rr:100px;display:flex;align-items:center;cursor: pointer;">
+                        <input type="checkbox" class="zyms" id="zyms" onchange="tpsettwo(this,1)">
+                        <span class="zybtnmo" style="position: relative;z-index: 9;display: flex;"></span>
+                    </label>
+                    <div class="mt-5" style="font-size: 0.9rem;">
+                        <span for="zyms">中 - 英</span>
+                    </div>
+                </div>
+
+                <div class="text-center pe-5 pt-15 pb-10 mx-5">
+                            <label class="ysyse newstyel bg-success-light " style="--rr:100px;display:flex;align-items:center;cursor: pointer;">
+                        <input type="checkbox" class="yzms" id="yzms" onchange="tpsettwo(this,2)">
+                        <span class="yzbtnmo" style="position: relative;z-index: 9;display: flex;"></span>
+                    </label>
+                    <div class="mt-5" style="font-size: 0.9rem;">
+                        <span for="yzms">英 - 中</span>
+                    </div>
+                </div>
+
+
+                <div class="text-center pe-5 pt-15 pb-10 mx-5">
+                        <label class="ysyse newstyel bg-info-light" style="--rr:100px;display:flex;align-items:center;">
+                        <input type="checkbox" class="txmo " id="txmo" onchange="ld(this)">
+                        <span for="txmo" style="cursor: pointer;position:relative;z-index:99;" class="icon-Headphones fs-24 p-10"><span class="path1"></span><span class="path2"></span></span>
+                    </label>
+                    <div class="mt-5" style="font-size: 0.9rem;">
+                        <span for="txmo">听写</span>
+                    </div>
+                </div>
+
+                <div class="text-center pe-5 pt-15 pb-10 mx-5">
+                        <label class="ysyse newstyel bg-warning-light" style="--rr:100px;display:flex;align-items:center;">
+                        <input type="checkbox" class="fymo " id="fymo" onchange="fymocz(this)">
+                        <span for="fymo" style="cursor: pointer;position:relative;z-index:99;" class="icon-Mic fs-24 p-10"><span class="path1"></span><span class="path2"></span></span>
+                    </label>
+                    <div class="mt-5" style="font-size: 0.9rem;">
+                        <span for="fymo">发音</span>
+                    </div>
+                </div>
+
+               
+
+            </div>
+            <div style="display:flex;" >
+                        <div style="display:flex;" class="fugongneng hide"> 
+                <div class="text-center pe-5  pt-15 pb-10 mx-5">
+                    <label class="ysyse  nrsty example" style="--rr:100px;display:flex;align-items:center;">
+                        <input type="checkbox" class="xsfy" id="xsfy" onchange="showfytwo(this)">
+                        <span for="xsfy" style="cursor: pointer;position:relative;z-index:99;" class="icon-Font fs-24 p-10"><span class="path1"></span><span class="path2"></span></span>
+                    </label>
+                    <div class="mt-5" style="font-size: 0.9rem;">
+                        <span for="xsfy">翻译</span>
+                    </div>
+                </div>
+                <div class="text-center pe-5 pt-15 pb-10 mx-5">
+                    <label class="ysyse  nrsty example" style="--rr:100px;display:flex;align-items:center;">
+                        <input type="checkbox" class="lxmo " id="lxmo" onchange="lxmotwo(this)">
+                        <span for="lxmo" style="cursor: pointer;position:relative;z-index:99;" class="icon-Write fs-24 p-10"><span class="path1"></span><span class="path2"></span></span>
+                    </label>
+                    <div class="mt-5" style="font-size: 0.9rem;">
+                        <span for="lxmo">练习</span>
+                    </div>
+                </div>
+                </div>
+                     <div class="text-center pe-5 pt-15 pb-10 mx-5" data-bs-toggle="modal" data-bs-target="#modal-righttwo">
+                        <label class="ysyse gnbtn nrsty example" onclick="shezhiys(this)" style="--rr:100px;display:flex;align-items:center;">
+                            <span for="" style="cursor: pointer;position:relative;z-index:99;" class="icon-Settings-2 fs-24 p-10"><span class="path1"></span><span class="path2"></span></span>
+                        </label>
+                        <div class="mt-5" style="font-size: 0.9rem;">
+                            <span>操作</span>
+                        </div>
+                    </div>
+            </div>
+            @*<div class="text-center pe-5 pt-15 pb-10 mx-5">
+                <label class="ysyse gnbtn nrsty example emptymo" onclick="IsEmptyNr(this)" style="--rr:100px;display:flex;align-items:center;">
+                    <span for="" style="cursor: pointer;position:relative;z-index:99;" class="icon-Update fs-24 p-10 "><span class="path1"></span><span class="path2"></span></span>
+                </label>
+                <div class="mt-5" style="font-size: 0.9rem;">
+                    <span>重置</span>
+                </div>
+            </div>
+
+            <div class="text-center pe-5 pt-15 pb-10 mx-5" data-bs-toggle="modal" data-bs-target="#modal-righttwo">
+                <label class="ysyse gnbtn nrsty example" onclick="shezhiys(this)" style="--rr:100px;display:flex;align-items:center;">
+                    <span for="" style="cursor: pointer;position:relative;z-index:99;" class="icon-Settings-2 fs-24 p-10"><span class="path1"></span><span class="path2"></span></span>
+                </label>
+                <div class="mt-5" style="font-size: 0.9rem;">
+                    <span>操作</span>
+                </div>
+            </div> *@
+
+
+        </div>
+    </div>
+
+
+    <div style="overflow-x: auto;" class="pt-5">
+        <section class="content ydorpcys">
+            <div class="row">
+                <div class="col-12">
+                    <div class="mb-10">
+                        
+                        <!-- /.box-header -->
+                        <div class="box-body no-padding mt-10">
+
+                            <div id="table">
+                            </div>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                    <!-- /.box -->
+                </div>
+
+            </div>
+        </section>
+    </div>
+}
+else
+{
+    <div class="text-left   my-20 p-20  nrsty  example">
+        <span style="position: relative;z-index: 1;">没有相关课程信息~</span>
+    </div>
+}
+
+
+<div style="padding: 0rem 1.5rem 20px 1.5rem; margin-right: auto; margin-left: auto;">
+    <div class=" fanyed" style="margin-bottom: 6px;">
+    </div>
+</div>
+<!-- 导入发货模板 -->
+<div class="modal center-modal fade" id="daoruword" tabindex="-1">
+    <div class="modal-dialog max-w-400">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">导入单词数据</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div>
+                <div class="box-body">
+                    <form action="/Import/DaoruCoursecontent" enctype="multipart/form-data" id="addformword" method="post" name="addformword">
+                        <p class="red text-center">
+                            请按照模板标准格式填写后上传文件，<br />否则无法识别！
+                            <a style="color:dodgerblue" href="/客户数据模板.xlsx" target="_blank">下载模板</a>
+                        </p>
+                        <input class="btn btn-default " style="width:100%;" id="fileVal" name="fileVal" accept=".xls,.xlsx" type="file" />
+                        <input type="hidden" id="kecenid" name="kecenid" value="@string.Format("{0}",ViewData["kc"])" />
+
+                    </form>
+                </div>
+            </div>
+            <div class="modal-footer modal-footer-uniform">
+                <button type="button" class="btn btn-danger gbck" data-bs-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary float-end" onclick="DaoruCoursecontent()">导入</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal center-modal fade" id="addword" tabindex="-1">
+    <div class="modal-dialog max-w-600">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><span class="cakhtype"></span>添加单词</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div>
+                <input type="hidden" id="courseId" value="@string.Format("{0}",ViewData["kc"])" />
+                <input type="hidden" id="courseName" value="@string.Format("{0}",ViewData["courseName"])" />
+                <div class="box-body">
+                    <div class="row justify-content-center ">
+                        <div class="my-10">
+                            <div class="nav-tabs-left mx-15">
+                                <label for="inserten" class="  min-w-80 w-80   col-form-label">单词<span style="color:red;">*</span></label>
+                                <input type="text" id="inserten" name="inserten" class="form-control  min-w-250" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row justify-content-center ">
+                        <div class=" my-10">
+                            <div class="nav-tabs-left mx-15">
+                                <label for="insertcn" class="  min-w-80  w-80  col-form-label">中文<span style="color:red;">*</span></label>
+                                <input type="text" id="insertcn" name="insertcn" class="form-control  min-w-250" placeholder="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer modal-footer-uniform">
+                <button type="button" class="btn btn-danger gbck" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary float-end" onclick="SaveCoursecontent()">保存</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal center-modal fade" id="modifyword" tabindex="-1" style="z-index:99999999;">
+    <div class="modal-dialog max-w-600">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><span class="cakhtype"></span>修改单词</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div>
+
+                <div class="row justify-content-center ">
+                    <div class="my-10">
+                        <div class="nav-tabs-left mx-15">
+                            <label for="" class="  min-w-80 w-80   col-form-label">单词<span style="color:red;">*</span></label>
+                            <input type="text" class="form-control env min-w-250" placeholder="">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row justify-content-center ">
+                    <div class=" my-10">
+                        <div class="nav-tabs-left mx-15">
+                            <label for="" class="  min-w-80  w-80  col-form-label">中文<span style="color:red;">*</span></label>
+                            <input type="text" class="form-control cnv min-w-250" placeholder="">
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="modal-footer modal-footer-uniform">
+                <button type="button" class="btn btn-danger gbck" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary float-end" onclick="updc()">保存</button>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal center-modal fade" id="dcdetail" tabindex="-1" style="z-index:99999998;">
+
+    <div class="modal-dialog max-w-800" style="font-kerning: normal;text-rendering: geometricPrecision;text-rendering: optimizeLegibility;-webkit-font-smoothing: subpixel-antialiased; -webkit-font-smoothing: antialiased;">
+        <div class="navv  bgtype" style="padding: 10px 0px 0px 0px;border-radius: 10px;pointer-events: auto;width: auto;">
+            <div style="padding: 5px 15px 0px 15px; display: flex; justify-content: space-between;">
+                <h5 class="modal-title" style="font-weight: bold !important;"><span class=" fw-bold"></span>单词详情</h5>
+                <button type="button" class="btn-close dcxqck text-mute" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div style="min-height:470px;display: flex;align-items: center;" id="dcdetailshow" ">
+            </div>
+
+            <div class=" flex my-5 pb-10 mx-20" id="containercode" style="display:flex; flex-wrap: wrap; justify-content: space-around;">
+                <div style="width: 15%;display: flex;justify-content:start">
+                    <div onclick="qiehuandc(-1)" style="display: flex;" class="ysyse  nrsty example "><i style="cursor: pointer;position: relative;z-index: 99;" class="icon-Angle-left fs-24  p-10"><span class="path1"></span><span class="path2"></span></i></div>
+                </div>
+            @if (Convert.ToInt32(ViewData["kc"]) != -100)
+            {
+                    <div class="flex" style=" display: flex; width: 70%;justify-content: space-evenly;">
+                            <div style="border-radius:25px;--yy: 8px;--yyw:1px;cursor: pointer;width: 90px;justify-content: center;text-align: center;align-items: center;display: flex;" class="px-20 py-10 newstyel bg-primary btbrs  " onclick="szzt(1,this)"><span style="position: relative;z-index: 99;">不认识</span></div>
+                            <div style="border-radius:25px;--yy: 8px;--yyw:1px;cursor: pointer;width: 90px;justify-content: center;text-align: center;align-items: center;display: flex;" class="px-20 py-10 newstyel bg-warning btwlj  " onclick="szzt(2,this)"><span style="position: relative;z-index: 99;">未牢记</span></div>
+                                <div style="border-radius:25px;--yy: 8px;--yyw:1px;cursor: pointer;width: 90px;justify-content: center;text-align: center;align-items: center;display: flex;" class="px-20 py-10 newstyel bg-success btyzw  " onclick="szzt(3,this)"><span style="position: relative;z-index: 99;">以掌握</span></div>
+                    </div>
+            }
+                <div style="width: 15%;display: flex;justify-content: end;">
+                    <div onclick="qiehuandc(1)" style="display: flex;" class="ysyse  nrsty example"><i style="cursor: pointer;position: relative;z-index: 99;" class="icon-Angle-right fs-24  p-10"><span class="path1"></span><span class="path2"></span></i></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+@* <div class="modal center-modal fade" id="fymsg" tabindex="-1">
+
+    <div class="modal-dialog max-w-1000">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><span class=" fw-bold"></span>单词翻译</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div>
+                <div>
+                    <iframe src="#" onload="iframeLoaded()" width="100%" height="500" frameborder="1" name="翻译信息" id="myIframe" style=" overflow-x: hidden;display:none;"></iframe>
+                </div>
+                <div class="rowalign-items-center justify-content-center text-center xsjzz">
+                    <div class="rounded30 p-50 ">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+ *@
+
+
+
+
+<div class="modal modal-right fade" id="modal-righttwo" tabindex="-1" style="display: none;" aria-modal="true" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">设置</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+
+                <div class=" mt-20" style="margin-left: 10px; margin-right: 30px; min-width: fit-content; ">
+                    <label for="name" class="min-w-80  w-80">搜索内容</label>
+                    <input type="text" id="name" class="form-control min-w-80 w-120" style=" line-height: 1.5;height:33.5px;" placeholder="">
+                    <button type="button" class="waves-effect waves-light btn btn-primary   btn-sm " style="margin-left:10px;" onclick="learnEnglishLFlushTable(1)">查询</button>
+                </div>
+
+                <div class=" mt-20" style="margin-left: 10px; margin-right: 30px; min-width: fit-content; ">
+                    <label for="name" class="min-w-80  w-80">课程操作</label>
+                    <button type="button" class="waves-effect waves-light btn btn-primary   btn-sm " style="" onclick="Calibration()">校准</button>
+            @if (Convert.ToBoolean(ViewData["isup"]))
+            {
+                        <button type="button" onclick="addword()" class="waves-effect waves-light btn btn-primary  btn-sm" style="margin-left: 10px;" data-bs-toggle="modal" data-bs-target="#addword">添加</button>
+                        <button type="button" onclick="drqz()" class="waves-effect waves-light btn btn-primary  btn-sm" style="margin-left: 10px;" data-bs-toggle="modal" data-bs-target="#daoruword">导入</button>
+            }
+
+                </div>
+
+                <div class="mt-20" style="margin-left: 10px; margin-right: 30px; ">
+                    <label for="sbmodeltype" class="  min-w-80  w-80">识别AI</label>
+                    <select id="sbmodeltype" class="form-control min-w-80  w-120">
+                        <option value="2">讯飞语音</option>
+                        <option value="3">百度语音</option>
+                        <option value="1">本地模型</option>
+                    </select>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.bootcdn.net/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+<script src="~/js/whisperaudio.js?v=332222223"></script>
+
+<script>
+
+  
+
+    function zonyinbtntype(fill){
+        $(".zybtnmo").html(`  <svg t="1754297221384" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                         p-id="4098" xmlns:xlink="http://www.w3.org/1999/xlink" width="22" height="22" style="position: relative;z-index: 9;">
+                        <path d="M213.312 640v85.312a85.312 85.312 0 0 0 78.976 85.12l6.4 0.256h128V896h-128A170.688 170.688 0 0 1 128 725.312V640h85.312zM768 426.688L955.776 896h-91.968l-51.2-128H638.08l-51.2 128H494.976l187.712-469.312H768z m-42.624 123.072l-53.248 132.928h106.368l-53.12-132.928z m-384-464.448v85.376H512v298.624H341.312v128H256v-128H85.312V170.688H256V85.312h85.312z m384 42.688A170.688 170.688 0 0 1 896 298.688V384h-85.312V298.688a85.312 85.312 0 0 0-85.312-85.376h-128V128h128zM256 256H170.688v128H256V256z m170.688 0H341.376v128h85.312V256z"
+                              fill="${fill}" fill-opacity=".45" p-id="4099">
+                        </path>
+                        <path d="M341.248 85.312v85.376h170.688v298.624H341.248v128H255.936v-128H85.248V170.688h170.688V85.312h85.312zM255.936 256H170.56v128H256V256z m170.624 0H341.248v128h85.312V256z"
+                              fill="${fill}" p-id="4100">
+                        </path>
+                    </svg>`);
+    }
+
+    function yinzonbtntype(fill){
+        $(".yzbtnmo").html(`  <svg t="1754300227601" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="15487" xmlns:xlink="http://www.w3.org/1999/xlink"
+                            width="22"
+                            height="22"  style="position: relative;z-index: 9;">
+                            <path d="M358.272 85.290667l187.776 469.333333h-91.946667l-51.2-128H228.309333l-51.2 128H85.248l187.733333-469.333333h85.290667z m-42.624 123.093333L262.4 341.290667h106.368L315.648 208.384z"
+                            fill="${fill}"
+                            p-id="15488">
+                            </path>
+                            <path d="M213.333333 640v85.333333a85.333333 85.333333 0 0 0 78.933334 85.077334L298.666667 810.666667h128v85.333333H298.666667a170.666667 170.666667 0 0 1-170.666667-170.666667v-85.333333h85.333333zM725.333333 128A170.666667 170.666667 0 0 1 896 298.666667v85.333333h-85.333333V298.666667a85.333333 85.333333 0 0 0-85.290667-85.333334h-128V128h128zM785.066667 384.042667v85.376h170.709333v298.624h-170.666667v128h-85.333333v-128h-170.666667v-298.624h170.666667V384.042667h85.333333z m-85.290667 170.666666H614.4v128h85.418667v-128h-0.042667z m170.624 0h-85.333333v128h85.333333v-128z"
+                            fill="${fill}"
+                            fill-opacity=".45"
+                            p-id="15489"></path></svg>`);
+    }
+
+
+
+        function tinzhitinxie(){
+
+             var istxmo = $(".txmo").prop("checked");
+                if (istxmo) {
+                    $(".txmo").click();
+                }
+        }
+
+        avativys($(".kcbtnc"));
+
+            //如果是手机，隐藏功能区按钮
+            if(isMobile){
+                $(".gnqan").hide();
+                 // tbtab(0);
+            }
+
+            var isFlipped = false;
+                    @* function tpset(dom){
+                var isxsfy = $(dom).prop("checked");
+                if (isxsfy) {
+                    $("#tp").val(2);
+                    $(".qhmstext").text("英 - 中");
+
+                }
+                else {
+                    $(".qhmstext").text("中 - 英");
+                    $("#tp").val(1);
+                }
+
+                  var $elementToFlip = $('.qhmsdh');
+                  isFlipped = !isFlipped;
+                  var scaleYValue = isFlipped ? '-1' : '1';
+                  $elementToFlip.css('transform', `scaleY(${scaleYValue})`);
+
+
+                 learnEnglishLFlushTable(1);
+            } *@
+
+             var thisdom = null;
+             function tpsettwo(dom,tp){
+
+                var isxsfy = $(dom).prop("checked");
+
+                if (isxsfy) {
+                     thisdom = dom;
+                     //其他与选中的都点击去掉
+                      closeBtnAll(dom);
+
+                     
+                      $("#tp").val(tp);
+
+                      if(tp==1){
+                           $(dom).closest(".ysyse").removeClass("bg-primary-light").addClass("bg-primary");
+                           zonyinbtntype('#ffffff');
+                      }else if(tp==2){
+                            yinzonbtntype('#ffffff');
+                            $(dom).closest(".ysyse").removeClass("bg-success-light").addClass("bg-success");
+                      }
+                      $(".fugongneng").removeClass("hide");
+                      btndh(dom);
+                     // let page = $("ul.pagination").children("li.active").text();
+                     // learnEnglishLFlushTable(page);
+                     tpReset(tp);
+                }
+                else {
+                     if(tp==1){
+                          $(dom).closest(".ysyse").removeClass("bg-primary").addClass("bg-primary-light");
+                          zonyinbtntype('#0052cc');
+                      }else if(tp==2){
+                          $(dom).closest(".ysyse").removeClass("bg-success").addClass("bg-success-light");
+                          yinzonbtntype('#04a08b');
+                      }
+                    //如果是当前按钮取消，恢复原状
+                    if(thisdom!=null&&thisdom==dom)
+                    {
+                         btndh(dom);
+                         closeBtn(true);
+                    }
+                    else{
+                        closeBtn(false);
+                    }
+                }
+            }
+
+            function closeBtnAll(dom){
+                 $('.ydorpcys input[type="checkbox"]:checked').not(dom).each(function() {
+                         $(this).click(function() {
+                             console.log('点击了' );
+                         }).trigger('click');
+                     });
+
+
+            }
+
+            function closeBtn(isfy){
+                 $(".fugongneng").addClass("hide");
+                 //所有按钮全部关闭
+                 $(".gnbtn").removeClass("border-primary-zq");
+                 if(isfy){
+                     //记录上一次操作的
+                     oldtp = $("#tp").val();
+                     //默认模式为10
+                     $("#tp").val(10);
+
+                    // let page = $("ul.pagination").children("li.active").text();
+                    // learnEnglishLFlushTable(page);
+
+                     tpReset(10);
+                 }
+            }
+            var oldtp = 0;
+
+            function tpReset(tp){
+
+                $('.nr').each(function () {
+                              let en = $(this).data("en");
+                              let cn = $(this).data("cn");
+
+                              let name = "";
+                              let value = "";
+
+                              if (tp == 1)
+                              {
+                                  name = cn;
+                                  value = en;
+                              }
+                              if (tp == 2 || tp == 10)
+                              {
+                                  name = en;
+                                  value = cn;
+                              }
+
+                              if (tp == 3|| tp == 4)
+                              {
+                                  name = en;
+                                  value = en;
+                              }
+
+
+                              $(this).attr("data-value",value);
+
+                              $(this).find('input.sq').attr("data-value",value);
+                              $(this).find('input.sq').data("value",value);
+
+                              $(this).find('.spy').text(value == "" ? "-" : value);
+                              $(this).find('.wb').text(name);
+
+                  });
+
+                      $('.ok').addClass("hide");
+                      $('.no').addClass("hide");
+                      $('.lb').addClass("hide");
+
+                      if(tp!=10 && oldtp!=tp)
+                      {
+                      $('input.sq').val("");
+
+                      $(".nr").removeClass("border-success-zq").removeClass("border-danger-zq").addClass("border-gainsboro");
+                      $(".sp").removeClass("text-danger").removeClass("text-success");
+                      }
+                    // $(".sp").attr('data-bs-toggle', 'modal');
+
+                     
+                     $(".zydf").addClass("hide");
+                     $(".yzdf").addClass("hide");
+                     $(".txdf").addClass("hide");
+                     $(".fydf").addClass("hide");
+                     if(tp==1){
+                          $(".zydf").removeClass("hide");
+                     }else  if(tp==2){
+                          $(".yzdf").removeClass("hide");
+                     }else if(tp==3){
+                          $(".fydf").removeClass("hide");
+                     }else if(tp==4){
+                          $(".txdf").removeClass("hide");
+                     }else{
+                         $(".zydf").removeClass("hide");
+                     $(".yzdf").removeClass("hide");
+                     $(".txdf").removeClass("hide");
+                     $(".fydf").removeClass("hide");
+                     }
+
+                     if(tp==4){
+                        // $(".sp").attr("data-bs-toggle","");
+                         $('.wb').addClass("hide");
+                         @* $('.djs').removeClass("hide"); *@
+                         $('.pronounce').removeClass("hide");
+                         $("input.sq").prop("disabled", true);
+                     }
+                     else{
+                        $("input.sq").prop("disabled", false);
+                        $('.wb').removeClass("hide");
+                       @*  $('.djs').addClass("hide"); *@
+                        $('.pronounce').addClass("hide");
+                     }
+
+                     if(tp==1||tp==4){
+                        $('.spy').removeClass("fs-16").addClass("fs-18");
+
+                     }else{
+                         $('.spy').removeClass("fs-18").addClass("fs-16");
+                     }
+
+                     if(tp==10&&tp!=4){
+                          $('.spy').removeClass("hide");
+                     }else{
+                         $('.spy').addClass("hide");
+                     }
+
+
+
+                     if(tp==1||tp==2||tp==4){
+                         $('input.sq').removeClass("hide");
+                     }
+                     else{
+                          $('input.sq').addClass("hide");
+                     }
+
+                     if(tp==3){
+                          $('.fylx').removeClass("hide");
+                     }else{
+                          $('.fylx').addClass("hide");
+                     }
+
+                     if(tp==2||tp==3||tp==10)
+                     {
+                        $('.wb').removeClass("fs-16").addClass("fs-18");
+
+
+                     }
+                     else{
+                          $('.wb').removeClass("fs-18").addClass("fs-16");
+                     }
+
+
+                      if(tp==4){
+                         txqd(1);
+                     }
+            }
+
+
+
+            function iframeLoaded() {
+
+                    $(".xsjzz").hide();
+
+                   var iframe = document.getElementById('myIframe');
+
+                  if( iframe.src !='')
+                  {
+                       $("#myIframe").show();
+                       iframe.height=500;
+                  }
+
+
+
+            }
+
+
+
+
+            function ydjmtz(){
+                      if(isMobile)
+                      {
+                             $(".ydheader").removeClass("hide");
+                             $(".pcheader").addClass("hide");
+                      
+                      }
+                      else{
+                           $(".ydheader").addClass("hide");
+                            $(".pcheader").removeClass("hide");
+                      }
+            }
+
+
+            $(document).ready(function () {
+                //默认中英按钮
+                 zonyinbtntype('#0052cc');
+                 yinzonbtntype('#04a08b');
+                 //移动端页面处理
+                 ydjmtz();
+
+                var courseName = $("#courseName").val();
+                edittitle(courseName,"learnEnglishTable");
+                  setTimeout(function() {
+                             lazydata("main");
+                          }, 200);
+            });
+
+
+            function DaoruCoursecontent() {
+                 // 确保有文件被选中
+                var fileInput = $("#fileVal")[0];
+                if (!fileInput.files.length) {
+                    alert('请选择一个文件！');
+                    return;
+                }
+
+                var fileVal = fileInput.files[0]; // 获取第一个选中的文件
+                // 修改这一行
+                var kecenid = $("#kecenid").val();
+
+                $('.gbck').click();
+                var layerIndexv2 = layer.open({
+                    type: 1, //page层
+                    area: ['300px', '70px'],
+                    title: '',
+                    shade: 0.1, //遮罩透明度
+                    moveType: 0, //拖拽风格，0是默认，1是传统拖动
+                    shift: -1, //0-6的动画形式，-1不开启
+                    closeBtn: 0,
+                    content: '<div id="xinglailoading" style="text-align: center; line-height:70px;"><img title="正在导入" alt="导入中" src="../Content/img/sunjing_loading2.gif" />&nbsp;&nbsp;正在导入单词数据,请稍等... ...</div>'
+                });
+                 var jwtToken = localStorage.getItem('jwtToken');
+                 var formData = new FormData();
+                     formData.append("file", fileVal);
+                     formData.append("kecenid", kecenid);
+
+            $.ajax({
+                url: "/Import/DaoruCoursecontent",
+                type: "POST",
+                data: formData,
+                processData: false, // 告诉jQuery不要去处理发送的数据
+                contentType: false, // 告诉jQuery不要去设置Content-Type请求头
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + jwtToken);
+                },
+                success: function (data) {
+                    if (data.success) {
+                        learnEnglishLFlushTable(1);
+                            layer.close(layerIndexv2);
+                            czjieguo(data.msg, 0);
+                    } else {
+                        layer.close(layerIndexv2);
+                            czjieguo(data.msg, 1);
+                    }
+                },
+                error: function (aa) {
+                    layer.close(layerIndexv2);
+                    czjieguo(aa, 1);
+                }
+            });
+
+            }
+            function addword() {
+                $("#insertcn").val("");
+                $("#inserten").val("");
+
+                $(".btn-close").click();
+            }
+
+            function drqz(){
+                $(".btn-close").click();
+            }
+
+            function SaveCoursecontent() {
+                var cn = $("#insertcn").val();
+                var en = $("#inserten").val();
+                var courseId = $("#courseId").val();
+                var layerIndexv = layer.open({
+                    type: 1, //page层
+                    area: ['300px', '70px'],
+                    title: '',
+                    shade: 0.1, //遮罩透明度
+                    moveType: 0, //拖拽风格，0是默认，1是传统拖动
+                    shift: -1, //0-6的动画形式，-1不开启
+                    closeBtn: 0,
+                    content: '<div id="xinglailoading" style="text-align: center; line-height:70px;"><img title="操作中" alt="操作中" src="../Content/img/sunjing_loading2.gif" />&nbsp;&nbsp;操作中，请稍等... ...</div>'
+                });
+                $('.gbck').click();
+
+
+                requestData("/Course/SaveCoursecontent",{ courseId: courseId, en: en, cn: cn }).then((data) => {
+                        layer.close(layerIndexv);
+                        if (data.success) {
+                            czjieguo("操作成功！", 0);
+                            var page = $("ul.pagination").children("li.active").text();
+                            learnEnglishLFlushTable(page);
+                        }
+                        else {
+                            czjieguo(data.msg, 1);
+                        }
+
+                }).catch((error) => {
+                   czjieguo(error.msg, 1);
+                });
+
+
+
+            }
+
+
+
+            function Calibration() {
+
+                var layerIndexv = layer.open({
+                    type: 1, //page层
+                    area: ['300px', '70px'],
+                    title: '',
+                    shade: 0.1, //遮罩透明度
+                    moveType: 0, //拖拽风格，0是默认，1是传统拖动
+                    shift: -1, //0-6的动画形式，-1不开启
+                    closeBtn: 0,
+                    content: '<div id="xinglailoading" style="text-align: center; line-height:70px;"><img title="操作中" alt="操作中" src="../Content/img/sunjing_loading2.gif" />&nbsp;&nbsp;操作中，请稍等... ...</div>'
+                });
+
+                  requestData("/Word/Calibration",{}).then((data) => {
+                        layer.close(layerIndexv);
+                        if (data.success) {
+                            czjieguo("校准成功！", 0);
+                            var page = $("ul.pagination").children("li.active").text();
+                            learnEnglishLFlushTable(page);
+                        }
+                        else {
+                            czjieguo(data.msg, 1);
+                        }
+
+                }).catch((error) => {
+                   czjieguo(error.msg, 1);
+                });
+
+
+            }
+
+            var ismobobi = (/Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+
+            $(".with-border button").addClass('btn-outline');
+            $(".with-border button:first").removeClass('btn-outline');
+
+            $(".with-border button").click(function () {
+                $(this).removeClass('btn-outline');
+                $(this).siblings().addClass('btn-outline');
+            });
+
+
+            var myCollection = [];
+            var cisu = 0;
+            // 定义一个处理集合元素的函数，接受当前索引作为参数
+            function processCollectionItem(index) {
+                if(myCollection.length>0)
+                {
+                // console.log("Processing item:", myCollection[index]);
+                // 在这里执行与当前元素相关的操作，如 DOM 更新、AJAX 请求等
+
+                 let palydom = myCollection.eq(index);
+                if (cisu < 3) {
+                    if (cisu == 0 && index > 0) {
+                        //在这里定位光标
+                        let ind = index - 1;
+                        let dom = myCollection.eq(ind);
+
+                        yz(dom);
+                    }
+                    cisu++;
+
+                    let value = palydom.data("en");
+                    if (value != undefined && value != "") {
+                        let language = $("#yyk").val();
+                        let text = language + value;
+
+                        if (!$(palydom).closest(".nr").find(".pronounce").hasClass('audioClick')) {
+                             //$(palydom).closest(".nr").find(".djs").addClass("hide");
+                             $(palydom).closest(".nr").find(".pronounce").removeClass("hide").addClass('audioClick');
+                        }
+
+                        playAudio(text);
+
+                    }
+
+                    setTimeout(() => {
+                        processCollectionItem(index)
+                    }, 3000); // 指定延迟 1000 毫秒（即 1 秒）
+
+                }
+                else {
+
+                     //$(palydom).closest(".nr").find(".djs").removeClass("hide");
+                     $(palydom).closest(".nr").find(".pronounce").removeClass('audioClick');
+                    // 如果还有下一个元素待处理，设置定时器以延迟 1 秒后继续
+                    if (index <= myCollection.length - 1) {
+                        cisu = 0;
+                        setTimeout(() => {
+                            processCollectionItem(index + 1);
+                        }, 3000); // 指定延迟 1000 毫秒（即 1 秒）
+                    }
+                    else {
+                        speak('听写完毕！');
+                        isup = true;
+                        upData();
+                    }
+                }
+
+                }
+            }
+
+            function bttype(dom, type) {
+
+                dom.parent().children(".sp").children(".ok").addClass("hide");
+                dom.parent().children(".sp").children(".no").addClass("hide");
+                dom.parent().children(".sp").children(".lb").addClass("hide");
+               @*  dom.parent().children(".sp").children(".djs").addClass("hide"); *@
+                dom.parent().children(".sp").children('.pronounce').addClass("hide");
+                if (type == 1) {
+                    dom.parent().children(".sp").children(".lb").removeClass("hide");
+                     dom.parent().children(".sp").children(".wb").addClass("hide");
+                }
+                else{
+                    dom.parent().children(".sp").children(".wb").removeClass("hide");
+                    if (type == 2) {
+                        dom.parent().children(".sp").children(".ok").removeClass("hide");
+                        dom.prop("disabled", true);
+                    }
+                    if (type == 3) {
+                        dom.parent().children(".sp").children(".no").removeClass("hide");
+                        dom.prop("disabled", true);
+                    }
+                }
+
+            }
+
+            function lxmotwo(dom){
+                btndh(dom);
+                 var isxsfy = $(".lxmo").prop("checked");
+
+                if (isxsfy) {
+
+                    $(dom).closest(".ysyse").addClass("border-primary-zq");
+                }
+                else {
+                    $(dom).closest(".ysyse").removeClass("border-primary-zq");
+                }
+            }
+
+            function btndh(dom){
+                  $(dom).parent().children("span").addClass("flipdh");
+
+                 setTimeout(function executeAfterOneSecond() {
+                     $(dom).parent().children("span").removeClass("flipdh");
+                 }, 800);
+            }
+
+             function showfytwo(dom) {
+                 btndh(dom);
+
+                var isxsfy = $(".xsfy").prop("checked");
+                if (isxsfy) {
+                    $(".spy").removeClass("hide");
+                    $(dom).closest(".ysyse").addClass("border-primary-zq");
+                }
+                else {
+                   $(".spy").addClass("hide");
+                   $(dom).closest(".ysyse").removeClass("border-primary-zq");
+                }
+            }
+
+            function showfy() {
+
+                var isxsfy = $(".xsfy").prop("checked");
+                if (isxsfy) {
+                    $(".spy").removeClass("hide");
+                }
+                else {
+                    $(".spy").addClass("hide");
+                }
+            }
+
+            function shezhiys(dom){
+                $(dom).children("span").addClass("rotatedh");
+
+                 setTimeout(function executeAfterOneSecond() {
+                     $(dom).children("span").removeClass("rotatedh");
+                 }, 800);
+            }
+
+            function IsEmptyNr(dom) {
+                 $(dom).children("span").addClass("rotatedh");
+
+                 setTimeout(function executeAfterOneSecond() {
+                     $(dom).children("span").removeClass("rotatedh");
+                 }, 800);
+
+                var istxmo = $(".txmo").prop("checked");
+                if (istxmo) {
+                    $(".txmo").click();
+                }
+                else {
+                    isup = true;
+                    upData();
+                }
+
+
+                cisu = 0;
+
+                $('#name').val("");
+                $("input.sq").prop("disabled", false);
+                $(".xsfy").prop("disabled", false);
+                $(".lxmo").prop("disabled", false);
+                $('.ok').addClass("hide");
+                $('.no').addClass("hide");
+                $('.lb').addClass("hide");
+               @*  $('.djs').addClass("hide"); *@
+               $('.pronounce').addClass("hide");
+               
+                $('.wb').removeClass("hide");
+                myCollection = [];
+
+                $('input.sq').val("");
+                $(".nr").removeClass("border-success-zq").removeClass("border-danger-zq").addClass("border-gainsboro");
+                $(".sp").removeClass("text-danger").removeClass("text-success");
+                learnEnglishLFlushTable(1);
+            }
+
+            function loadAudio(){
+
+                 //当前口音
+                   let language = $("#yyk").val();
+                   //优先加载当前设置的
+                   let onekey = language=="Speech_EN"?"Speech_EN":"Speech_US";
+
+                   //加载另一种
+                  let twokey = onekey=="Speech_EN"?"Speech_US":"Speech_EN";
+
+                  // 启动异步批次加载
+                  createAndLoadBatch(language,$('.nr')).then(() => {
+                      console.log('所有音频加载完毕');
+                      // 在这里可以执行后续操作，比如播放音频
+
+                         createAndLoadBatch(language,$('.nr')).then(() => {
+                             console.log('所有音频加载完毕');
+                             // 在这里可以执行后续操作，比如播放音频
+                            // batchIndex = 0;
+
+
+
+                         }).catch((error) => {
+                             console.error('加载过程中出现错误:', error);
+                         });
+
+
+
+                  }).catch((error) => {
+                      console.error('加载过程中出现错误:', error);
+                  });
+
+
+
+
+
+
+
+               // createAndLoadBatch('Speech_EN');
+                //  batchIndex = 0;
+
+              //  createAndLoadBatch('Speech_US');
+
+                //var indexcs = 0;
+                //  $('.nr').each(function () {
+                //    var en = $(this).data("en");
+                //    //添加语音文件
+                //    let isenaudio = $(this).data("isenaudio")
+                //    let isusaudio = $(this).data("isusaudio")
+
+                //    if(isenaudio==1){
+                //        let key = 'Speech_EN'+en;
+                //        let value = 'https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/Speech_EN/'+en+'.mp3';
+
+                //        if(indexcs==0)
+                //        {
+                //               setAudioMap(key,value);
+                //        }
+                //       else{
+                //          setTimeout(() => {
+                //              setAudioMap(key,value);
+                //          }, 1000);
+                //     }
+
+
+                //    }
+                //    if(isusaudio==1){
+                //         let key = 'Speech_US'+en;
+                //        let value = 'https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/Speech_US/'+en+'.mp3';
+
+                //          setTimeout(() => {
+                //              setAudioMap(key,value);
+                //          }, 1000);
+
+                //    }
+                //});
+            }
+
+           function quxiaocaxun(dom,id){
+
+              $(dom).addClass("hide");
+               $(".mkf_" + id).removeClass("hide");
+                currentWord = "";
+           }
+
+
+            function shibiefy(dom,id){
+                debugger
+                let domtwo =$(".shibieing_"+id);
+                if(currentWord==id)
+                {
+                    $(dom).addClass("hide");
+                    $(domtwo).removeClass("hide");
+
+                   //停止录音
+                 // currentWord = "";
+                  let modeltype = getModelType();
+                    if(modeltype==1||modeltype==3)
+                  {
+                      modelsAudioStop()
+                  }else if(modeltype==2)
+                  {
+                      stopRecording()
+                  }
+                    $(domtwo).removeClass("is-recording");
+                }
+            }
+            var currentWord = "";
+           async function fykaiguan(dom,id){
+
+                if(currentWord =="")
+                {
+                     currentWord = id;
+                    let domtwo =$(".lyzbtn_"+id);
+                    $(dom).addClass("hide");
+                    $(domtwo).removeClass("hide");
+
+                    let modeltype = getModelType();
+                    if(modeltype==1||modeltype==3)
+                    {
+                     await  startRecording(domtwo,id);
+                    }
+                    else if(modeltype==2)
+                    {
+                     await  xunFeiStartRecording(domtwo,id);
+                    }
+                }
+
+            }
+
+            function getModelType(){
+               //  return  $("#modeltype").val();
+
+              return $("#sbmodeltype").val();
+            }
+
+            //写入结果
+          function audioResultSet(word,isok){
+              debugger
+              //关闭
+
+
+              let dom = $(".shibieing_" + word);
+
+                setTimeout(() => {
+                           jgtx(isok,$(dom).closest(".nr"));
+                    }, 0);
+
+
+
+                if (isok) {
+                    $(dom).closest(".nr").removeClass("border-gainsboro").removeClass("border-danger-zq").addClass("border-success-zq");
+                    $(dom).closest(".nr").children(".sp").removeClass("text-danger").addClass("text-success");
+
+                } else {
+                    $(dom).closest(".nr").removeClass("border-gainsboro").removeClass("border-success-zq").addClass("border-danger-zq");
+                    $(dom).closest(".nr").children(".sp").removeClass("text-success").addClass("text-danger");
+                }
+
+                $(dom).addClass("hide");
+                $(".mkf_" + word).removeClass("hide");
+                $(".lyzbtn_"+word).addClass("hide");
+
+                //记录结果
+                let isfy = $(".xsfy").prop("checked");
+                let islxmo = $(".lxmo").prop("checked");
+                if (!isfy&&!islxmo) {
+                       var lexiconid = $(dom).closest(".nr").data("lexiconid");
+                        if (word != 0) {
+                        let tp = $("#tp").val();
+                        let valueobj = isupMap.get(lexiconid);
+                        if(tp==1){
+                            valueobj.zyno=false;
+                        }else if(tp==2){
+                            valueobj.yzno=false;
+                        }else if(tp==3){
+                            valueobj.fyno=true;
+                        }else if(tp==4){
+                            valueobj.txno=true;
+                        }
+                        isupMap.set(lexiconid, valueobj);
+                        upbsno(lexiconid, isok);
+                    }
+                }
+          }
+
+
+
+            function fymocz(dom){
+                 var isfymo = $(".fymo").prop("checked");
+                 if (isfymo) {
+                      thisdom = dom;
+                     //其他与选中的都点击去掉
+                     closeBtnAll(dom);
+
+                    $(dom).closest(".ysyse").removeClass("bg-warning-light").addClass("bg-warning");
+                    $("#tp").val(3);
+                    btndh(dom);
+
+                    tpReset(3);
+                    //let page = $("ul.pagination").children("li.active").text();
+                   // learnEnglishLFlushTable(page,()=>{
+                        // $("input.sq").css("display","none");
+                       //  $(".fylx").removeClass("hide");
+                    // });
+                 }
+                 else{
+                     $("input.sq").css("display","");;
+                     $(".fylx").addClass("hide");
+                      $(dom).closest(".ysyse").removeClass("bg-warning").addClass("bg-warning-light");
+                     //如果是当前按钮取消，恢复原状
+                      if(thisdom!=null&&thisdom==dom)
+                      {
+                           btndh(dom);
+                           closeBtn(true);
+                      }
+                      else{
+                          closeBtn(false);
+                      }
+                 }
+            }
+
+            function txqd(type){
+                if(type==1)
+                {
+                    //加载音频
+                 loadAudio();
+
+                  myCollection = $('input.sq');
+                             speak('听写开始！');
+                             setTimeout(() => {
+                                 if(myCollection.length>0)
+                                 {
+                                     myCollection.eq(0).prop("disabled", false);
+                                     bttype(myCollection.eq(0), 1);
+                                     myCollection.eq(0).focus();
+                                     // 调用函数开始处理集合
+                                     processCollectionItem(0);
+                                 }
+                             }, 3000); // 指定延迟 1000 毫秒（即 1 秒）
+                }
+                else{
+
+
+                    isup = true;
+                    upData();
+                    cisu = 0;
+
+                    myCollection = [];
+
+                    //清空当前
+                     if(dqaudio!=null)
+                     {
+                         dqaudio.unload();
+                         dqaudio=null;
+                     }
+                }
+
+            }
+
+            function ld(dom) {
+
+                var istxmo = $(".txmo").prop("checked");
+                if (istxmo) {
+                    if($('.nr').length==0)
+                    {
+                        speak('没有听写内容！');
+                         $(".txmo").prop("checked", false);
+                         return false;
+                    }
+                     btndh(dom);
+                     thisdom = dom;
+                    //其他与选中的都点击去掉
+                     closeBtnAll(dom);
+                     $("#tp").val(4);
+                     $(dom).closest(".ysyse").removeClass("bg-info-light").addClass("bg-info");
+
+                     tpReset(4);
+
+                     // let page = $("ul.pagination").children("li.active").text();
+                    // learnEnglishLFlushTable(page,()=>{
+                          // txqd();
+                     //});
+                }
+                else {
+                   $(dom).closest(".ysyse").removeClass("bg-info").addClass("bg-info-light");
+                  //  $(".sp").attr('data-bs-toggle', 'modal');
+                    isup = true;
+                    upData();
+                    cisu = 0;
+                    $("input.sq").prop("disabled", false);
+                    $(".xsfy").prop("disabled", false);
+                    $(".lxmo").prop("disabled", false);
+                    $('.ok').addClass("hide");
+                    $('.no').addClass("hide");
+                    $('.lb').addClass("hide");
+                    @* $('.djs').addClass("hide"); *@
+                    $('.pronounce').addClass("hide");
+                    $('.wb').removeClass("hide");
+                    myCollection = [];
+                    speak('听写关闭！');
+
+                    //清空当前
+                     if(dqaudio!=null)
+                     {
+                         dqaudio.unload();
+                         dqaudio=null;
+                     }
+
+                     //如果是当前按钮取消，恢复原状
+                     if(thisdom!=null&&thisdom==dom)
+                     {
+                          btndh(dom);
+                          closeBtn(true);
+                     }
+                     else{
+                         closeBtn(false);
+                     }
+                }
+
+            }
+
+            //高质量语音文件
+            async function playAudio2(rul) {
+
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const audioBuffer = audioContext.createBufferSource();
+                audioContext.decodeAudioData(await (await fetch(rul)).arrayBuffer(), buffer => {
+                    audioBuffer.buffer = buffer;
+                    audioBuffer.connect(audioContext.destination);
+                    audioBuffer.start(0);
+                }, err => {
+                    console.error('Error decoding audio data: ', err);
+                });
+
+                //fetch(rul)
+                //    .then(response => response.arrayBuffer())
+                //    .then(arrayBuffer => {
+                //        return new Promise((resolve, reject) => {
+                //            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                //            const audioBuffer = audioContext.createBufferSource();
+                //            audioContext.decodeAudioData(arrayBuffer, buffer => {
+                //                audioBuffer.buffer = buffer;
+                //                audioBuffer.connect(audioContext.destination);
+                //                audioBuffer.start(0);
+                //                resolve();
+                //            }, err => {
+                //                console.error('Error decoding audio data: ', err);
+                //                reject(err);
+                //            });
+                //        });
+                //    })
+                //    .catch(err => {
+                //        console.error('Error fetching audio file: ', err);
+                //    });
+            }
+
+            function speak(text, language) {
+                // 创建一个 SpeechSynthesisUtterance 对象
+                const utterance = new SpeechSynthesisUtterance();
+
+                // 设置要朗读的文本
+                utterance.text = text;
+
+                // 设置语言，例如中文（zh-CN）或英文（en-US）
+                utterance.lang = language || 'zh-CN'; // 默认为中文，可按需改为其他语言
+
+                // 可以根据需要设置更多属性，如音量、语速等
+                // utterance.volume = 1.0; // 音量，范围 0.0 到 1.0，默认为 1.0
+                utterance.rate = 0.8; // 语速，范围 0.1 到 10.0，默认为 1.0
+                // utterance.pitch = 1.0; // 音调，范围 0.0 到 2.0，默认为 1.0
+
+                // 将 utterance 添加到队列并开始朗读
+                speechSynthesis.speak(utterance);
+            }
+
+            function stringToBoolSmart(str) {
+            const lowerStr = str.toLowerCase();
+            if (lowerStr === 'true') return true;
+            if (lowerStr === 'false') return false;
+            // 可以根据需要处理其他情况，这里默认返回false
+            return false;
+        }
+
+        async function bfzb(dc, dom){
+
+                 if (!$(dom).children(".df").is(':hidden')) {
+                    var language = $("#yyk").val();
+                    var text = language + dc;
+
+                      let isenaudio = $(dom).parent().data("isenaudio")
+                      let isusaudio = $(dom).parent().data("isusaudio")
+
+                     $("#gg_isenaudio").val(isenaudio);
+                     $("#gg_isusaudio").val(isusaudio);
+                     //在这儿加入到播放列表
+                     var audio = audioMap[text];
+                     if(!audio)
+                     {
+
+                             //确定当前的
+                             let dqk = language=="Speech_EN"?"Speech_EN":"Speech_US";
+                             let dqisaudio = language=="Speech_EN"?isenaudio:isusaudio;
+                             if(dqisaudio==1)
+                             {
+                                 let dqvalue = 'https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/'+dqk+'/'+dc+'.mp3';
+                                 await loadSound(dqk+dc,dqvalue);
+                                // playAudio(text);  //播放
+
+                              }
+                              else{
+                                   let type = dqk=="Speech_EN"?1:0;
+                                  var newSrc = 'http://dict.youdao.com/dictvoice?type='+type+'&audio='+dc;
+                                  changeAudioSource('GG_'+dqk,newSrc)
+                              }
+                             //剩下的
+                             let sxk = dqk=="Speech_EN"?"Speech_US":"Speech_EN";
+                             let sxisaudio = dqk=="Speech_EN"?isusaudio:isenaudio;
+                             if(sxisaudio==1)
+                             {
+                                 let sxvalue = 'https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/'+sxk+'/'+dc+'.mp3';
+                                 await loadSound(sxk+dc,sxvalue);
+                             }
+
+
+                             //if(isenaudio==1){
+                             //     let key = 'Speech_EN'+dc;
+                             //    let value = 'https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/Speech_EN/'+dc+'.mp3';
+                             ////    setAudioMap(key,value);
+                             // await loadSound(key,value);
+                             //}
+                             //if(isusaudio==1){
+                             //    let key = 'Speech_US'+dc;
+                             //    let value = 'https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/Speech_US/'+dc+'.mp3';
+                             // //   setAudioMap(key,value);
+                             //  await loadSound(key,value);
+                             //}
+                     }
+                   else{
+                      // playAudio(text); //播放
+                   }
+
+                }
+        }
+
+        async function qiehuandc(type){
+
+            let index = dqdomindex+type;
+
+            let length =  $('.wbpd').children().length;
+              if(length>0)
+            {
+
+            if(index>length-1){
+                index = 0;
+            }
+
+            if(index<0){
+                    index = length-1;
+                 }
+
+                var xzdom = $('.wbpd').children().eq(index).find(".sp");
+
+                bfdc(xzdom);
+                 } else{
+                        $('.dcxqck').click();
+                  }
+            }
+
+
+          //当前操作的dom
+        var dqdom = null;
+        var dqdomindex = 0;
+        async function bfdc(dom)
+        {
+            isxunhuanbf=false;
+
+            dqdom = dom;
+            let parentdom = $(dom).closest(".nr");
+            dqdomindex = parentdom.closest(".wyg").index();
+
+            let dc = parentdom.data("en");
+            let cn = parentdom.data("cn");
+            let zt =  parentdom.data("zt");
+            let id =  parentdom.data("coursecontentid");
+            let lexiconId =  parentdom.data("lexiconid");
+            let isupdate =  parentdom.data("isupdate");
+
+                   let iscollectvlue =  parentdom.data("iscollect");
+
+                              $(".iscollectvlue").val(iscollectvlue==1?'True':'False');
+
+
+
+
+
+
+
+                var zdfy = $("#zdfy").prop("checked");
+                 if(zdfy)
+                 {
+                      setTimeout(async () => {
+                       await bfzb(dc,dom);
+                     }, 0);
+                 }
+
+                setTimeout(() => {
+
+                   lexiconDeatil(dc,false);
+                    }, 0);
+
+
+                $(".wordisup").val(stringToBoolSmart(isupdate));
+                $(".env").val(dc);
+                $(".cnv").val(cn);
+                $(".id").val(id);
+                $(".lexiconId").val(lexiconId);
+
+                $(".btbrs").hide();
+                $(".btwlj").hide();
+                $(".btyzw").hide();
+
+                if (zt == 1) {
+
+                    $(".btwlj").show();
+                    $(".btyzw").show();
+                }
+                if (zt == 2) {
+                    $(".btbrs").show();
+                    $(".btyzw").show();
+                }
+                if (zt == 3) {
+                    $(".btbrs").show();
+                    $(".btwlj").show();
+                }
+
+
+        }
+
+        //正确错误特效
+        function jgtx(isok,dom){
+
+            if(isok)
+                    {
+                        $('#fireworks').clone().appendTo(dom);
+                      // $(dom).append($('#fireworks'));
+                       $(dom).removeClass('correct-animation')
+                       .delay(10)
+                       .queue(function(next) {
+                           $(this).addClass('correct-animation');
+                           next();
+                       });
+
+                        // 3秒后移除动画类
+                        setTimeout(() => {
+                            $(dom).children('#fireworks').remove();
+                            $(dom).removeClass('correct-animation');
+                        }, 1500);
+                    }
+                    else{
+                        $(dom).removeClass('wrong-animation')
+                              .delay(10)
+                              .queue(function(next) {
+                                  $(this).addClass('wrong-animation');
+                                  next();
+                              });
+
+                          // 0.5秒后移除动画类
+                          setTimeout(() => {
+                             $(dom).removeClass('wrong-animation');
+                          }, 500);
+                    }
+
+        }
+
+
+
+            function upbsno(id, isok) {
+                var isupaa = isupMap.get(id);
+                 let tp = $("#tp").val();
+                 
+
+                    let valObj = upMap.get(id);
+                    let isupno=false;
+                    if(tp==1&&isupaa.zyno){
+                        let zyno = valObj.zyno;
+                        zyno = isok ? zyno + 1 : zyno - 3;
+                        if (zyno > 15)
+                        {
+                            zyno = 15;
+                        }
+                        else if (zyno < 0)
+                        {
+                            zyno = 0;
+                        }
+                        valObj.zyno = zyno;
+                        isupno=true;
+                    }else if(tp==2&&isupaa.yzno){
+                       let yzno = valObj.yzno;
+                        yzno = isok ? yzno + 1 : yzno - 3;
+                        if (yzno > 15)
+                        {
+                            yzno = 15;
+                        }
+                        else if (yzno < 0)
+                        {
+                            yzno = 0;
+                        }
+                       valObj.yzno = yzno;
+                       isupno=true;
+                    }else if(tp==3&&isupaa.fyno){
+                       let fyno = valObj.fyno;
+                        fyno = isok ? fyno + 1 : fyno - 3;
+                        if (fyno > 15)
+                        {
+                            fyno = 15;
+                        }
+                        else if (fyno < 0)
+                        {
+                            fyno = 0;
+                        }
+                        valObj.fyno = fyno;
+                        isupno=true;
+                    }else if(tp==4&&isupaa.txno){
+                       let txno = valObj.txno;
+                        txno = isok ? txno + 1 : txno - 3;
+                        if (txno > 15)
+                        {
+                            txno = 15;
+                        }
+                        else if (txno < 0)
+                        {
+                            txno = 0;
+                        }
+                         valObj.txno = txno;
+                         isupno=true;
+                    }
+
+
+
+                    if(isupno)
+                    {
+                    upMap.set(id, valObj);
+
+
+
+                    isupData = true;
+                    isup = true;
+                    $(".upbs").show();
+
+                    let newno = 0;
+                    let claname = '';
+
+                    if(tp==1){
+                        isupaa.zyno=false;
+
+                        newno = valObj.zyno;
+                         claname = 'zy';
+                    }else if(tp==2){
+                        isupaa.yzno=false;
+
+                       newno = valObj.yzno;
+                       claname = 'yz';
+                    }else if(tp==3){
+                        isupaa.fyno=false;
+
+                       newno = valObj.fyno;
+                        claname = 'fy';
+                    }else if(tp==4){
+                        isupaa.txno=false;
+
+                       newno = valObj.txno;
+                       claname = 'tx';
+                    }
+
+                    isupMap.set(id, isupaa);
+                   
+                       //更新页面显示
+                     let dom =  $(".nr_lexiconid_"+id);
+
+
+                      $(dom).data(claname+"no",newno).attr("data-"+claname+"no", newno);;
+
+                      let cln ='.'+ claname+'df';
+                      let domdf = $(dom).find(cln).first();
+
+                      if(domdf.length>0)
+                      {
+                          let ztcla="fa-circle-o";
+                          if(newno>=10)
+                          {
+                              ztcla="fa-circle";
+                          }else if(newno>=5&&newno<10)
+                          {
+                              ztcla="fa-adjust";
+                          }
+
+                         $(domdf).removeClass("fa-circle-o").removeClass("fa-adjust").removeClass("fa-circle").addClass(ztcla);
+                      }
+                 }
+            }
+
+            function yz(dom) {
+
+                var customValue = $(dom).data("value").trim();
+                var value = $(dom).val().trim();
+                var isok = false;
+
+                var tp = $("#tp").val();
+                if (value.length >= 1) {
+                    isok = tp == 1||tp == 3||tp == 4 ? customValue.toLowerCase() === value.toLowerCase() : customValue.indexOf(value) !== -1;
+                }
+
+                  setTimeout(() => {
+                           jgtx(isok, $(dom).closest(".nr"));
+                    }, 0);
+
+
+                if (isok) {
+                    bttype(dom, 2);
+                    $(dom).closest(".nr").removeClass("border-gainsboro").removeClass("border-danger-zq").addClass("border-success-zq");
+                    $(dom).closest(".nr").children(".sp").removeClass("text-danger").addClass("text-success");
+
+                } else {
+                    bttype(dom, 3);
+                    $(dom).closest(".nr").removeClass("border-gainsboro").removeClass("border-success-zq").addClass("border-danger-zq");
+                    $(dom).closest(".nr").children(".sp").removeClass("text-success").addClass("text-danger");
+                }
+                debugger
+                let isfy = $(".xsfy").prop("checked");
+                let islxmo = $(".lxmo").prop("checked");
+                if (!isfy&&!islxmo) {
+                    var lexiconid = $(dom).data("lexiconid");
+                        if (lexiconid != 0) {
+                        let tp = $("#tp").val();
+                        let valueobj = isupMap.get(lexiconid);
+                        if(tp==1){
+                            valueobj.zyno=false;
+                        }else if(tp==2){
+                            valueobj.yzno=false;
+                        }else if(tp==3){
+                            valueobj.fyno=true;
+                        }else if(tp==4){
+                            valueobj.txno=true;
+                        }
+                        isupMap.set(lexiconid, valueobj);
+                        upbsno(lexiconid, isok);
+                    }
+                }
+
+                let nextFocusableElement = $(dom).nextAll(':input:not([type="hidden"]):visible:first');
+                if (!nextFocusableElement.length) {
+                    nextFocusableElement = $(dom).closest(".wyg").next().find(':input:not([type="hidden"]):visible:first');
+                }
+                if (nextFocusableElement.length) {
+                    nextFocusableElement.prop("disabled", false);
+                    nextFocusableElement.focus();
+                    bttype(nextFocusableElement, 1);
+                }
+
+
+            }
+
+
+            //删除
+            function dedc() {
+                var id =   $(".id").val();
+
+                swal({
+                    title: "确定删除单词?",
+                    text: '仅会在本词典中删除，不会影响其它词典',
+                    showCancelButton: true,
+                    cancelButtonText: '取消',
+                    confirmButtonColor: "#DD6B55",
+                    confirmButtonText: "确定",
+
+                    closeOnConfirm: false
+                }, function () {
+
+
+
+                requestData("/Word/deletedc",{ coursecontentId: id}).then((data) => {
+                        if (data.success) {
+                                czjieguo("操作成功！", 0);
+                                var page = $("ul.pagination").children("li.active").text();
+                                learnEnglishLFlushTable(page);
+                            }
+                            else {
+                                czjieguo("操作失败！", 1);
+                            }
+
+                }).catch((error) => {
+                   czjieguo(error.msg, 1);
+                });
+
+
+
+
+
+                });
+
+            }
+
+
+
+
+            function updc() {
+                var en = $(".env").val();
+                var cn = $(".cnv").val();
+                var lexiconId = $(".lexiconId").val();
+                  $(".gbck").click();
+                var layerIndexv = layer.open({
+                    type: 1, //page层
+                    area: ['300px', '70px'],
+                    title: '',
+                    shade: 0.1, //遮罩透明度
+                    moveType: 0, //拖拽风格，0是默认，1是传统拖动
+                    shift: -1, //0-6的动画形式，-1不开启
+                    closeBtn: 0,
+                    content: '<div id="xinglailoading" style="text-align: center; line-height:70px;"><img title="操作中" alt="操作中" src="../Content/img/sunjing_loading2.gif" />&nbsp;&nbsp;操作中，请稍等... ...</div>'
+                });
+
+
+                 requestData("/Word/updc",{ id: lexiconId, en: en, cn: cn}).then((data) => {
+                        layer.close(layerIndexv);
+                        if (data.succss) {
+                            //   $('.gbck').click();
+                            czjieguo("操作成功！", 0);
+                            var page = $("ul.pagination").children("li.active").text();
+                            learnEnglishLFlushTable(page);
+                        }
+                        else {
+                            czjieguo(data.msg, 1);
+                        }
+
+                }).catch((error) => {
+                   czjieguo(error.msg, 1);
+                });
+
+
+
+
+            }
+
+            function setCollect(isCollect){
+
+
+                 let lexiconId =   $(".lexiconId").val();
+
+                 var iscollectvlue = $(".iscollectvlue").val();
+
+                $(".iscollect").hide();
+                $(".clz").show();
+
+                                 requestData("/Word/SetCollect",{ lexiconId: lexiconId, isCollect: iscollectvlue}).then((data) => {
+
+                        if (data.succss) {
+
+                            if(iscollectvlue==='True'){
+                                    $(".iscollect").removeClass("fa-bookmark").addClass("fa-bookmark-o");
+                                 $(".iscollectvlue").val("False");
+                                 $(".nr_lexiconid_"+lexiconId).data("iscollect",0);
+                            }
+                            else{
+                                        $(".iscollect").removeClass("fa-bookmark-o").addClass("fa-bookmark");
+                                $(".iscollectvlue").val("True");
+
+
+                                     $(".nr_lexiconid_"+lexiconId).data("iscollect",1);
+                            }
+                            $(".clz").hide();
+                            $(".iscollect").show();
+                            //如果是在收藏，刷新当前页面
+                           let courseId = $("#courseId").val();
+                           if(courseId==-100){
+                                var page = $("ul.pagination").children("li.active").text();
+                                learnEnglishLFlushTable(page);
+                           }
+                        }
+                        else {
+
+                        }
+
+                }).catch((error) => {
+                   czjieguo(error.msg, 1);
+                });
+
+            }
+
+            function szzt(zt,dom) {
+                $(dom).prop('disabled', true);
+                var id = $(".id").val();
+                var dqzt = $(".zt").val();
+                var lexiconId = $(".lexiconId").val();
+                    @*var layerIndexv = layer.open({
+                type: 1, //page层
+                area: ['300px', '70px'],
+                title: '',
+                shade: 0.1, //遮罩透明度
+                moveType: 0, //拖拽风格，0是默认，1是传统拖动
+                shift: -1, //0-6的动画形式，-1不开启
+                closeBtn: 0,
+                content: '<div id="xinglailoading" style="text-align: center; line-height:70px;"><img title="操作中" alt="操作中" src="../Content/img/sunjing_loading2.gif" />&nbsp;&nbsp;操作中，请稍等... ...</div>'
+            });*@
+
+
+                   requestData("/Word/szzt",{ id: id, zt: zt, dqzt: dqzt,lexiconId:lexiconId}).then((data) => {
+                         $(dom).prop('disabled', false);
+                       //layer.close(layerIndexv);
+                        if (data.succss) {
+
+                            //删除当前单词
+                            let index = dqdomindex;
+                            $('.wbpd').children().eq(index).remove();
+                            //自动切换到下一个
+                             let length =  $('.wbpd').children().length;
+                            if(length>0)
+                           {
+                             if(index>length-1){
+                                 index = 0;
+                             }
+                             if(index<0){
+                                 index = length-1;
+                             }
+
+                             var xzdom = $('.wbpd').children().eq(index).find(".sp");
+                             bfdc(xzdom);
+
+                             //数量修改
+                             //当前数量-1
+                            let dqzt = $(".zt").val();
+
+                            let  xsbrsv =parseInt($(".xsbrs").text());
+                            let  xswljv =parseInt($(".xswlj").text());
+                            let  xsyzwv =parseInt($(".xsyzw").text());
+
+                             if(dqzt==1){
+                                 $(".xsbrs").text(xsbrsv-1);
+                             }
+                              if(dqzt==2){
+                                   $(".xswlj").text(xswljv-1);
+                             }
+                              if(dqzt==3){
+                                   $(".xsyzw").text(xsyzwv-1);
+                             }
+
+                             //转到的为止+1
+                             if(zt==1){
+                                  $(".xsbrs").text(xsbrsv+1);
+                             }
+                              if(zt==2){
+                                   $(".xswlj").text(xswljv+1);
+                             }
+                              if(zt==3){
+                                   $(".xsyzw").text(xsyzwv+1);
+                             }
+
+
+
+                    @*czjieguo("操作成功！", 0);*@
+                            }
+                            else{
+                                  $('.dcxqck').click();
+                                 var page = $("ul.pagination").children("li.active").text();
+                                 learnEnglishLFlushTable(page);
+                            }
+                        }
+                        else {
+                            czjieguo(data.msg, 1);
+                        }
+
+                }).catch((error) => {
+                   czjieguo(error.msg, 1);
+                });
+
+
+            }
+
+            learnEnglishLFlushTable(1);
+
+
+
+            var urlWithoutParams = window.location.origin + window.location.pathname + '#/Insurance/Translate';
+            function getUrlParametersUsingSearchParams() {
+                var searchParams = new URLSearchParams(window.location.search);
+                return Object.fromEntries(searchParams.entries());
+            }
+            function zt(zt) {
+                 
+                if(zt==1){
+                                $(".xsbrsbtn").removeClass("text-primary").addClass("newstyel").addClass("bg-primary");
+                                $(".xswljbtn").removeClass("newstyel").removeClass("bg-warning").addClass("text-warning");
+                                $(".xsyzwbtn").removeClass("newstyel").removeClass("bg-success").addClass("text-success");
+                }
+                if(zt==2){
+                                 $(".xsbrsbtn").removeClass("newstyel").removeClass("bg-primary").addClass("text-primary");
+                                 $(".xswljbtn").removeClass("text-warning").addClass("newstyel").addClass("bg-warning");
+                                 $(".xsyzwbtn").removeClass("newstyel").removeClass("bg-success").addClass("text-success");
+                }
+                if(zt==3){
+                                 $(".xsbrsbtn").removeClass("newstyel").removeClass("bg-primary").addClass("text-primary");
+                                 $(".xswljbtn").removeClass("newstyel").removeClass("bg-warning").addClass("text-warning");
+                                 $(".xsyzwbtn").removeClass("text-success").addClass("newstyel").addClass("bg-success");
+                }
+
+                var zt = $(".zt").val(zt);
+                learnEnglishLFlushTable(1);
+            }
+
+            //查询
+            function learnEnglishLFlushTable(pageIndex,callback=null) {
+                debugger
+                //更新数据
+                isup = true;
+                upData();
+
+                var istxmo = $(".txmo").prop("checked");
+                if (istxmo) {
+                     $(".txmo").click();
+                }
+                    @*  
+                var isfymo = $(".fymo").prop("checked");
+                if (isfymo) {
+                    $(".fymo").click();
+                } *@
+
+                $(".fanyed").empty();
+                var tp = $("#tp").val();
+                var courseId = $("#courseId").val();
+                var zt = $(".zt").val();
+                var name = $("#name").val();
+                if(courseId>0){
+                     requestUrlHtml("/Word/learnEnglishList", {
+                         kc: courseId,
+                         zt: zt,
+                         tp: tp,
+                         name: name,
+                         index: pageIndex,
+                         pageSize:isMobile?10:30
+                     }, "table").then((data) => {
+                            //如果点击了听写，这儿自动触发听写
+                            if(callback!=null){
+                                callback();
+                            }
+
+                     }).catch((error) => {
+
+
+                     });
+    ;
+                 }else{
+
+                      requestUrlHtml("/Word/learnEnglishCollectList", {
+                         kc: courseId,
+                         zt: zt,
+                         tp: tp,
+                         name: name,
+                         index: pageIndex
+                     }, "table").then((data) => {
+                          //如果点击了听写，这儿自动触发听写
+                            if(callback!=null){
+                                callback();
+                            }
+                     }).catch((error) => {
+
+
+                     });
+                 }
+            }
+
+            function fy(en, cn, zt, id, lexiconId) {
+
+               $(".xsjzz").show();
+                var iframe = document.getElementById('myIframe');
+                iframe.height=0;
+                //https://m.youdao.com/m/result?word https://dict.youdao.com/result?word=static&lang=en
+                var url = 'https://m.youdao.com/m/result?word=' + en + '&lang=en';
+                // 设置新的 URL
+                iframe.src = url;
+                $(".env").val(en);
+                $(".cnv").val(cn);
+                $(".id").val(id);
+                $(".lexiconId").val(lexiconId);
+
+                $(".btbrs").hide();
+                $(".btwlj").hide();
+                $(".btyzw").hide();
+
+                if (zt == 1) {
+
+                    $(".btwlj").show();
+                    $(".btyzw").show();
+                }
+                if (zt == 2) {
+                    $(".btbrs").show();
+                    $(".btyzw").show();
+                }
+                if (zt == 3) {
+                    $(".btbrs").show();
+                    $(".btwlj").show();
+                }
+
+            }
+
+
+
+
+
+            //========================================================================
+
+
+
+            async function playAudio88(text, rul, isplay = true) {
+
+                // 尝试从本地缓存中获取音频文件
+                const localUrl = await getFromCache(text);
+                if (localUrl) {
+                    // 如果本地已有缓存，直接使用本地地址播放
+                    playFromLocal(localUrl);
+                } else {
+                    // 如果本地无缓存，从服务器下载并缓存到本地
+                    fetchAndCache(rul, text);
+                }
+
+                async function getFromCache(key) {
+                    return new Promise((resolve, reject) => {
+                        const request = indexedDB.open('audio_cache', 1);
+                        request.onerror = reject;
+
+                        request.onsuccess = () => {
+                            const db = request.result;
+                            const tx = db.transaction('audio', 'readonly');
+                            const store = tx.objectStore('audio');
+
+                            const getRequest = store.get(key);
+                            getRequest.onerror = reject;
+
+                            getRequest.onsuccess = () => {
+                                const result = getRequest.result;
+                                if (result) {
+                                    resolve(result.url);
+                                } else {
+                                    resolve(null);
+                                }
+                            };
+                        };
+
+                        request.onupgradeneeded = event => {
+                            const db = event.target.result;
+                            if (!db.objectStoreNames.contains('audio')) {
+                                db.createObjectStore('audio', { keyPath: 'key' });
+                            }
+                        };
+                    });
+                }
+
+                async function fetchAndCache(rul, key) {
+                    try {
+                        const response = await fetch(rul);
+                        const arrayBuffer = await response.arrayBuffer();
+                        const blob = new Blob([arrayBuffer], { type: 'audio/mp3' }); // 假设音频格式为mp3
+                        const url = URL.createObjectURL(blob);
+
+                        const db = await openDatabase();
+                        const tx = db.transaction('audio', 'readwrite');
+                        const store = tx.objectStore('audio');
+                        store.put({ key, url });
+
+                        await tx.complete;
+
+                        // 播放缓存的音频
+                        playFromLocal(url);
+
+                        // 清理资源
+                        // URL.revokeObjectURL(url);
+                    } catch (err) {
+                        console.error('Error fetching audio file: ', err);
+                    }
+                }
+
+                async function openDatabase() {
+                    return new Promise((resolve, reject) => {
+                        const request = indexedDB.open('audio_cache', 1);
+                        request.onerror = reject;
+                        request.onsuccess = () => resolve(request.result);
+                        request.onupgradeneeded = event => {
+                            const db = event.target.result;
+                            if (!db.objectStoreNames.contains('audio')) {
+                                db.createObjectStore('audio', { keyPath: 'key' });
+                            }
+                        };
+                    });
+                }
+
+                async function playFromLocal(localUrl) {
+                    if (isplay) {
+                        //const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        //const audioBuffer = audioContext.createBufferSource();
+                        //audioContext.decodeAudioData(await (await fetch(localUrl)).arrayBuffer(), buffer => {
+                        //    audioBuffer.buffer = buffer;
+                        //    audioBuffer.connect(audioContext.destination);
+                        //    audioBuffer.start(0);
+                        //}, err => {
+                        //    console.error('Error decoding audio data: ', err);
+                        //});
+
+
+
+
+                        await fetch(localUrl)
+                            .then(response => response.arrayBuffer())
+                            .then(arrayBuffer => {
+                                return new Promise((resolve, reject) => {
+                                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                                    const audioBuffer = audioContext.createBufferSource();
+                                    audioContext.decodeAudioData(arrayBuffer, buffer => {
+                                        audioBuffer.buffer = buffer;
+                                        audioBuffer.connect(audioContext.destination);
+                                        audioBuffer.start(0);
+                                        resolve();
+                                    }, err => {
+                                        console.error('Error decoding audio data: ', err);
+                                        reject(err);
+                                    });
+                                });
+                            })
+                            .catch(err => {
+                                console.error('Error fetching audio file: ', err);
+                            });
+                    }
+                }
+            }
+
+</script>

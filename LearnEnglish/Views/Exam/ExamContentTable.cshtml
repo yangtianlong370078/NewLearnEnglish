@@ -1,0 +1,848 @@
+﻿@{
+    Layout = null;
+}
+
+<style>
+
+    .pull-up-active {
+        -webkit-transform: translateY(-4px);
+        -moz-transform: translateY(-4px);
+        -ms-transform: translateY(-4px);
+        -o-transform: translateY(-4px);
+        transform: translateY(-4px);
+        -webkit-box-shadow: 0 14px 24px rgba(62,57,107,.1);
+        box-shadow: 0 14px 24px rgba(62,57,107,.1);
+        z-index: 999;
+    }
+
+    .ysys {
+        display: flex;
+        align-items: center;
+        vertical-align: middle;
+        font-size: 1.714rem;
+        height: 45px;
+        text-align: center;
+        width: 45px;
+        line-height: 28px;
+        justify-content: center;
+    }
+
+
+
+:root {
+    --input-bd-color:rgb(220,220,220);
+}
+
+
+body.dark-skin {
+    --input-bd-color:rgb(100,100,100,0.3);
+}
+
+
+
+
+    .disabled:hover {
+        cursor: not-allowed;
+    }
+
+    .qhmsdh{
+
+        transition:transform 0.5s ease;
+    }
+
+    .rotatedh {
+  transform: rotate(-360deg);
+  transition: transform 0.5s ease;
+}
+
+.flipdh {  
+    transition: transform 0.5s ease;
+    transform: rotateY(360deg); 
+}  
+
+.ksdf{
+    font-style: italic;  
+}
+
+.ksnr{
+       margin-bottom: 1.5rem;
+}
+
+</style>
+
+
+<script src="~/scripts/jquery.form.js"></script>
+
+
+<input type="hidden" id="examId" value='@ViewData["ExamId"]' />
+<input type="hidden" id="examName" value="@string.Format("{0}",ViewData["ExamName"])" />
+<input type="hidden" id="Limittime" value='@ViewData["Limittime"]' />
+
+
+@if (Convert.ToInt32(ViewData["ExamId"]) > 0)
+{
+   <div class="navbar-custom-menu r-side mx-20 pt-10" style="display:flex;overflow-x: auto;">
+
+        <div class="text-center " style="display: flex;justify-content: space-between;align-items: center;width: 100%;">
+            <div >
+                    <div style="position:absolute;top:20px;">
+                        <input type="hidden" value="1" id="kstype" />
+                          <div class="btn-group" >
+                                 <button class="btn btn-rounded btn-primary dropdown-toggle dqkslx " type="button" style="min-width:100px;" data-bs-toggle="dropdown">中 - 英</button>
+                                 <div class="dropdown-menu xzksms">
+                                       <a class="dropdown-item szy"  onclick="qhhkms(1)" href="#">中 - 英</a>
+                                       <a class="dropdown-item syz"   onclick="qhhkms(2)"  href="#">英 - 中</a>
+                                       <a class="dropdown-item stx"   onclick="qhhkms(3)"  href="#">听&nbsp;&nbsp;&nbsp;写</a>
+                                       <a class="dropdown-item stx" onclick="qhhkms(4)" href="#">发&nbsp;&nbsp;&nbsp;音</a>
+                                 </div>
+                           </div>
+                           <div class="btn-group ms-20 cxks" style="display:none;">
+                                    <button class="btn btn-rounded btn-info dropdown-toggle no-caret" onclick="RestartExam()" type="button" >重考</button>
+                           </div>
+
+                           <div class="btn-group ms-20 ksks"  style="display:none;">
+                                <button class="btn btn-rounded btn-info dropdown-toggle no-caret"  data-bs-toggle="modal" data-bs-target="#kaskexam"   type="button" >开始考试</button>
+                          </div>
+
+                           <div class="btn-group ms-20 ljjj"  style="display:none;">
+                                <button class="btn btn-rounded btn-warning dropdown-toggle no-caret" style="font-size:14px;"  onclick="lijijiaojuan(3)"  type="button" >交卷 <span class="badge badge-pill badge-warning-light ksdjs"> </span></button>
+                           </div>
+                    </div>
+            </div>
+            <div class = "me-10 " style="min-height:57px;height:57px;" >
+                  <h2 class="font-light text-danger ksdfkg" style="display:none;"><span class="ksdf" style="font-family:IBM Plex Sans, sans-serif;">20</span><span style="font-size:12px;">分</span></h2>
+            </div>
+        </div>
+    </div>
+
+    <div style="overflow-x: auto;" class="pt-5">
+                <section class="content ydorpcys" >
+            <div class="row">
+                <div class="col-12">
+                    <div class="mb-10">
+                        
+                        <!-- /.box-header -->
+                        <div class="box-body no-padding mt-10">
+
+                            <div id="table">
+                            </div>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                    <!-- /.box -->
+                </div>
+
+            </div>
+        </section>
+    </div>
+}
+else
+{
+                <div class="text-left box bgtype my-20 p-20 text-muted">
+                        <span>没有相关课程信息~</span>
+                </div>
+}
+
+
+
+<div class="modal center-modal fade" id="kaskexam" tabindex="-1">
+    <div class="modal-dialog max-w-600">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">立即开始考试？</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+          </button>
+        </div>
+        <div>
+          <div class="box-body p-10">
+            <div class="row justify-content-center ">
+              <div class="my-10">
+                <div class="nav-tabs-left mx-15">
+                     <label for="limittime" class="  min-w-100 w-100   col-form-label">计分方式</label>
+                    <div class="demo-radio-button row" style="">
+                        <div class="col-12 col-lg-6 my-5"  style="align-items: center; display: flex;">
+                        <input name="dfjsradio" type="radio" id="ssjsdf" value="1" class="radio-col-primary" checked="">
+                        <label for="ssjsdf" style="margin-bottom: 0px;" >交卷后计算</label>
+                        </div>
+                        <div class="col-12 col-lg-6 my-5" style="align-items: center; display: flex;">
+                        <input name="dfjsradio" type="radio" id="jjhjsdf"  value="2"  class="radio-col-primary" >
+                        <label for="jjhjsdf" style="margin-bottom: 0px;" >实时计算</label>
+                        </div>
+					</div>
+
+                </div>
+              </div>
+             
+              <div class="bstx" style="display:none;">
+                    <div class="my-10">
+                     <div class="nav-tabs-left mx-15">
+                       <label for="limittime" class="  min-w-100 w-100   col-form-label">考试时间</label>
+                       @*<input type="text" id="kslimittime" name="kslimittime" onkeyup="this.value=this.value.replace(/[^\d]/g,'')" value="@ViewData["Limittime"]" class="form-control  min-w-200" placeholder="">
+*@
+
+                       <select id="kslimittime" name="kslimittime" class="form-select">
+                                        <option class="py-10" value="5">5分钟</option>
+                                        <option class="py-10" value="10">10分钟</option>
+                                        <option class="py-10" value="15">15分钟</option>
+                                        <option class="py-10" value="20">20分钟</option>
+                                        <option class="py-10" value="30">30分钟</option>
+                                        <option class="py-10" value="50">50分钟</option>
+                       </select>
+
+
+                     </div>
+                   </div>
+                  
+                   <div class="my-10 px-10 ">
+                     <div class="nav-tabs-left mt-15 mx-5" >
+                       <p class="text-muted mt-10">提示：到达设定时间自动交卷。</p>
+                      
+                     </div>
+                   </div>
+              </div>
+
+              <div class="jstx" style="display:none;">
+                  <div class="mt-10 px-10 ">
+                     <div class="nav-tabs-left mt-15 mx-5" >
+                       <p class="text-muted">提示：听写完毕自动交卷。</p>
+                     </div>
+                   </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer modal-footer-uniform">
+          <button type="button" class="btn btn-danger gbck" data-bs-dismiss="modal">取消</button>
+          <button type="button" class="btn btn-primary float-end" onclick="StartupExam()">确定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<div class="modal center-modal fade" id="addexam" tabindex="-1">
+    <div class="modal-dialog max-w-600">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">创建试题</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+                </button>
+            </div>
+            <div>
+
+                <div class="box-body">
+                    <div class="row justify-content-center ">
+                        <div class="my-10">
+                            <div class="nav-tabs-left mx-15">
+                                <span style="font-weight: 600; font-size: 18px;" class="kcnametitle ">
+                                </span>
+                            </div>
+                        </div>
+                        <div class="my-10">
+                            <div class="nav-tabs-left mx-15">
+                                <label for="examcount" class="  min-w-160 w-160   col-form-label">
+                                    考核单词数量
+                                    <span style="color:red;">*</span>
+                                </label>
+                                <input type="text" id="examcount" name="examcount" onkeyup="this.value=this.value.replace(/[^\d]/g,'')" class="form-control  min-w-200" placeholder="">
+                            </div>
+                        </div>
+                        <div class="my-10">
+                            <div class="nav-tabs-left mx-15">
+                                <label for="limittime" class="  min-w-160 w-160   col-form-label">
+                                    考试时间（分钟）
+                                    <span style="color:red;">*</span>
+                                </label>
+                                <input type="text" id="limittime" name="limittime" onkeyup="this.value=this.value.replace(/[^\d]/g,'')" value="20" class="form-control  min-w-200" placeholder="">
+                            </div>
+                        </div>
+                        <div class="my-10 px-10 ">
+                            <div class="nav-tabs-left mx-15" style="display:block;">
+                                <p style="font-weight: 600;">提示：根据填写的单词数量自动创建试题，创建规则如下：</p>
+                                <p class="text-muted">1、试题单词只会在所选课程的已掌握单词中选取，优先选取高考频次高的和熟练程度低的单词。</p>
+                                <p class="text-muted">2、如果当天已经生成了一份或多份试题，本次试题会排除当天前面生成的试题单词。</p>
+                                <p class="text-muted">3、如果所选课程中已掌握的单词数量小于填写的单词数量，试题单词数量以当前课程已掌握单词数量为准。如果所选课程已掌握单词小于5个，不可创建试题。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer modal-footer-uniform">
+                <button type="button" class="btn btn-danger gbck" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary float-end" onclick="SaveExam()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //是否在考试中
+    var isksz = false;
+
+      //考试倒计时
+     var countdownTimeout = null;
+
+       if(isMobile){
+            $(".gnqan").hide();
+             // tbtab(0);
+        }
+
+        
+          
+               avativys($(".stbtnc"));
+          
+
+         $(document).ready(function () {
+            var examName = $("#examName").val();
+            
+            edittitle(examName,"ExamContentTable");
+
+            
+
+                setTimeout(function() {  
+                          lazydata("main");
+                      }, 200); 
+               
+        });
+
+        function szfenshu(fenshu){
+
+            let fensuyanshi = "text-danger";
+            if(fenshu>=60&&fenshu<90){
+                fensuyanshi = "text-warning";
+            }
+            if(fenshu>=90){
+                fensuyanshi = "text-success";
+            }
+
+            $(".ksdfkg").removeClass("text-danger").removeClass("text-warning").removeClass("text-success").addClass(fensuyanshi);
+            $(".ksdf").text(fenshu);
+            $(".ksdfkg").show();
+        }
+
+        function qhhkms(type){
+
+            if(isksz){
+                czjieguo("正在考试中，请先交卷！", 1);
+            }
+            else{
+                 $("#kstype").val(type);
+                 
+                  $(".ljjj").hide();
+                 FlushData();
+            }
+        }
+
+        FlushData();
+
+        function FlushData(){
+             var type = $("#kstype").val();
+             if(type){
+                 $(".szy").show();
+                 $(".syz").show();
+                 $(".stx").show();
+
+                  $(".jstx").hide();
+                 $(".bstx").show();
+
+                 if(type==1){
+                     $(".szy").hide();
+                     $(".dqkslx").text($(".szy").text());
+                 }
+                 if(type==2){
+                     $(".syz").hide();
+                     $(".dqkslx").text($(".syz").text());
+                 }
+                 if(type==3){
+                     $(".stx").hide();
+                     $(".dqkslx").text($(".stx").text());
+
+                      $(".jstx").show();
+                     $(".bstx").hide();
+                 }
+             }
+
+              FlushTable();
+        }
+
+        //查询
+        function FlushTable() {
+           
+            var examId = $("#examId").val();
+             var type = $("#kstype").val();
+            if(examId>0){
+                 requestUrlHtml("/Exam/ExamContentList", {
+                     id: examId,
+                     type: type
+                 }, "table").then((data) => {
+
+                 }).catch((error) => {
+
+
+                 });
+;
+             }
+        }
+
+  function RestartExam(){
+    event.stopPropagation();
+            swal({
+                title: "重新考试",
+                text: '确定清空当前考试成绩，重新考试？',
+                showCancelButton: true,
+                cancelButtonText: '取消',
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确定",
+
+                closeOnConfirm: false
+            }, function () {
+
+             var examId = $("#examId").val();
+             var type = $("#kstype").val();
+            if(examId>0){
+                 requestData("/Exam/RestartExam",{ examid: examId, type: type }).then((data) => {
+                  if (data.success) {
+                      czjieguo("考试成绩已重置！", 0);
+                      FlushData();
+                  }
+                  else {
+                      czjieguo(data.msg, 1);
+                  }
+
+          }).catch((error) => {
+             czjieguo(error.msg, 1);
+          });
+;
+             }
+
+            });
+}
+
+        //中英或英中启用倒计时
+        function startCountdown() {
+
+              // 清除之前的定时器
+              if (countdownTimeout !== null) {
+                  clearTimeout(countdownTimeout);
+                  countdownTimeout = null;
+              }
+                  
+             var kslimittime=   $("#kslimittime").val();
+
+             let num = parseInt(kslimittime, 10); 
+             num= isNaN(num) ? 0 : num;   
+             const targetTime = new Date(Date.now() + num * 60 * 1000);
+
+         function updateTimer() {
+            const timeLeft = Math.max(0, targetTime.getTime() - Date.now());
+
+            if (timeLeft > 0) {
+                let minutesLeft = Math.floor(timeLeft / (1000 * 60));
+                let secondsLeft = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                document.querySelector('.ksdjs').textContent = `${minutesLeft}分${secondsLeft}秒`;
+
+              countdownTimeout =  setTimeout(updateTimer, 1000);
+            } else {
+                clearTimeout(countdownTimeout);
+                save(); // 倒计时结束后调用 save() 函数
+            }
+          }
+
+            updateTimer(); // 启动倒计时
+        }
+
+        //开始考试
+      function  StartupExam(){
+
+          $('.gbck').click();
+          $(".ksks").hide();
+          $(".ljjj").show();
+
+           var jffs = $('input[name="dfjsradio"]:checked').val(); 
+           if(jffs==2)
+           {
+                 $(".ksdfkg").show();
+           }
+           else{
+                 $(".ksdfkg").hide();
+           }
+
+
+          isksz = true;
+           var kstype = $("#kstype").val();
+            if(kstype<3){
+                startCountdown();
+                $("input.sq").prop("disabled", false);
+                 $(".ksdjs").show();
+            }
+            else{
+                $(".ksdjs").hide();
+                kstinxie();
+            }
+      }
+
+      //开始听写
+      function kstinxie(){
+          //加载音频
+          ksLoadAudio();
+
+           myCollection = $('input.sq');
+                speak('听写开始！');
+                setTimeout(() => {
+                    if(myCollection.length>0)
+                    {
+                        myCollection.eq(0).prop("disabled", false);
+                        bttype(myCollection.eq(0), 1);
+                        myCollection.eq(0).focus();
+                        // 调用函数开始处理集合
+                        processCollectionItem(0);
+                    }
+                }, 3000); 
+
+      }
+
+         function speak(text, language) {
+            // 创建一个 SpeechSynthesisUtterance 对象
+            const utterance = new SpeechSynthesisUtterance();
+
+            // 设置要朗读的文本
+            utterance.text = text;
+
+            // 设置语言，例如中文（zh-CN）或英文（en-US）
+            utterance.lang = language || 'zh-CN'; // 默认为中文，可按需改为其他语言
+
+            // 可以根据需要设置更多属性，如音量、语速等
+            // utterance.volume = 1.0; // 音量，范围 0.0 到 1.0，默认为 1.0
+            utterance.rate = 0.8; // 语速，范围 0.1 到 10.0，默认为 1.0
+            // utterance.pitch = 1.0; // 音调，范围 0.0 到 2.0，默认为 1.0
+
+            // 将 utterance 添加到队列并开始朗读
+            speechSynthesis.speak(utterance);
+        }
+
+        var myCollection = []; 
+        var cisu = 0;
+        // 定义一个处理集合元素的函数，接受当前索引作为参数
+        function processCollectionItem(index) {
+            if(myCollection.length>0)
+            {
+            // console.log("Processing item:", myCollection[index]);
+            // 在这里执行与当前元素相关的操作，如 DOM 更新、AJAX 请求等
+            if (cisu < 3) {
+                if (cisu == 0 && index > 0) {
+                    //在这里定位光标
+                    var ind = index - 1;
+                    var dom = myCollection.eq(ind);
+                    yz(dom);
+                }
+                cisu++;
+                  let palydom = myCollection.eq(index);
+                let value = palydom.data("en");
+                if (value != undefined && value != "") {
+                    let language = $("#yyk").val();
+                    let text = language + value;
+
+                     if (!$(palydom).closest(".ksnr").find(".pronounce").hasClass('audioClick')) {
+                            $(palydom).closest(".ksnr").find(".pronounce").addClass('audioClick');
+                    }
+
+                    playAudio(text);
+                }
+
+                setTimeout(() => {
+                    processCollectionItem(index)
+                }, 3000); // 指定延迟 1000 毫秒（即 1 秒）
+
+            }
+            else {
+                $(".pronounce").removeClass('audioClick');
+                // 如果还有下一个元素待处理，设置定时器以延迟 1 秒后继续
+                if (index <= myCollection.length - 1) {
+                    cisu = 0;
+                    setTimeout(() => {
+                        processCollectionItem(index + 1);
+                    }, 3000); // 指定延迟 1000 毫秒（即 1 秒）
+                }
+                else {
+                    speak('听写完毕！');
+                    save();
+                }
+            }
+
+            }
+        }
+
+
+        function bttype(dom, type) {
+            dom.parent().children(".sp").children(".wb").hide();
+            dom.parent().children(".sp").children(".ok").hide();
+            dom.parent().children(".sp").children(".no").hide();
+            dom.parent().children(".sp").children(".lb").hide();
+            dom.parent().children(".sp").children(".djs").hide();
+
+            var jffs = $('input[name="dfjsradio"]:checked').val(); 
+
+            if (type == 1) {
+                dom.parent().children(".sp").children(".lb").show();
+
+            }
+
+            if(jffs==2)
+            {
+                 if (type == 2) {
+                     dom.parent().children(".sp").children(".ok").show();
+                     dom.prop("disabled", true);
+                 }
+                 if (type == 3) {
+                     dom.parent().children(".sp").children(".no").show();
+                     dom.prop("disabled", true);
+                 }
+            }
+            else{
+                  if (type != 1) {
+                      dom.parent().children(".sp").children(".djs").show();
+                  }
+            }
+        }
+
+
+         function yz(dom) {
+            var jffs = $('input[name="dfjsradio"]:checked').val(); 
+
+            var customValue = $(dom).data("value").trim();
+            var value = $(dom).val().trim();
+
+            var isok = customValue.toLowerCase() === value.toLowerCase();
+
+            if (isok) {
+                bttype(dom, 2);
+                if(jffs==2){
+                              $(dom).closest(".ksnr").removeClass("border-gainsboro").removeClass("border-danger-zq").addClass("border-success-zq");
+                      $(dom).closest(".ksnr").children(".sp").removeClass("text-danger").addClass("text-success");
+                 }
+                else {
+                      $(dom).closest(".ksnr").removeClass("border-danger-no").addClass("border-success-no");
+                      $(dom).closest(".ksnr").children(".sp").removeClass("text-danger-no").addClass("text-success-no");
+                }
+
+            } else {
+                bttype(dom, 3);
+                if(jffs==2){
+                             $(dom).closest(".ksnr").removeClass("border-gainsboro").removeClass("border-success-zq").addClass("border-danger-zq");
+                     $(dom).closest(".ksnr").children(".sp").removeClass("text-success").addClass("text-danger");
+                 }
+                else{
+                     $(dom).closest(".ksnr").removeClass("border-success-no").addClass("border-danger-no");
+                     $(dom).closest(".ksnr").children(".sp").removeClass("text-success-no").addClass("text-danger-no");
+                }
+            }
+
+            if(jffs==2){
+                //实时计算得分
+                shishitonjidf();
+            }
+            
+
+            let nextFocusableElement = $(dom).nextAll(':input:not([type="hidden"]):visible:first');
+            if (!nextFocusableElement.length) {
+                nextFocusableElement = $(dom).closest(".wyg").next().find(':input:not([type="hidden"]):visible:first');
+            }
+            if (nextFocusableElement.length) {
+                nextFocusableElement.prop("disabled", false);
+                nextFocusableElement.focus();
+                bttype(nextFocusableElement, 1);
+            }
+        }
+
+
+  function shishitonjidf(){
+          var count = $('.ksnr.border-success-zq').length;
+      var modellist = parseInt($(".modellist").val());
+
+      var fenshu = Math.floor(count/modellist*100);
+       szfenshu(fenshu);
+
+   }
+
+
+// 定义在倒计时结束后调用的函数
+function save() {
+    isksz = false;
+    $(".cxks").show();
+    $(".ljjj").hide();
+    $(".ksspy").show();
+
+    
+    czjieguo("已交卷！", 0);
+  
+     var jffs = $('input[name="dfjsradio"]:checked').val(); 
+     //计算得分
+     if(jffs==1){
+             $('.ksnr.border-success-no').removeClass("border-gainsboro").removeClass("border-success-no").addClass("border-success-zq");
+             $('.ksnr.border-danger-no').removeClass("border-gainsboro").removeClass("border-danger-no").addClass("border-danger-zq");
+
+         $(".ksnr").children('.sp.text-danger-no').removeClass("text-danger-no").addClass("text-danger");
+         $(".ksnr").children('.sp.text-success-no').removeClass("text-success-no").addClass("text-success");
+
+         //计算得分
+        shishitonjidf();
+     }
+
+         $('.ksnr.border-gainsboro').removeClass("border-gainsboro").addClass("border-danger-zq");
+         $(".ksnr.border-danger-zq").children(".sp").addClass("text-danger");
+
+     //组装数据，只获取错误数据
+     
+     var examnswers = [];
+           $('.ksnr.border-danger-zq').each(function () {
+            
+            let id = $(this).data("id");
+            let answer = $(this).children('input.sq').val()?.trim() || '';
+
+             var examnswer = {
+                        examdetailid: id,
+                        answer: answer 
+                    };
+                    examnswers.push(examnswer);
+         });
+      
+          let examId = $("#examId").val();
+          let type = $("#kstype").val();
+          let fenshu =  parseInt($(".ksdf").text());
+          let data = JSON.stringify(examnswers);
+
+          requestData("/Exam/InsertExamnswer",{ data: data, examid: examId, type: type ,score:fenshu }).then((data) => {
+                  if (data.succss) {
+
+                            requestData("/Word/Calibration",{}).then((data) => {
+                                layer.close(layerIndexv);
+                                if (data.success) {
+                                    czjieguo("校准成功！", 0);
+                                }
+                                else {
+                                    czjieguo(data.msg, 1);
+                                }
+
+                        }).catch((error) => {
+                           czjieguo(error.msg, 1);
+                        });
+
+                            czjieguo("提交成功", 0);
+
+
+                      }
+                  else {
+                      czjieguo(data.msg, 1);
+                  }
+         
+          }).catch((error) => {
+             czjieguo(error.msg, 1);
+          });
+
+  
+
+}
+
+
+
+//手动交卷
+function lijijiaojuan(){
+
+    //如果在考试中
+    if(isksz){
+
+        event.stopPropagation();
+            swal({
+                title: "立即交卷",
+                text: '考试未结束，是否立即交卷？',
+                showCancelButton: true,
+                cancelButtonText: '取消',
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "确定",
+
+                closeOnConfirm: false
+            }, function () {
+
+            $("input.sq").prop("disabled", true);
+                
+            var kstype = $("#kstype").val();
+
+
+
+            if(kstype!=3){
+
+                //帮忙提交一次
+                $('.sq:input').trigger($.Event('keydown', {
+                    keyCode: 32, 
+                    which: 32,
+                    key: ' ',
+                    code: 'Space'
+                }));
+                
+
+
+                  // 清除之前的定时器
+              if (countdownTimeout !== null) {
+                  clearTimeout(countdownTimeout);
+                  countdownTimeout = null;
+                 }
+            }
+            else{
+               
+                cisu = 0;
+              
+                $('.ok').hide();
+                $('.no').hide();
+                $('.lb').hide();
+                $('.djs').hide();
+                $('.wb').show();
+                myCollection = [];
+                speak('听写关闭！');
+            }
+                save();
+
+            });
+    }
+
+    
+}
+
+
+//加载音频
+ function ksLoadAudio(){
+
+             //当前口音
+               let language = $("#yyk").val();
+               //优先加载当前设置的
+               let onekey = language=="Speech_EN"?"Speech_EN":"Speech_US";
+
+               //加载另一种
+              let twokey = onekey=="Speech_EN"?"Speech_US":"Speech_EN";
+
+              // 启动异步批次加载
+              createAndLoadBatch(language,$('.ksnr')).then(() => {
+                  console.log('所有音频加载完毕');
+                  // 在这里可以执行后续操作，比如播放音频
+
+                     createAndLoadBatch(language,$('.ksnr')).then(() => {
+                         console.log('所有音频加载完毕');
+                         // 在这里可以执行后续操作，比如播放音频
+                        // batchIndex = 0;
+
+
+
+                     }).catch((error) => {
+                         console.error('加载过程中出现错误:', error);
+                     });
+
+
+
+              }).catch((error) => {
+                  console.error('加载过程中出现错误:', error);
+              });
+
+        }
+
+</script>

@@ -1,0 +1,965 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <!-- IE 浏览器运行最新的渲染模式-->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- 启用响应式特性 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <meta name="description" content="">
+    <meta name="author" content="">
+    @* <link rel="icon" href="~/Content/images/favicon.ico" />
+*@
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no,viewport-fit=cover">
+
+    <title>记忆助手</title>
+    <link href="~/css/header.css?v=3311111237" rel="stylesheet" />
+    <!-- Vendors Style-->
+    <link href="~/content/css/vendors_css.css?v=444" rel="stylesheet" />
+    <link href="~/content/css/style.css?v=444" rel="stylesheet" />
+    <link href="~/content/css/skin_color.css?v=444" rel="stylesheet" />
+
+    <!--jquery的样式提示框，还不错的-->
+    <link href="~/scripts/layer/skin/layer.css?v=116137" rel="stylesheet" />
+
+    <style>
+        .center-modal {
+            -webkit-transform: scale(0);
+            transform: scale(0);
+            -webkit-transition: .0s !important;
+            transition: .0s !important;
+        }
+
+        .fade {
+            transition: opacity 0s linear !important;
+        }
+
+       
+       
+    </style>
+
+    @*  <link href="~/css/fuzzyhalotheme.css?v=332222144" rel="stylesheet" /> *@
+
+    <!-- 加载框样式-->
+
+    <link href="~/content/lodingstyle.css" rel="stylesheet" />
+    <script src="~/assets/jquery-3.3.1.js"></script>
+    <!-- 提示消息样式-->
+    <script src="~/scripts/message.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.4/howler.min.js"></script>
+    <script type="text/javascript" src="https://res.wx.qq.com/open/js/jweixin-1.3.2.js"></script>
+    <script src="~/scripts/main.js?v=554411449921"></script>
+
+
+    <!-- 语音识别-->
+    <script src="~/js/xunfeiaudio.js?v=33188222"></script>
+</head>
+<body class="bodyy  hold-transition light-skin sidebar-mini theme-primary  fixed  ">
+
+    @RenderBody()
+
+    <script src="~/assets/vendor_components/sweetalert/sweetalert.min.js"></script>
+    <script src="~/assets/vendor_components/jquery-toast-plugin-master/src/jquery.toast.js"></script>
+
+    <!--jquery的样式提示框，还不错的-->
+    <script src="~/scripts/layer/layer.js"></script>
+    <script src="~/scripts/pages/chat-popup.js"></script>
+    <script src="~/assets/icons/feather-icons/feather.min.js"></script>
+
+
+    <div class="XXSkin">
+        <svg class="mp-bg-svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">
+            <defs>
+                <radialgradient id="Gradient1" cx="50%" cy="50%" fx="10%" fy="50%" r=".5">
+                    <animate attributeName="fx" dur="34s" values="0%;3%;0%" repeatCount="indefinite" class="svg-animation"></animate>
+                    <stop offset="0%" stop-color="#ff0"></stop>
+                    <stop offset="100%" stop-color="#ff00"></stop>
+                </radialgradient>
+                <radialgradient id="Gradient2" cx="50%" cy="50%" fx="10%" fy="50%" r=".5">
+                    <animate attributeName="fx" dur="23.5s" values="0%;3%;0%" repeatCount="indefinite" class="svg-animation"></animate>
+                    <stop offset="0%" stop-color="#0ff"></stop>
+                    <stop offset="100%" stop-color="#0ff0"></stop>
+                </radialgradient>
+                <radialgradient id="Gradient3" cx="50%" cy="50%" fx="50%" fy="50%" r=".5">
+                    <animate attributeName="fx" dur="21.5s" values="0%;3%;0%" repeatCount="indefinite" class="svg-animation"></animate>
+                    <stop offset="0%" stop-color="#f0f"></stop>
+                    <stop offset="100%" stop-color="#f0f0"></stop>
+                </radialgradient>
+            </defs>
+            <rect x="0" y="0" width="100%" height="100%" fill="url(#Gradient1)">
+                <animate attributeName="x" dur="20s" values="25%;0%;25%" repeatCount="indefinite" class="svg-animation"></animate>
+                <animate attributeName="y" dur="21s" values="0%;25%;0%" repeatCount="indefinite" class="svg-animation"></animate>
+                <animatetransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="17s" repeatCount="indefinite" class="svg-animation"></animatetransform>
+            </rect>
+            <rect x="0" y="0" width="100%" height="100%" fill="url(#Gradient2)">
+                <animate attributeName="x" dur="23s" values="-25%;0%;-25%" repeatCount="indefinite" class="svg-animation"></animate>
+                <animate attributeName="y" dur="24s" values="0%;50%;0%" repeatCount="indefinite" class="svg-animation"></animate>
+                <animatetransform attributeName="transform" type="rotate" from="0 50 50" to="360 50 50" dur="18s" repeatCount="indefinite" class="svg-animation"></animatetransform>
+            </rect>
+            <rect x="0" y="0" width="100%" height="100%" fill="url(#Gradient3)">
+                <animate attributeName="x" dur="25s" values="0%;25%;0%" repeatCount="indefinite" class="svg-animation"></animate>
+                <animate attributeName="y" dur="26s" values="0%;25%;0%" repeatCount="indefinite" class="svg-animation"></animate>
+                <animatetransform attributeName="transform" type="rotate" from="360 50 50" to="0 50 50" dur="19s" repeatCount="indefinite" class="svg-animation"></animatetransform>
+            </rect>
+        </svg>
+    </div>
+
+    <!-- 光晕背景容器 -->
+    @*    <div class="glass-light-container">
+        <div class="light light-1"></div>
+        <!-- <div class="light light-2"></div> -->
+        <div class="light light-3"></div>
+        <div class="light light-4"></div>
+        <div class="light light-5"></div>
+        <div class="light light-6"></div> <!-- 保留6个色块 -->
+    </div>  *@
+
+
+</body>
+</html>
+
+
+<script>
+
+          // 给所有动画元素添加统一class，方便选择
+        const svgAnimations = document.querySelectorAll('.svg-animation');
+        // 存储动画原本的repeatCount值
+        const originalRepeatCounts = new Map();
+
+        // 暂停动画：移除循环属性，让动画停止在当前状态
+        function pauseAnimations() {
+          svgAnimations.forEach(animation => {
+            // 保存原始的repeatCount值
+            const original = animation.getAttribute('repeatCount');
+            originalRepeatCounts.set(animation, original);
+            // 移除循环，动画执行完当前周期后停止
+            animation.setAttribute('repeatCount', '0');
+            // 对于已经在运行的动画，强制刷新状态
+            animation.endElement();
+          });
+        }
+
+        // 恢复动画：恢复循环属性，重新启动动画
+        function resumeAnimations() {
+          svgAnimations.forEach(animation => {
+            // 恢复原始的repeatCount值
+            const original = originalRepeatCounts.get(animation) || 'indefinite';
+            animation.setAttribute('repeatCount', original);
+            // 重新启动动画
+            animation.beginElement();
+          });
+        }
+
+        // 监听页面可见性变化
+        document.addEventListener('visibilitychange', () => {
+          if (document.hidden) {
+            pauseAnimations();
+            //console.log("关闭动画");
+          } else {
+            resumeAnimations();
+            //console.log("开启动画");
+          }
+        });
+
+
+
+            //   const container = document.querySelector('.glass-light-container');
+            // // 监听页面可见性，当页面不可见时暂停动画
+            //         document.addEventListener('visibilitychange', function() {
+            //             if (document.hidden) {
+            //                 container.style.animationPlayState = 'paused';
+            //                 document.querySelectorAll('.light').forEach(light => {
+            //                     light.style.animationPlayState = 'paused';
+            //                 });
+            //             } else {
+            //                 container.style.animationPlayState = 'running';
+            //                 document.querySelectorAll('.light').forEach(light => {
+            //                     light.style.animationPlayState = 'running';
+            //                 });
+            //             }
+            //         });
+
+
+
+
+             function bgaduitbf(){
+                isxunhuanbf=false;
+
+                if(audioElement!=null){
+                                 audioElement.pause();
+                                 audioElement.currentTime = 0; // 将播放位置重置到开始处
+                             }
+
+                              //清空当前
+                             if(dqaudio!=null)
+                             {
+                                 dqaudio.unload();
+                                 dqaudio=null;
+                             }
+
+
+           }
+
+       function stringToBool(str) {
+            str = str.toLowerCase(); // 将字符串转换为小写
+            if (str === "true" || str === "1") {
+                return true;
+            } else if (str === "false" || str === "0") {
+                return false;
+            } else {
+                return false;
+            }
+        }
+
+       $("#basic_checkbox_2").change(function () {
+
+            // $("body").toggleClass('dark-skin');
+             let darkskin = $("#basic_checkbox_2").prop("checked");
+            localStorage.setItem('dark-skin', darkskin);
+
+            if(darkskin){
+            if (!$('body').hasClass('dark-skin')) {
+                 $('body').addClass('dark-skin');
+                }
+             }
+             else{
+                 if ($('body').hasClass('dark-skin')) {
+                   $('body').removeClass('dark-skin');
+                 }
+             }
+        });
+
+         $("#zdfy").change(function () {
+               localStorage.setItem('zdfy', $("#zdfy").prop("checked"));
+         });
+
+          $("#ycfy").change(function () {
+               localStorage.setItem('ycfy', $("#ycfy").prop("checked"));
+         });
+
+          $("#yyk").change(function () {
+               localStorage.setItem('yyk', $("#yyk").val());
+         });
+
+
+        let valuestr = localStorage.getItem('dark-skin');
+        let darkskin2 = stringToBool(valuestr==null?"false":valuestr);
+        $("#basic_checkbox_2").prop("checked",darkskin2);
+
+        if(darkskin2){
+            if (!$('body').hasClass('dark-skin')) {
+              $('body').addClass('dark-skin');
+            }
+        }
+        else{
+            if ($('body').hasClass('dark-skin')) {
+              $('body').removeClass('dark-skin');
+            }
+        }
+
+        let zdfy = localStorage.getItem('zdfy');
+        let zdfy2 = stringToBool(zdfy==null?"false":zdfy);
+        $("#zdfy").prop("checked",zdfy2);
+
+        let ycfy = localStorage.getItem('ycfy');
+        let ycfy2 = stringToBool(ycfy==null?"false":ycfy);
+        $("#ycfy").prop("checked",ycfy2);
+
+         let yyk = localStorage.getItem('yyk');
+         yyk=yyk==null?"Speech_EN":yyk;
+        $('#yyk').val(yyk);
+
+
+     function tbtab(type){
+        if(isMobile)
+        {
+        //0为隐藏
+        if(type==0){
+             $(".ydheader").addClass('animated ' + 'fadeOutDown').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+
+                    $(".ydheader").hide();
+                    $(this).removeClass('animated ' + 'fadeOutDown');
+                });
+        }else{
+
+            if (!$('.ydheader').is(':visible')) {
+               $(".ydheader").show().addClass('animated ' + 'fadeInUp').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+
+                    $(".ydheader").removeClass('animated ' + 'fadeInUp');
+                    //$(this).removeClass('animated ' + 'fadeOutDown');
+                });
+            }
+        }
+        }
+        else{
+             $(".ydheader").hide();
+        }
+    }
+
+            function refreshdata(page){
+
+            if(page==undefined||page=="" ){
+                return false;
+            }
+
+                 if(page=="dqhome"){
+                  setTimeout(function() {
+                      requestUrlHtml("/Home/Home", "", "dqhome");
+                   }, 0);
+            }
+
+            if(page=="dqMyCategoryList"){
+                setTimeout(function() {
+                      requestUrlHtml("/Course/MyCategoryList", "", "dqMyCategoryList");
+                   }, 0);
+            }
+
+            if(page=="dqExamList"){
+                setTimeout(function() {
+                      requestUrlHtml("/Exam/ExamList", "", "dqExamList");
+                  }, 0);
+            }
+
+             if(page=="dqMy"){
+                  setTimeout(function() {
+                      requestUrlHtml("/Home/My", "", "dqMy");
+                   }, 0);
+            }
+        }
+
+         function lazydata(page){
+         var wxpagename = $(".wxpagename").val();
+        if(page==undefined||page==""|| wxpagename!="" ){
+            return false;
+        }
+
+        if(page!="dqhome"){
+              setTimeout(function() {
+                  if ($('#dqhome').children().length == 0) {
+                  requestUrlHtml("/Home/Home", "", "dqhome");
+               }
+               }, 0);
+        }
+
+        if(page!="dqMyCategoryList"){
+            setTimeout(function() {
+                   if ($('#dqMyCategoryList').children().length == 0) {
+                  requestUrlHtml("/Course/MyCategoryList", "", "dqMyCategoryList");
+               }
+               }, 0);
+        }
+
+        if(page!="dqExamList"){
+            setTimeout(function() {
+                  if ($('#dqExamList').children().length == 0) {
+                  requestUrlHtml("/Exam/ExamList", "", "dqExamList");
+              }
+              }, 0);
+        }
+
+         if(page!="dqMy"){
+              setTimeout(function() {
+                  if ($('#dqMy').children().length == 0) {
+                  requestUrlHtml("/Home/My", "", "dqMy");
+               }
+               }, 0);
+        }
+
+    }
+
+
+
+
+    //var isback = false;
+
+    //var historypath = "";
+    //window.addEventListener('popstate333', function(event) {
+    //      let hash = window.location.hash;
+    //        window.history.pushState({}, "");
+    //      history.pushState({page: 1}, null, window.location.href);
+
+    //      if(isMobile)
+    //             {
+    //                  //alert("进了返回222="+hash);
+    //                  //  if(isback){
+    //                  //        isback = false
+
+
+    //                  //        requestUrlHtml("/Home/PageBack", "","main");
+    //                  //    }
+
+    //                  //    if(hash.includes("PageBack")){
+
+    //                  //                }
+    //             }
+    //       else{
+
+
+    //          //  history.pushState({path: window.location.href}, document.title);
+
+
+    //             if(historypath==hash){
+    //              //  tbtab(1);
+    //                if(historypath!="")
+    //               {
+    //                    historypath ="";
+    //                  //  window.history.pushState({}, "");
+    //                    if(hash.includes("learnEnglishTable")){
+    //                         MyCategoryList($(".kcbtnc"),isMobile?1:0)
+    //                    }
+    //                    if(hash.includes("ExamContentTable")){
+    //                        Privacy($(".stbtnc"),isMobile?1:0)
+    //                    }
+    //                }
+    //            }
+    //            else{
+    //                    historypath =hash;
+    //            }
+
+    //       }
+
+
+
+
+
+
+    //});
+
+
+    // H5页面中的JavaScript代码
+    //history.pushState({path: window.location.pathname}, document.title);
+    //window.addEventListener('popstate', function(event) {
+    //  // 当用户尝试返回时，这个事件会被触发
+    //  debugger
+    //  if (confirm('您有未完成的操作，确定要离开此页面吗？')) {
+    //    // 如果用户确认离开，则允许返回
+    //    history.back();
+    //  } else {
+    //    // 否则，取消返回
+    //    window.history.pushState({}, "");
+    //  }
+    //});
+
+           $(document).on('click', function(event) {
+                  var $target = $(event.target);
+
+                  if (!$target.is('.dcsearch') &&!$target.is('.gnanty') && !$target.closest('.tsgn').length) {
+                     if (!$('.gnanty').hasClass('collapsed')) {
+                               $(".gnanty").click()
+                         }
+                  }
+           });
+
+
+           //完全是为了解决移动端从后台切换回来没有声音的问题
+      const audioBase64 ='data:audio/mpeg;base64,SUQzBAAAAAABX1RYWFgAAAASAAADbWFqb3JfYnJhbmQATTRBIABUWFhYAAAAEQAAA21pbm9yX3ZlcnNpb24AMABUWFhYAAAAIAAAA2NvbXBhdGlibGVfYnJhbmRzAE00QSBpc29tbXA0MgBUWFhYAAAANgAAA3ZvaWNlLW1lbW8tdXVpZAA2NDdBQkNERi05NDY0LTQ1QjctODc2OC1GRkJGRUQzODQ3QkQAVElUMgAAABEAAAPmuIXmsrPkuIDmlK/ot68AVFNTRQAAAA8AAANMYXZmNTguNDIuMTAwAAAAAAAAAAAAAAD/+1TAAAAAAAAAAAAAAAAAAAAAAABJbmZvAAAADwAAAAQAAAPAAGZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZpmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZmZnMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzMzM/////////////////////////////////wAAAABMYXZjNTguNzgAAAAAAAAAAAAAAAAkA8AAAAAAAAADwCIoDRQAAAAAAAAAAAAAAAAAAAD/+1TEAAPAAAGkAAAAIAAANIAAAARMQUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+1TEVYPAAAGkAAAAIAAANIAAAARVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+1TEqgPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/+1TEqgPAAAGkAAAAIAAANIAAAARVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVU=';
+      const audYS= new Howl({
+                   src: [audioBase64],
+                   autoplay: true,
+                   loop: false,
+                   volume: 1,
+                   html5: true,
+                   onplay: function(){
+                       this.mute(false);
+                        }
+                  });
+
+
+    var dqaudio=null;
+           // 创建一个对象来存储 Howl 对象
+        var audioMap = {};
+        var isbfaudio = 0;
+
+        const userAgent = navigator.userAgent.toLowerCase();
+
+        // 检查是否包含 iOS 关键字
+        var isIOS = false;
+
+        // 检查是否包含 Safari 关键字，并且不包含 Chrome（因为 iOS Chrome 也可能包含 Safari）
+        const isSafari = /safari/.test(userAgent) && !/chrome/.test(userAgent);
+
+        // 检查是否是移动设备
+        // 注意：这里只是一个简单的示例，移动设备检测可以更加复杂
+        var isMobile = false;
+
+
+
+        //登陆客户端类型
+        var browser = {
+            versions: function () {
+                var u = navigator.userAgent, app = navigator.appVersion;
+                return {         //移动终端浏览器版本信息
+                    trident: u.indexOf('Trident') > -1, //IE内核
+                    presto: u.indexOf('Presto') > -1, //opera内核
+                    webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+                    gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+                    mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+                    ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+                    android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或uc浏览器
+                    iPhone: u.indexOf('iPhone') > -1, //是否为iPhone或者QQHD浏览器
+                    iPad: u.indexOf('iPad') > -1, //是否iPad
+                    webApp: u.indexOf('Safari') == -1 //是否web应该程序，没有头部与底部
+                };
+            }(),
+            language: (navigator.browserLanguage || navigator.language).toLowerCase()
+        }
+
+        if (browser.versions.mobile) {
+            isMobile = true;
+            var ua = navigator.userAgent.toLowerCase();//获取判断用的对象
+            if (ua.match(/MicroMessenger/i) == "micromessenger") {
+            }
+            else if (browser.versions.android) {    //ViewBag.AndroidUrl
+            }
+            else if (browser.versions.iPhone || browser.versions.iPad) {
+               isIOS =true;
+            }
+        }
+
+        var audioElement = null;
+
+      function changeAudioSource(myAudio,newSrc) {
+
+          if(audioElement!=null){
+              audioElement.pause();
+              audioElement.currentTime = 0; // 将播放位置重置到开始处
+          }
+
+         audioElement = document.getElementById(myAudio);
+
+        // 假设我们只有一个<source>元素，或者我们想要替换所有的<source>元素
+        let sourceElement = audioElement.querySelector('source');
+        if (!sourceElement) {
+            // 如果没有<source>元素，则创建一个
+            sourceElement = document.createElement('source');
+            audioElement.appendChild(sourceElement);
+        }
+
+        // 设置新的src属性
+
+             sourceElement.src = newSrc; // 替换为新的音频文件URL
+              // 调用load()方法来重新加载音频
+            audioElement.load();
+
+
+              // 监听 ended 事件，播放完毕执行
+             audioElement.addEventListener('ended', function() {
+
+              if(isxunhuanbf){
+                  audioElement.play();
+              }
+              else{
+                   $(".dcxqdbf").removeClass('audioClick');
+              }
+            });
+
+        // 监听加载完成事件（可选）
+        audioElement.addEventListener('canplay', function() {
+           // console.log('音频现在可以播放');
+            // 在这里可以添加自动播放或其他逻辑
+            audioElement.play();
+        }, { once: true }); // 使用{ once: true }来确保事件监听器只执行一次
+    }
+
+
+
+    function edittitle(title,action) {
+
+        if(action!="HearingLX"){
+
+             setTimeout(function () {
+            if (typeof qinkonandtinzhi === 'function') {
+                     qinkonandtinzhi();
+                 }
+                 }, 10);
+
+                 $("#main").html();
+        }
+
+        if(action!="learnEnglishTable"){
+             setTimeout(function () {
+            if (typeof tinzhitinxie === 'function') {
+                     tinzhitinxie();
+                 }
+                 }, 10);
+
+                  $("#main").html();
+        }
+
+
+
+        let uptitle = "";
+        if (window.location.href.indexOf('Home/Home') !== -1 && action =="Home") {
+            uptitle = "记忆助手";
+        }
+        else if (window.location.href.indexOf('Course/CategoryList') !== -1 && action == "CategoryList") {
+            uptitle = "精选课程";
+        }
+        else if (window.location.href.indexOf('Course/MyCategoryList') !== -1 && action == "MyCategoryList") {
+            uptitle = "我的课程";
+        }
+        else if (window.location.href.indexOf('Exam/ExamList') !== -1 && action == "ExamList") {
+            uptitle = "试题列表";
+        }else  if (!$('#dqMy').is(':hidden') && action =="My") {
+            uptitle = "个人中心";
+        }
+        else if (window.location.href.indexOf('learnEnglishTable') !== -1 && action == "learnEnglishTable") {
+            uptitle = title;
+        }
+        else if (window.location.href.indexOf('ExamContentTable') !== -1 && action == "ExamContentTable") {
+            uptitle = title;
+        }
+        else if (window.location.href.indexOf('HearingLX') !== -1 && action == "HearingLX") {
+            uptitle = title;
+        }
+
+        if (uptitle != "") {
+            $(".dqbtdetail").text(uptitle == "记忆助手"?"":uptitle);
+              if(isMobile) {
+                document.title = uptitle == "记忆助手"?"":uptitle;
+            }
+        }
+        else{
+          if(isMobile) {
+            if (!$('#dqhome').is(':hidden') && action =="Home") {
+                    uptitle = "记忆助手";
+            }
+            else if (!$('#main').is(':hidden') && action =="CategoryList") {
+                    uptitle = "精选课程";
+            }
+
+            else if (!$('#dqMyCategoryList').is(':hidden') && action =="MyCategoryList") {
+                    uptitle = "我的课程";
+            }else if (!$('#dqExamList').is(':hidden') && action =="ExamList") {
+                    uptitle = "试题列表";
+            }else if (!$('#dqMy').is(':hidden') && action =="My") {
+                    uptitle = "个人中心";
+            }else if (!$('#main').is(':hidden') && action =="learnEnglishTable") {
+                    uptitle = title;
+            }else if (!$('#main').is(':hidden') && action =="ExamContentTable") {
+                    uptitle = title;
+            }
+            else if (!$('#main').is(':hidden') && action =="HearingLX") {
+                    uptitle = title;
+            }
+                $(".dqbtdetail").text(uptitle);
+                document.title = uptitle;
+           }
+        }
+    }
+
+    // 清理audioMap中所有Howl实例
+    function cleanupAudioMap() {
+        for (let key in audioMap) {
+            if (audioMap.hasOwnProperty(key)) {
+                let howlInstance = audioMap[key];
+                if (howlInstance && typeof howlInstance.unload === 'function') {
+                    howlInstance.unload();  // 释放单个音频资源
+                }
+                delete audioMap[key];  // 从audioMap中移除引用
+            }
+        }
+    }
+
+    // 封装Howl加载为Promise
+    function loadSound(key,url) {
+        return new Promise((resolve) => {
+            var sound = new Howl({
+                src: [url],
+                html5: isSafari,
+                onload: () => {
+                    audioMap[key] = sound;
+                    //console.log(`音频 ${url} 加载完成`);
+                    resolve(sound);
+                },
+                onloaderror: (error) => {
+                   // console.error(`音频 ${url} 加载失败: `, error);
+                    resolve(null); // 即使加载失败也resolve，保证流程继续
+                },onend: function() {
+                    if(!isxunhuanbf)
+                    {
+                         $(".dcxqdbf").removeClass('audioClick');
+                    }
+                   }
+            });
+        });
+    }
+
+    //批量加载
+
+    async function createAndLoadBatch(Speech,dom) {
+        // 创建并加载本批次的Howl实例
+        for (let i = 0; i < dom.length; i++) {
+              var en = dom.eq(i).data("en");
+              debugger
+              //添加语音文件
+              let isenaudio = dom.eq(i).data("isenaudio")
+              let isusaudio = dom.eq(i).data("isusaudio")
+              let key = Speech+en;
+              let value = 'https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/'+Speech+'/'+(en.toLowerCase())+'.mp3';
+              await loadSound(key,value)
+        }
+    }
+
+
+    //存储 Howl 对象
+     function setAudioMap(key,value){
+          let audio = audioMap[key];
+          if(!audio){
+              let sound = new Howl({
+                   src: [value],
+                   autoplay: false,
+                   loop: false,
+                   volume: 1,
+                   html5: isSafari,  //如果true这个在移动端会变慢
+                   onplay: function(){
+                       this.mute(false);  //这个解决移动端锁屏再启动没有声音
+                        },
+                  onloaderror: function() {
+                       sound.unload(); // 先卸载之前的加载状态，可选，根据实际需要使用
+                       sound.load(); // 重新加载
+                  }
+                  });
+
+              audioMap[key] = sound;
+          }
+        }
+
+
+        function playAudioV2(src) {
+
+              // 创建一个新的Audio对象
+                //let audio = new Audio();
+
+                // let firstPart = key.substring(0, 9);
+                //let secondPart = key.substring(9);
+
+                //let type = firstPart=="Speech_EN"?1:0;
+
+                //var url = 'http://dict.youdao.com/dictvoice?type='+type+'&audio='+secondPart;
+                //// 给audio对象的src属性赋值
+                //// 这里应该是音频文件的URL
+                //audio.src = url; // 替换为你的音频文件路径
+
+                //// 确保音频已经加载完成，然后再播放
+                //audio.oncanplay = function() {
+                //    // 播放音频
+                //    audio.play().catch(function(error) {
+                //        console.log('播放失败: ' + error);
+                //    });
+                //};
+
+
+
+                var audioElement = document.getElementById(key);
+
+                 if (!audioElement.paused && !audioElement.ended) {
+                     audioElement.pause(); // 如果正在播放，先暂停
+                 }
+
+                 // 尝试播放音频，并处理可能的错误
+                 audioElement.play().catch(function (error) {
+                     console.error('播放音频时出错:', error);
+                     alert('无法播放音频，请检查浏览器设置或网络状况。');
+                     //playAudio2(src);
+                 });
+        }
+        var isxunhuanbf = false;
+         function playAudio(key,retryCount = 0) {
+
+             //清空当前
+             if(dqaudio!=null)
+             {
+                 dqaudio.unload();
+                 dqaudio=null;
+                // alert("清空了之前的");
+             }
+
+               var audio = audioMap[key];
+               if (audio) {
+                   if(isbfaudio==1){
+                     //  alert("播放了预设");
+                       isbfaudio=0;
+                       audYS.play();
+                   }
+                   dqaudio =audio;
+
+
+                  dqaudio.load();
+                  dqaudio.loop(isxunhuanbf);
+
+                   // 确保sound已经加载完成
+                  if (dqaudio.state() === 'loaded') {
+                    // 取消静音并播放
+                    dqaudio.mute(false);
+                    dqaudio.play();
+                  } else {
+                    // 如果还没加载完成，可以在onload回调中处理
+                    dqaudio.once('load', function() {
+
+                      dqaudio.mute(false);
+                      dqaudio.play();
+                    });
+                  }
+
+
+                   //监听播放情况
+                   dqaudio.once('playerror', function() {
+                      alert('播放失败，尝试重试...');
+                      isbfaudio=1;
+                      if (retryCount < 3) {
+                          // 如果重试次数小于3，则重新加载音频并递归调用此函数
+                          dqaudio.once('load', function() {
+                              console.log('音频重新加载成功');
+                          });
+                          dqaudio.load(); // 重新加载音频
+
+                          // 递归调用自身，增加重试计数
+                          playAudio(key, retryCount + 1);
+                      } else {
+                          alert('播放失败，已达最大重试次数');
+                          console.error('播放失败，已达最大重试次数');
+                      }
+                   });
+
+
+               } else {
+                // playAudioV2("");
+               }
+
+
+
+
+
+         }
+
+          function RequestUrl(url, date) {
+              JavaScript: requestUrlHtml(url, date, 'main');
+        }
+
+
+
+        function czjieguo(text, type) {
+
+            if (type == 0) {
+                text = text == '' ? "操作成功！" : text;
+                swal({
+                    title: text,
+                    type: "success",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            }
+            else {
+
+                text = text == '' ? "保存失败！" : text;
+                swal({
+                    title: text,
+                    type: "warning",
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+
+
+            }
+        }
+
+
+
+
+        document.addEventListener('visibilitychange', function() {
+      if (document.visibilityState === 'visible') {
+
+
+
+         var tt =  $(".dqbtdetail").text();
+          if(tt.includes("记忆助手")||tt=="")
+          {
+               //if (typeof updatemycategory === 'function') {
+               //       updatemycategory();
+               //   }
+              if (typeof settjsujutwo === 'function') {
+                      settjsujutwo();
+               }
+          }
+          if(tt.includes("我的课程"))
+          {
+
+             if (typeof updatemycategory === 'function') {
+                      updatemycategory();
+                  }
+
+          }
+           if(tt.includes("精选课程"))
+          {
+
+          }
+           if(tt.includes("试题列表"))
+          {
+              if (typeof updateexam === 'function') {
+                     updateexam();
+                  }
+          }
+
+
+        // 尝试恢复所有Howler实例的播放
+       //   Howler.unmute(); // 如果之前全局静音了，需要取消静音
+        // 假设你有一个或多个Howler实例
+        // 重新播放音频
+        //yourHowlerSound.play();
+
+        // cleanupAudioMap();
+        //Howler.unlock();
+         // Howler.unmute();
+
+         // var value='https://marketimages.oss-cn-shanghai.aliyuncs.com/learnEnglish/ysf.mp3';
+    isbfaudio=1;
+         //解决移动端从页面切换回来没有声音的问题
+        //audYS.play();
+
+      }else{
+
+          //页面隐藏了
+          //cleanupAudioMap();
+          isbfaudio=1;
+
+          $(".dcxqdbf").removeClass('audioClick');
+
+          if(dqaudio!=null){
+              dqaudio.stop();
+          }
+          }
+    });
+
+        function getkey() {
+        return Math.floor(Math.random() * 900000) + 100000;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // 尝试解锁音频上下文
+       //cleanupAudioMap();
+      //Howler.unlock();
+
+
+
+
+
+       //const originalFetch = window.fetch;
+       // window.fetch = function(input, init = {}) {
+       //     // 从localStorage读取Token
+       //     const token = localStorage.getItem('jwtToken');
+       //     if (token) {
+       //         // 如果存在Token，添加到请求头中
+       //         init.headers = init.headers || new Headers();
+       //         init.headers.set('Authorization', `Bearer ${token}`);
+       //     }
+       //     // 使用原始的fetch函数进行请求，并传入修改后的init对象
+       //     return originalFetch(input, init);
+       // };
+
+
+    });
+
+
+</script>

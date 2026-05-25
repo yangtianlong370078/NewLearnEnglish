@@ -1,0 +1,105 @@
+﻿@{
+    ViewData["Title"] = "登录";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="https://res.wx.qq.com/open/js/jweixin-1.6.0.js"></script>
+
+<button type="button" class="waves-effect waves-light btn btn-primary   btn-sm " style="margin-left:10px;" onclick="login()">点击登录</button>
+
+<button type="button" class="waves-effect waves-light btn btn-primary   btn-sm " style="margin-left:10px;" onclick="getcode2()">获取code</button>
+
+  <script>
+     
+      function getcode2(){
+          var code = getCode();
+          alert(code);
+      }
+
+const config = {
+  appId: '@ViewData["appId"]',
+  timestamp: '@ViewData["timestamp"]',
+  nonceStr: '@ViewData["nonceStr"]',
+  signature: '@ViewData["signature"]'
+};
+
+
+function getCode() {
+        console.log(window.location.href)
+        let code = window.location.search;
+        var theRequest = new Object();
+        if (code.indexOf('?') != -1) {
+            var str = code.substr(1);
+            var strs = str.split('&');
+            for (var i = 0; i < strs.length; i++) {
+                theRequest[strs[i].split('=')[0]] = strs[i].split('=')[1];
+            }
+        }
+        return theRequest;
+    }
+
+      function login(){
+
+
+          //测试号的appid
+        let appID = 'wx229d8ad441b0b9fa'; // 测试使用
+        let url ="http://ttkx.natapp1.cc/Login/Index";
+        let page =
+            'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' +
+            appID +
+            '&redirect_uri=' +
+            url +
+            '&response_type=code&scope=snsapi_base&state=STATE#wechat_redirect';
+        window.location.href = page;
+
+
+
+//          // 配置微信JS-SDK
+//wx.config({
+//  debug: true, // 开启调试模式
+//  appId: config.appId,
+//  timestamp: config.timestamp,
+//  nonceStr: config.nonceStr,
+//  signature: config.signature,
+//  jsApiList: ['wx.login'] // 所需接口列表
+//});
+
+//          debugger
+//          alert('开始准备');
+//          wx.ready(() => {
+
+//               alert('准备完成');
+//  wx.login({
+//    success: (res) => {
+//         alert('返回结果'+res);
+//      if (res.code) {
+//          debugger
+          
+//          alert('code='+res.code);
+
+//           $.ajax({
+//            type: "post",
+//            url: "/Login/GetOpenId",
+//            data: { code: res.code },
+//            success: function (data) {
+//               debugger
+//                if (data.succss) {
+//                    //   $('.gbck').click();
+//                    alert('data='+data.data);
+
+//                }
+//                else {
+//                    czjieguo(data.msg, 1);
+//                }
+//            }
+//        })
+
+//      } else {
+//        console.log('获取用户登录态失败！' + res.errMsg);
+//      }
+//    }
+//  });
+//});
+      }
+
+  </script>

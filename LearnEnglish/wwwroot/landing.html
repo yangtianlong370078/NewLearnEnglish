@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学英文 - 智能英语学习平台</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
+                        accent: { 400: '#f87171', 500: '#ef4444', 600: '#dc2626' },
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delay': 'float 6s ease-in-out 2s infinite',
+                        'float-slow': 'float 8s ease-in-out 1s infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out forwards',
+                        'fade-in-left': 'fadeInLeft 0.8s ease-out forwards',
+                        'fade-in-right': 'fadeInRight 0.8s ease-out forwards',
+                        'pulse-soft': 'pulseSoft 3s ease-in-out infinite',
+                        'gradient': 'gradient 8s ease infinite',
+                    },
+                    keyframes: {
+                        float: { '0%, 100%': { transform: 'translateY(0px)' }, '50%': { transform: 'translateY(-20px)' } },
+                        fadeInUp: { '0%': { opacity: '0', transform: 'translateY(40px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        fadeInLeft: { '0%': { opacity: '0', transform: 'translateX(-40px)' }, '100%': { opacity: '1', transform: 'translateX(0)' } },
+                        fadeInRight: { '0%': { opacity: '0', transform: 'translateX(40px)' }, '100%': { opacity: '1', transform: 'translateX(0)' } },
+                        pulseSoft: { '0%, 100%': { opacity: '1' }, '50%': { opacity: '0.7' } },
+                        gradient: { '0%, 100%': { backgroundPosition: '0% 50%' }, '50%': { backgroundPosition: '100% 50%' } },
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        body { font-family: 'Inter', system-ui, sans-serif; }
+        .gradient-text { background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: 200% auto; animation: gradient 4s ease infinite; }
+        .hero-gradient { background: linear-gradient(135deg, #0f172a 0%, #1e293b 30%, #0f172a 60%, #1a1a3e 100%); }
+        .glass { background: rgba(255,255,255,0.05); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); }
+        .glass-light { background: rgba(255,255,255,0.7); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.3); }
+        .feature-card:hover { transform: translateY(-8px); box-shadow: 0 25px 50px -12px rgba(59,130,246,0.15); }
+        .glow { box-shadow: 0 0 60px rgba(59,130,246,0.3); }
+        .glow-purple { box-shadow: 0 0 60px rgba(139,92,246,0.2); }
+        .blob { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+        .stat-card:hover .stat-icon { transform: scale(1.2) rotate(5deg); }
+        [data-animate] { opacity: 0; }
+        [data-animate].visible { opacity: 1; }
+        .tech-badge:hover { transform: scale(1.05); }
+        .nav-blur { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(16px); }
+    </style>
+</head>
+<body class="bg-white text-gray-900 antialiased overflow-x-hidden">
+
+    <!-- 导航栏 -->
+    <nav class="fixed top-0 w-full z-50 nav-blur border-b border-white/10 transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 lg:h-20">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    </div>
+                    <span class="text-xl font-bold text-white tracking-tight">学英文</span>
+                </div>
+                <div class="hidden md:flex items-center space-x-8">
+                    <a href="#features" class="text-gray-300 hover:text-white transition-colors text-sm font-medium">核心功能</a>
+                    <a href="#ai" class="text-gray-300 hover:text-white transition-colors text-sm font-medium">AI 驱动</a>
+                    <a href="#stats" class="text-gray-300 hover:text-white transition-colors text-sm font-medium">学习数据</a>
+                    <a href="#tech" class="text-gray-300 hover:text-white transition-colors text-sm font-medium">技术架构</a>
+                    <a href="#cta" class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-5 py-2.5 rounded-full text-sm font-semibold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 hover:-translate-y-0.5">立即体验</a>
+                </div>
+                <button class="md:hidden text-white" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                </button>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden pb-4">
+                <a href="#features" class="block py-2 text-gray-300 hover:text-white text-sm">核心功能</a>
+                <a href="#ai" class="block py-2 text-gray-300 hover:text-white text-sm">AI 驱动</a>
+                <a href="#stats" class="block py-2 text-gray-300 hover:text-white text-sm">学习数据</a>
+                <a href="#tech" class="block py-2 text-gray-300 hover:text-white text-sm">技术架构</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero 区域 -->
+    <section class="hero-gradient min-h-screen flex items-center relative overflow-hidden">
+        <!-- 装饰元素 -->
+        <div class="absolute inset-0 overflow-hidden">
+            <div class="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 blob animate-float blur-3xl"></div>
+            <div class="absolute top-40 right-20 w-96 h-96 bg-purple-500/10 blob animate-float-delay blur-3xl"></div>
+            <div class="absolute bottom-20 left-1/3 w-80 h-80 bg-indigo-500/8 blob animate-float-slow blur-3xl"></div>
+            <!-- 网格背景 -->
+            <div class="absolute inset-0" style="background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px;"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                <div class="space-y-8">
+                    <div class="inline-flex items-center space-x-2 glass rounded-full px-4 py-2">
+                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                        <span class="text-green-400 text-sm font-medium">AI 驱动 · 智能学习</span>
+                    </div>
+                    <h1 class="text-5xl sm:text-6xl lg:text-7xl font-black text-white leading-tight">
+                        让英语学习<br>
+                        <span class="gradient-text">更高效、更智能</span>
+                    </h1>
+                    <p class="text-lg sm:text-xl text-gray-400 max-w-xl leading-relaxed">
+                        融合 AI 语音识别、智能考试、个性化学习路径，打造全方位英语学习体验。从单词记忆到口语发音，一站式解决你的英语学习需求。
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="#cta" class="group bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 hover:-translate-y-1 flex items-center justify-center space-x-2">
+                            <span>开始学习</span>
+                            <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                        </a>
+                        <a href="#features" class="glass text-white px-8 py-4 rounded-2xl text-lg font-semibold hover:bg-white/10 transition-all duration-300 flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            <span>了解更多</span>
+                        </a>
+                    </div>
+                    <!-- 技术标签 -->
+                    <div class="flex flex-wrap gap-3 pt-4">
+                        <span class="glass text-gray-400 text-xs px-3 py-1.5 rounded-full">.NET 10</span>
+                        <span class="glass text-gray-400 text-xs px-3 py-1.5 rounded-full">Whisper AI</span>
+                        <span class="glass text-gray-400 text-xs px-3 py-1.5 rounded-full">MongoDB</span>
+                        <span class="glass text-gray-400 text-xs px-3 py-1.5 rounded-full">Redis</span>
+                    </div>
+                </div>
+
+                <!-- Hero 右侧插画 -->
+                <div class="relative hidden lg:block">
+                    <div class="relative w-full max-w-lg mx-auto">
+                        <!-- 主卡片 -->
+                        <div class="glass rounded-3xl p-8 glow animate-float">
+                            <div class="space-y-6">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-14 h-14 bg-gradient-to-br from-blue-400 to-blue-600 rounded-2xl flex items-center justify-center">
+                                        <span class="text-2xl">📖</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-white font-semibold text-lg">今日学习</p>
+                                        <p class="text-gray-400 text-sm">已完成 85%</p>
+                                    </div>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-3">
+                                    <div class="bg-gradient-to-r from-blue-500 to-purple-500 h-3 rounded-full" style="width: 85%"></div>
+                                </div>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <div class="text-center">
+                                        <p class="text-2xl font-bold text-white">42</p>
+                                        <p class="text-gray-500 text-xs">新单词</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-2xl font-bold text-blue-400">96<span class="text-sm">%</span></p>
+                                        <p class="text-gray-500 text-xs">正确率</p>
+                                    </div>
+                                    <div class="text-center">
+                                        <p class="text-2xl font-bold text-purple-400">2.5<span class="text-sm">h</span></p>
+                                        <p class="text-gray-500 text-xs">学习时长</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 浮动小卡片1 -->
+                        <div class="absolute -top-6 -right-6 glass rounded-2xl p-4 animate-float-delay">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
+                                    <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <div>
+                                    <p class="text-white text-sm font-medium">发音评分</p>
+                                    <p class="text-green-400 text-xs font-bold">Excellent!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 浮动小卡片2 -->
+                        <div class="absolute -bottom-4 -left-8 glass rounded-2xl p-4 animate-float-slow">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                                    <span class="text-lg">🎯</span>
+                                </div>
+                                <div>
+                                    <p class="text-white text-sm font-medium">连续打卡</p>
+                                    <p class="text-purple-400 text-xs font-bold">28 天</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 波浪分隔 -->
+        <div class="absolute bottom-0 left-0 right-0">
+            <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M0 120L60 108C120 96 240 72 360 66C480 60 600 72 720 78C840 84 960 84 1080 78C1200 72 1320 60 1380 54L1440 48V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="white"/></svg>
+        </div>
+    </section>
+
+    <!-- 核心功能 -->
+    <section id="features" class="py-24 lg:py-32 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-20" data-animate>
+                <span class="inline-block bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full text-sm font-semibold mb-4">核心功能</span>
+                <h2 class="text-4xl lg:text-5xl font-black text-gray-900 mb-6">全方位英语学习体验</h2>
+                <p class="text-xl text-gray-500 max-w-2xl mx-auto">六大核心模块，覆盖听说读写全场景，让你的英语能力全面进阶</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 功能卡片1 -->
+                <div class="feature-card group bg-white border border-gray-100 rounded-3xl p-8 transition-all duration-500 hover:border-blue-200" data-animate>
+                    <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-blue-500/20">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">智能单词学习</h3>
+                    <p class="text-gray-500 leading-relaxed mb-4">基于记忆曲线的多阶段学习系统，支持收藏、进度追踪，搭配中英释义与真人发音，让每个单词深入记忆。</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-blue-50 text-blue-600 text-xs px-2.5 py-1 rounded-full">记忆曲线</span>
+                        <span class="bg-blue-50 text-blue-600 text-xs px-2.5 py-1 rounded-full">进度追踪</span>
+                        <span class="bg-blue-50 text-blue-600 text-xs px-2.5 py-1 rounded-full">收藏管理</span>
+                    </div>
+                </div>
+
+                <!-- 功能卡片2 -->
+                <div class="feature-card group bg-white border border-gray-100 rounded-3xl p-8 transition-all duration-500 hover:border-purple-200" data-animate>
+                    <div class="w-14 h-14 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-purple-500/20">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">智能考试系统</h3>
+                    <p class="text-gray-500 leading-relaxed mb-4">自定义考试参数，涵盖选择题、填空题、翻译题多种题型，实时评分与错题回顾，针对性强化薄弱环节。</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-purple-50 text-purple-600 text-xs px-2.5 py-1 rounded-full">多种题型</span>
+                        <span class="bg-purple-50 text-purple-600 text-xs px-2.5 py-1 rounded-full">实时评分</span>
+                        <span class="bg-purple-50 text-purple-600 text-xs px-2.5 py-1 rounded-full">错题回顾</span>
+                    </div>
+                </div>
+
+                <!-- 功能卡片3 -->
+                <div class="feature-card group bg-white border border-gray-100 rounded-3xl p-8 transition-all duration-500 hover:border-green-200" data-animate>
+                    <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-green-500/20">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">沉浸式听力</h3>
+                    <p class="text-gray-500 leading-relaxed mb-4">分课程听力教材，精确时间点标记，支持分段精听与泛听模式，Redis 缓存加速确保流畅体验。</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-green-50 text-green-600 text-xs px-2.5 py-1 rounded-full">分段精听</span>
+                        <span class="bg-green-50 text-green-600 text-xs px-2.5 py-1 rounded-full">课程分类</span>
+                        <span class="bg-green-50 text-green-600 text-xs px-2.5 py-1 rounded-full">极速加载</span>
+                    </div>
+                </div>
+
+                <!-- 功能卡片4 -->
+                <div class="feature-card group bg-white border border-gray-100 rounded-3xl p-8 transition-all duration-500 hover:border-amber-200" data-animate>
+                    <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-amber-500/20">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">课程管理</h3>
+                    <p class="text-gray-500 leading-relaxed mb-4">多种学习路径自由选择，支持课程收藏、自定义课程创建，灵活编辑课程内容，打造专属学习计划。</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-amber-50 text-amber-600 text-xs px-2.5 py-1 rounded-full">自定义课程</span>
+                        <span class="bg-amber-50 text-amber-600 text-xs px-2.5 py-1 rounded-full">学习路径</span>
+                        <span class="bg-amber-50 text-amber-600 text-xs px-2.5 py-1 rounded-full">内容编辑</span>
+                    </div>
+                </div>
+
+                <!-- 功能卡片5 -->
+                <div class="feature-card group bg-white border border-gray-100 rounded-3xl p-8 transition-all duration-500 hover:border-rose-200" data-animate>
+                    <div class="w-14 h-14 bg-gradient-to-br from-rose-500 to-pink-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-rose-500/20">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">数据统计</h3>
+                    <p class="text-gray-500 leading-relaxed mb-4">周度、月度学习报告可视化呈现，每日目标设定与追踪，用数据驱动你的学习进步。</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-rose-50 text-rose-600 text-xs px-2.5 py-1 rounded-full">学习报告</span>
+                        <span class="bg-rose-50 text-rose-600 text-xs px-2.5 py-1 rounded-full">目标设定</span>
+                        <span class="bg-rose-50 text-rose-600 text-xs px-2.5 py-1 rounded-full">数据可视化</span>
+                    </div>
+                </div>
+
+                <!-- 功能卡片6 -->
+                <div class="feature-card group bg-white border border-gray-100 rounded-3xl p-8 transition-all duration-500 hover:border-cyan-200" data-animate>
+                    <div class="w-14 h-14 bg-gradient-to-br from-cyan-500 to-teal-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-cyan-500/20">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"></path></svg>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">智能翻译</h3>
+                    <p class="text-gray-500 leading-relaxed mb-4">集成有道词典 API，一键查词释义。配合 CMU 音标数据库，精准展示国际音标，助力标准发音。</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-cyan-50 text-cyan-600 text-xs px-2.5 py-1 rounded-full">有道词典</span>
+                        <span class="bg-cyan-50 text-cyan-600 text-xs px-2.5 py-1 rounded-full">IPA 音标</span>
+                        <span class="bg-cyan-50 text-cyan-600 text-xs px-2.5 py-1 rounded-full">一键查词</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI 驱动 -->
+    <section id="ai" class="py-24 lg:py-32 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-96 h-96 bg-blue-100/50 rounded-full blur-3xl -translate-y-1/2"></div>
+        <div class="absolute bottom-0 left-0 w-96 h-96 bg-purple-100/50 rounded-full blur-3xl translate-y-1/2"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="order-2 lg:order-1" data-animate>
+                    <!-- AI 可视化卡片 -->
+                    <div class="relative">
+                        <div class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-8 shadow-2xl">
+                            <div class="flex items-center space-x-2 mb-6">
+                                <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                                <span class="text-gray-500 text-xs ml-2">Whisper AI 语音分析</span>
+                            </div>
+                            <div class="space-y-4">
+                                <div class="flex items-start space-x-4">
+                                    <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center mt-1 shrink-0">
+                                        <svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                                    </div>
+                                    <div class="flex-1">
+                                        <p class="text-gray-400 text-xs mb-1">你的发音</p>
+                                        <p class="text-white font-mono text-lg">"The quick brown fox"</p>
+                                        <div class="flex items-center space-x-1 mt-2">
+                                            <div class="h-4 w-1 bg-blue-400 rounded-full"></div>
+                                            <div class="h-6 w-1 bg-blue-500 rounded-full"></div>
+                                            <div class="h-8 w-1 bg-blue-400 rounded-full"></div>
+                                            <div class="h-5 w-1 bg-blue-500 rounded-full"></div>
+                                            <div class="h-10 w-1 bg-purple-400 rounded-full"></div>
+                                            <div class="h-7 w-1 bg-blue-400 rounded-full"></div>
+                                            <div class="h-4 w-1 bg-blue-500 rounded-full"></div>
+                                            <div class="h-9 w-1 bg-purple-500 rounded-full"></div>
+                                            <div class="h-6 w-1 bg-blue-400 rounded-full"></div>
+                                            <div class="h-3 w-1 bg-blue-500 rounded-full"></div>
+                                            <div class="h-7 w-1 bg-blue-400 rounded-full"></div>
+                                            <div class="h-5 w-1 bg-purple-400 rounded-full"></div>
+                                            <div class="h-8 w-1 bg-blue-500 rounded-full"></div>
+                                            <div class="h-4 w-1 bg-blue-400 rounded-full"></div>
+                                            <div class="h-6 w-1 bg-purple-500 rounded-full"></div>
+                                            <div class="h-3 w-1 bg-blue-400 rounded-full"></div>
+                                            <div class="h-5 w-1 bg-blue-500 rounded-full"></div>
+                                            <div class="h-7 w-1 bg-blue-400 rounded-full"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-t border-gray-700 pt-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <span class="text-gray-400 text-sm">音标匹配度</span>
+                                        <span class="text-green-400 font-bold">92%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-700 rounded-full h-2">
+                                        <div class="bg-gradient-to-r from-green-400 to-emerald-500 h-2 rounded-full" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <div class="bg-gray-800/50 rounded-xl p-3">
+                                        <p class="text-gray-500 text-xs">语速</p>
+                                        <p class="text-white font-semibold">适中 ✓</p>
+                                    </div>
+                                    <div class="bg-gray-800/50 rounded-xl p-3">
+                                        <p class="text-gray-500 text-xs">流畅度</p>
+                                        <p class="text-white font-semibold">优秀 ★</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- 装饰光晕 -->
+                        <div class="absolute -inset-1 bg-gradient-to-r from-blue-500/20 to-purple-500/20 rounded-3xl blur-xl -z-10"></div>
+                    </div>
+                </div>
+
+                <div class="order-1 lg:order-2 space-y-8" data-animate>
+                    <span class="inline-block bg-purple-50 text-purple-600 px-4 py-1.5 rounded-full text-sm font-semibold">AI 驱动</span>
+                    <h2 class="text-4xl lg:text-5xl font-black text-gray-900 leading-tight">
+                        OpenAI Whisper<br>
+                        <span class="gradient-text">智能语音引擎</span>
+                    </h2>
+                    <p class="text-lg text-gray-500 leading-relaxed">
+                        本地部署 Whisper 语音识别模型，无需联网即可实现精准的英文语音转文字。结合 CMU 国际音标数据库与百度语音 API，为你的每一次发音提供专业级评分与反馈。
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-blue-50 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                                <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900">本地化 AI 推理</p>
+                                <p class="text-gray-500 text-sm">Whisper 模型本地运行，数据不出设备，隐私安全有保障</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-purple-50 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                                <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900">自动音频预处理</p>
+                                <p class="text-gray-500 text-sm">自动转换为 16kHz 单声道 WAV 格式，确保最佳识别效果</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start space-x-4">
+                            <div class="w-10 h-10 bg-green-50 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-gray-900">IPA 音标对比</p>
+                                <p class="text-gray-500 text-sm">CMU 词典 7万+ 词条音标数据，精准匹配发音差异</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 数据统计 -->
+    <section id="stats" class="py-24 lg:py-32 hero-gradient relative overflow-hidden">
+        <div class="absolute inset-0" style="background-image: radial-gradient(rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 40px 40px;"></div>
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center mb-16" data-animate>
+                <span class="inline-block bg-white/10 text-blue-300 px-4 py-1.5 rounded-full text-sm font-semibold mb-4">数据驱动</span>
+                <h2 class="text-4xl lg:text-5xl font-black text-white mb-6">用数据见证你的成长</h2>
+                <p class="text-xl text-gray-400 max-w-2xl mx-auto">每一次练习都被记录，每一点进步都被看见</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6" data-animate>
+                <div class="stat-card glass rounded-3xl p-8 text-center group hover:bg-white/10 transition-all duration-300">
+                    <div class="stat-icon w-16 h-16 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-transform duration-300 shadow-lg shadow-blue-500/30">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    </div>
+                    <p class="text-4xl font-black text-white mb-2">50,000<span class="text-xl text-blue-400">+</span></p>
+                    <p class="text-gray-400 font-medium">词库容量</p>
+                </div>
+
+                <div class="stat-card glass rounded-3xl p-8 text-center group hover:bg-white/10 transition-all duration-300">
+                    <div class="stat-icon w-16 h-16 bg-gradient-to-br from-purple-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-transform duration-300 shadow-lg shadow-purple-500/30">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    </div>
+                    <p class="text-4xl font-black text-white mb-2">10<span class="text-xl text-purple-400">+</span></p>
+                    <p class="text-gray-400 font-medium">课程路径</p>
+                </div>
+
+                <div class="stat-card glass rounded-3xl p-8 text-center group hover:bg-white/10 transition-all duration-300">
+                    <div class="stat-icon w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-transform duration-300 shadow-lg shadow-green-500/30">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                    </div>
+                    <p class="text-4xl font-black text-white mb-2">70,000<span class="text-xl text-green-400">+</span></p>
+                    <p class="text-gray-400 font-medium">音标词条</p>
+                </div>
+
+                <div class="stat-card glass rounded-3xl p-8 text-center group hover:bg-white/10 transition-all duration-300">
+                    <div class="stat-icon w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center mx-auto mb-4 transition-transform duration-300 shadow-lg shadow-amber-500/30">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <p class="text-4xl font-black text-white mb-2">99.9<span class="text-xl text-amber-400">%</span></p>
+                    <p class="text-gray-400 font-medium">系统可用性</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 技术架构 -->
+    <section id="tech" class="py-24 lg:py-32 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16" data-animate>
+                <span class="inline-block bg-indigo-50 text-indigo-600 px-4 py-1.5 rounded-full text-sm font-semibold mb-4">技术架构</span>
+                <h2 class="text-4xl lg:text-5xl font-black text-gray-900 mb-6">现代化技术栈</h2>
+                <p class="text-xl text-gray-500 max-w-2xl mx-auto">采用分层架构设计，融合多种数据库与 AI 能力，构建高性能学习平台</p>
+            </div>
+
+            <!-- 架构层级 -->
+            <div class="max-w-4xl mx-auto space-y-6" data-animate>
+                <!-- Web 层 -->
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-6 text-white shadow-xl shadow-blue-500/20">
+                    <div class="flex items-center justify-between flex-wrap gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path></svg>
+                            </div>
+                            <div>
+                                <p class="font-bold text-lg">表现层 · Web</p>
+                                <p class="text-blue-100 text-sm">ASP.NET Core MVC + Razor Pages</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">Controllers</span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">Views</span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">Middleware</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <div class="w-0.5 h-6 bg-gray-200"></div>
+                </div>
+
+                <!-- 应用层 -->
+                <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-2xl p-6 text-white shadow-xl shadow-purple-500/20">
+                    <div class="flex items-center justify-between flex-wrap gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                            </div>
+                            <div>
+                                <p class="font-bold text-lg">应用层 · Application</p>
+                                <p class="text-purple-100 text-sm">业务逻辑与服务接口</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">Interfaces</span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">DTOs</span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">Services</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <div class="w-0.5 h-6 bg-gray-200"></div>
+                </div>
+
+                <!-- 领域层 -->
+                <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-2xl p-6 text-white shadow-xl shadow-indigo-500/20">
+                    <div class="flex items-center justify-between flex-wrap gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
+                            </div>
+                            <div>
+                                <p class="font-bold text-lg">领域层 · Domain</p>
+                                <p class="text-indigo-100 text-sm">实体定义与业务规则</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">Entities</span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">Exceptions</span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">Common</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-center">
+                    <div class="w-0.5 h-6 bg-gray-200"></div>
+                </div>
+
+                <!-- 基础设施层 -->
+                <div class="bg-gradient-to-r from-slate-700 to-slate-800 rounded-2xl p-6 text-white shadow-xl shadow-slate-500/20">
+                    <div class="flex items-center justify-between flex-wrap gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"></path></svg>
+                            </div>
+                            <div>
+                                <p class="font-bold text-lg">基础设施层 · Infrastructure</p>
+                                <p class="text-slate-300 text-sm">数据存储 · 缓存 · 外部服务</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">MySQL</span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">MongoDB</span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">Redis</span>
+                            <span class="bg-white/20 px-3 py-1 rounded-full text-xs font-medium">Whisper</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 技术标签云 -->
+            <div class="mt-16 flex flex-wrap justify-center gap-4" data-animate>
+                <span class="tech-badge bg-gray-50 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 hover:border-blue-300 hover:bg-blue-50 cursor-default">.NET 10</span>
+                <span class="tech-badge bg-gray-50 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 hover:border-green-300 hover:bg-green-50 cursor-default">C#</span>
+                <span class="tech-badge bg-gray-50 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 hover:border-blue-300 hover:bg-blue-50 cursor-default">ASP.NET Core</span>
+                <span class="tech-badge bg-gray-50 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-50 cursor-default">MongoDB</span>
+                <span class="tech-badge bg-gray-50 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 hover:border-red-300 hover:bg-red-50 cursor-default">Redis</span>
+                <span class="tech-badge bg-gray-50 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 hover:border-orange-300 hover:bg-orange-50 cursor-default">MySQL</span>
+                <span class="tech-badge bg-gray-50 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 hover:border-purple-300 hover:bg-purple-50 cursor-default">Whisper AI</span>
+                <span class="tech-badge bg-gray-50 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 hover:border-pink-300 hover:bg-pink-50 cursor-default">NAudio</span>
+                <span class="tech-badge bg-gray-50 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 hover:border-indigo-300 hover:bg-indigo-50 cursor-default">Serilog</span>
+                <span class="tech-badge bg-gray-50 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 hover:border-teal-300 hover:bg-teal-50 cursor-default">JWT Auth</span>
+                <span class="tech-badge bg-gray-50 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 hover:border-cyan-300 hover:bg-cyan-50 cursor-default">Youdao API</span>
+                <span class="tech-badge bg-gray-50 border border-gray-200 text-gray-700 px-5 py-2.5 rounded-2xl text-sm font-medium transition-all duration-300 hover:border-yellow-300 hover:bg-yellow-50 cursor-default">CMU Dict</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section id="cta" class="py-24 lg:py-32 bg-gradient-to-b from-gray-50 to-white relative overflow-hidden">
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-blue-200/30 to-purple-200/30 rounded-full blur-3xl"></div>
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center" data-animate>
+            <h2 class="text-4xl lg:text-6xl font-black text-gray-900 mb-6">
+                准备好开始你的<br>
+                <span class="gradient-text">英语学习之旅</span>了吗？
+            </h2>
+            <p class="text-xl text-gray-500 mb-10 max-w-2xl mx-auto leading-relaxed">
+                无论你是初学者还是进阶学习者，学英文都能为你提供最适合的学习方案。立即加入，用科技的力量加速你的英语进步。
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="#" class="group bg-gradient-to-r from-blue-600 to-purple-600 text-white px-10 py-5 rounded-2xl text-lg font-bold hover:shadow-2xl hover:shadow-blue-500/30 transition-all duration-300 hover:-translate-y-1 inline-flex items-center justify-center space-x-3">
+                    <span>免费开始学习</span>
+                    <svg class="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                </a>
+                <a href="https://github.com" class="bg-gray-900 text-white px-10 py-5 rounded-2xl text-lg font-bold hover:bg-gray-800 transition-all duration-300 hover:-translate-y-1 inline-flex items-center justify-center space-x-3">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    <span>GitHub</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid md:grid-cols-4 gap-12">
+                <div class="md:col-span-2">
+                    <div class="flex items-center space-x-3 mb-6">
+                        <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        </div>
+                        <span class="text-xl font-bold text-white">学英文</span>
+                    </div>
+                    <p class="text-gray-400 leading-relaxed max-w-md mb-6">
+                        融合 AI 技术与科学学习方法，致力于为英语学习者提供高效、智能、有趣的学习体验。从单词到听力，从考试到口语，全面提升你的英语能力。
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <span class="bg-slate-800 text-gray-400 text-xs px-3 py-1.5 rounded-full">ASP.NET Core</span>
+                        <span class="bg-slate-800 text-gray-400 text-xs px-3 py-1.5 rounded-full">Whisper AI</span>
+                        <span class="bg-slate-800 text-gray-400 text-xs px-3 py-1.5 rounded-full">MongoDB</span>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">功能</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">单词学习</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">听力训练</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">智能考试</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">口语评测</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">学习统计</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-white font-semibold mb-4">关于</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">技术架构</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">开发者</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">更新日志</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors text-sm">隐私政策</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 mt-12 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <p class="text-gray-500 text-sm">&copy; 2025 杨天龙 | 蜀ICP备2025171624号-1</p>
+                <p class="text-gray-600 text-xs">Built with .NET 10 &amp; ❤️</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 滚动动画脚本 -->
+    <script>
+        // Intersection Observer for scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    const children = entry.target.querySelectorAll('.feature-card, .stat-card');
+                    children.forEach((child, index) => {
+                        child.style.animationDelay = `${index * 100}ms`;
+                        child.style.animation = 'fadeInUp 0.6s ease-out forwards';
+                        child.style.opacity = '0';
+                        setTimeout(() => { child.style.opacity = '1'; }, index * 100);
+                    });
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+        document.querySelectorAll('[data-animate]').forEach(el => observer.observe(el));
+
+        // Navbar scroll effect
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const navbar = document.getElementById('navbar');
+            const currentScroll = window.pageYOffset;
+            if (currentScroll > 100) {
+                navbar.style.borderBottomColor = 'rgba(255,255,255,0.05)';
+            } else {
+                navbar.style.borderBottomColor = 'rgba(255,255,255,0.1)';
+            }
+            lastScroll = currentScroll;
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Close mobile menu
+                    document.getElementById('mobile-menu').classList.add('hidden');
+                }
+            });
+        });
+
+        // Counter animation for stats
+        function animateCounter(el, target, suffix = '') {
+            let current = 0;
+            const increment = target / 60;
+            const timer = setInterval(() => {
+                current += increment;
+                if (current >= target) { current = target; clearInterval(timer); }
+                el.textContent = Math.floor(current).toLocaleString();
+            }, 16);
+        }
+
+        const statsObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.querySelectorAll('.stat-card').forEach(card => {
+                        const numEl = card.querySelector('.text-4xl');
+                        const text = numEl.textContent;
+                        const num = parseFloat(text.replace(/[^0-9.]/g, ''));
+                        if (num > 100) {
+                            animateCounter(numEl, num);
+                            const span = document.createElement('span');
+                            span.className = numEl.querySelector('span')?.className || '';
+                            span.textContent = numEl.querySelector('span')?.textContent || '';
+                            setTimeout(() => { numEl.appendChild(span); }, 1100);
+                        }
+                    });
+                    statsObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.3 });
+
+        const statsSection = document.getElementById('stats');
+        if (statsSection) statsObserver.observe(statsSection);
+    </script>
+</body>
+</html>
