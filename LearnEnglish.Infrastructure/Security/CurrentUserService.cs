@@ -43,6 +43,22 @@ namespace LearnEnglish.Infrastructure.Security
         }
 
         /// <summary>
+        /// 获取当前用户的服务起始日期（来自 JWT Claims）
+        /// </summary>
+        public DateTime? StartDate
+        {
+            get
+            {
+                var value = _httpContextAccessor.HttpContext?.User?.FindFirstValue("startdate");
+                if (string.IsNullOrEmpty(value)) return null;
+                return DateTime.TryParse(value, System.Globalization.CultureInfo.InvariantCulture,
+                    System.Globalization.DateTimeStyles.RoundtripKind, out var dt)
+                    ? dt
+                    : (DateTime?)null;
+            }
+        }
+
+        /// <summary>
         /// 获取当前用户信息（包含有效性校验）
         /// 如果未登录或已过期，抛出异常
         /// </summary>

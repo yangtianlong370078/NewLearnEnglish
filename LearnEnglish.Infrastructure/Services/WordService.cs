@@ -27,6 +27,7 @@ namespace LearnEnglish.Infrastructure.Services
         private readonly ILexiconDetailRepository _lexiconDetailRepository;
         private readonly IRedisService _redisService;
         private readonly ITranslateService _translateService;
+        private readonly IStatisticsVersionService _statsVersionService;
         private readonly ILogger<WordService> _logger;
 
         // Redis 中单词详情的 Hash Key 前缀
@@ -42,6 +43,7 @@ namespace LearnEnglish.Infrastructure.Services
             ILexiconDetailRepository lexiconDetailRepository,
             IRedisService redisService,
             ITranslateService translateService,
+            IStatisticsVersionService statsVersionService,
             ILogger<WordService> logger)
         {
             _wordQueryRepository = wordQueryRepository;
@@ -53,6 +55,7 @@ namespace LearnEnglish.Infrastructure.Services
             _lexiconDetailRepository = lexiconDetailRepository;
             _redisService = redisService;
             _translateService = translateService;
+            _statsVersionService = statsVersionService;
             _logger = logger;
         }
 
@@ -129,6 +132,9 @@ namespace LearnEnglish.Infrastructure.Services
                     UserId = userId,
                     UpdateTime = DateTime.Now
                 }));
+
+                // 让统计 ETag 失效
+                await _statsVersionService.BumpAsync(userId);
             }
 
             // 处理被降级的（oldStatus=3）→ 删除 mylearn + 更新 Redis 缓存
@@ -291,6 +297,9 @@ namespace LearnEnglish.Infrastructure.Services
         {
             // 统计缓存更新逻辑：移除今天的缓存，让下次查询时重新计算
             var key = $"categorys:user_{userId}";
+
+            // 让统计 ETag 失效，触发前端拿到 200 + 新数据
+            await _statsVersionService.BumpAsync(userId);
             var today = DateTime.Now.Date.ToString("yyyy-MM-dd");
             await _redisService.HashDeleteAsync(key, today);
         }

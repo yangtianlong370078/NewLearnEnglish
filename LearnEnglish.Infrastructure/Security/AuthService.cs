@@ -262,6 +262,7 @@ namespace LearnEnglish.Infrastructure.Security
                 new Claim("username", user.Name),
                 new Claim("courseId", user.CourseId.ToString()),
                 new Claim("status", user.Status.ToString()),
+                new Claim("startdate", user.StartDate.ToString("o")),
                 new Claim(JwtRegisteredClaimNames.Sub, user.Name),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
