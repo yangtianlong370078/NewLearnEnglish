@@ -71,6 +71,7 @@ namespace LearnEnglish.Infrastructure
             services.AddScoped<ICourseService, Services.CourseService>();
             services.AddScoped<IWordService, Services.WordService>();
             services.AddScoped<IStatisticsService, Services.StatisticsService>();
+            services.AddSingleton<IStatisticsVersionService, Services.StatisticsVersionService>();
             services.AddScoped<IFavoriteService, Services.FavoriteService>();
             services.AddScoped<IExamService, Services.ExamService>();
             services.AddScoped<ITranslateService, Services.TranslateService>();

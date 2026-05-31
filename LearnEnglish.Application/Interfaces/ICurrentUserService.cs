@@ -18,6 +18,11 @@ namespace LearnEnglish.Application.Interfaces
         string? UserName { get; }
 
         /// <summary>
+        /// 获取当前用户的服务起始日期（来自 JWT Claims）
+        /// </summary>
+        DateTime? StartDate { get; }
+
+        /// <summary>
         /// 获取当前用户信息（包含有效性校验）
         /// </summary>
         User GetValidUser();

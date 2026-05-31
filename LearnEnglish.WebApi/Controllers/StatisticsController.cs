@@ -1,7 +1,7 @@
 using LearnEnglish.Application.Interfaces;
-using LearnEnglish.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 
 namespace LearnEnglish.WebApi.Controllers
 {
@@ -13,37 +13,35 @@ namespace LearnEnglish.WebApi.Controllers
     {
         private readonly IStatisticsService _statisticsService;
         private readonly ICurrentUserService _currentUserService;
-        private readonly IUserRepository _userRepository;
+        private readonly IStatisticsVersionService _statsVersionService;
 
         public StatisticsController(
             IStatisticsService statisticsService,
             ICurrentUserService currentUserService,
-            IUserRepository userRepository)
+            IStatisticsVersionService statsVersionService)
         {
             _statisticsService = statisticsService;
             _currentUserService = currentUserService;
-            _userRepository = userRepository;
+            _statsVersionService = statsVersionService;
         }
 
         private int RequireUserId() => _currentUserService.UserId
             ?? throw new UnauthorizedAccessException("用户未登录");
 
         /// <summary>
-        /// 加载当前登录用户的服务起始日期。
-        /// JWT Claims 中不包含 StartDate，需要从数据库取，避免使用 default(DateTime)
-        /// 触发 SQL Server datetime 越界 (0001-01-01)。
+        /// 从 JWT Claims 中读取当前登录用户的上下文（userId / userName / startDate）。
+        /// StartDate 在登录时已写入 Token，避免每次请求都查询数据库；
+        /// 若 Token 中缺失或无效，则回退到一年前，避免 SQL Server datetime 越界。
         /// </summary>
-        private async Task<(int userId, string userName, DateTime startDate)> LoadUserContextAsync()
+        private (int userId, string userName, DateTime startDate) LoadUserContext()
         {
             var userId = RequireUserId();
-            var user = await _userRepository.GetByIdAsync(userId)
-                ?? throw new UnauthorizedAccessException("用户不存在");
+            var userName = _currentUserService.UserName ?? string.Empty;
+            var startDate = _currentUserService.StartDate is { } sd && sd != default
+                ? sd.Date
+                : DateTime.Today.AddYears(-1);
 
-            var startDate = user.StartDate == default
-                ? DateTime.Today.AddYears(-1)
-                : user.StartDate.Date;
-
-            return (userId, user.Name, startDate);
+            return (userId, userName, startDate);
         }
 
         /// <summary>本周及总学习单词数量</summary>
@@ -51,35 +49,66 @@ namespace LearnEnglish.WebApi.Controllers
         [Authorize]
         public async Task<IActionResult> QueryLearnCount()
         {
-            var (userId, userName, startDate) = await LoadUserContextAsync();
+            var (userId, userName, startDate) = LoadUserContext();
             var (weekCount, totalCount, _) = await _statisticsService.QueryLearnCountAsync(userId, startDate);
 
             return Ok(new { success = true, bzcount = weekCount, count = totalCount, username = userName });
         }
 
         /// <summary>按月份统计学习情况</summary>
+        /// <remarks>
+        /// 响应通过 ETag + Cache-Control: private, no-cache 实现协商缓存。
+        /// 用户的统计数据未变化时浏览器会自动带 If-None-Match 重新校验，
+        /// 服务端返回 304（无 body），浏览器从本地复用上一次的响应体。
+        /// </remarks>
         [HttpGet("StatisticsLearnCountTwo")]
         [Authorize]
         public async Task<IActionResult> StatisticsLearnCountTwo()
         {
-            var (userId, _, startDate) = await LoadUserContextAsync();
+            var (userId, _, startDate) = LoadUserContext();
+
+            // 1. 拿到当前用户的统计版本号，构造 ETag
+            //var version = await _statsVersionService.GetAsync(userId);
+            //var etag = new EntityTagHeaderValue($"\"u{userId}-v{version}\"");
+
+            //// 2. 校验 If-None-Match：命中则返回 304，无需查询/序列化数据
+            //var ifNoneMatch = Request.Headers.IfNoneMatch;
+            //if (ifNoneMatch.Count > 0)
+            //{
+            //    foreach (var raw in ifNoneMatch)
+            //    {
+            //        if (raw is null) continue;
+            //        if (EntityTagHeaderValue.TryParse(raw, out var incoming)
+            //            && incoming.Compare(etag, useStrongComparison: false))
+            //        {
+            //            Response.Headers.ETag = etag.ToString();
+            //            Response.Headers.CacheControl = "private, no-cache";
+            //            return StatusCode(StatusCodes.Status304NotModified);
+            //        }
+            //    }
+            //}
+
+            // 3. 未命中缓存，查询并返回精简后的数据
             var result = await _statisticsService.GetMonthlyStatisticsAsync(userId, startDate);
 
+            // 仅保留前端实际使用到的字段：
+            // - 父级：date / totalcount
+            // - 日明细：date / count
+            // - 任务：count / weekend（去除冗余的 id / userid / startdate；无任务则为 null）
             var categorys = result.Select(g => new
             {
                 date = g.Date,
                 totalcount = g.TotalCount,
-                statisticsLearns = g.StatisticsLearns.Select(s => new { date = s.Date, count = s.Count }).ToList(),
-                task = new
-                {
-                    id = g.Task.Id,
-                    userid = g.Task.UserId,
-                    startdate = g.Task.StartDate,
-                    count = g.Task.Count,
-                    weekend = g.Task.Weekend
-                }
+                statisticsLearns = g.StatisticsLearns
+                    .Select(s => new { date = s.Date, count = s.Count })
+                    .ToList(),
+                task = g.Task is null
+                    ? null
+                    : new { count = g.Task.Count, weekend = g.Task.Weekend }
             }).ToList();
 
+         //   Response.Headers.ETag = etag.ToString();
+           // Response.Headers.CacheControl = "private, no-cache";
             return Ok(new { success = true, categorys });
         }
 

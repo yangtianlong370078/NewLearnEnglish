@@ -1,8 +1,10 @@
+using System.IO.Compression;
 using LearnEnglish.Application;
 using LearnEnglish.Extensions;
 using LearnEnglish.Infrastructure;
 using LearnEnglish.Infrastructure.HealthChecks;
 using LearnEnglish.Middleware;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.OpenApi;
 using Serilog;
 using Serilog.Events;
@@ -77,6 +79,20 @@ try
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddHttpClient();
 
+    // ========== 响应压缩（Brotli / Gzip） ==========
+    // JSON 文本压缩率通常 80–90%，对 /api/Statistics/StatisticsLearnCountTwo
+    // 这类返回较大的接口收益尤其明显。EnableForHttps 在内网/受信任前端场景安全。
+    builder.Services.AddResponseCompression(options =>
+    {
+        options.EnableForHttps = true;
+        options.Providers.Add<BrotliCompressionProvider>();
+        options.Providers.Add<GzipCompressionProvider>();
+        options.MimeTypes = ResponseCompressionDefaults.MimeTypes
+            .Concat(new[] { "application/json" });
+    });
+    builder.Services.Configure<BrotliCompressionProviderOptions>(o => o.Level = CompressionLevel.Fastest);
+    builder.Services.Configure<GzipCompressionProviderOptions>(o => o.Level = CompressionLevel.Fastest);
+
     // CORS：API 一般放开限制，按需调整
     builder.Services.AddCors(options =>
     {
@@ -128,6 +144,9 @@ try
     });
 
     app.UseHttpsRedirection();
+
+    // 必须在 UseRouting / UseCors 之前启用压缩
+    app.UseResponseCompression();
 
     app.UseSerilogRequestLogging(options =>
     {

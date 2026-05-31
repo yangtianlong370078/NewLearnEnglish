@@ -10,7 +10,8 @@ namespace LearnEnglish.Application.Dtos.Statistics
         public int Month => Date.Month;
         public List<StatisticsLearnDto> StatisticsLearns { get; set; } = new();
         public int TotalCount { get; set; }
-        public LearnTaskDto Task { get; set; } = new();
+        /// <summary>该月份对应的任务；未配置任务时为 null</summary>
+        public LearnTaskDto? Task { get; set; }
     }
 
     /// <summary>
