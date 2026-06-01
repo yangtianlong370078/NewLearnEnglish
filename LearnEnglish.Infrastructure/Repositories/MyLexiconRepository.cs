@@ -74,6 +74,30 @@ namespace LearnEnglish.Infrastructure.Repositories
             });
         }
 
+        public async Task UpsertOrInsertNumberAsync(int userId, int lexiconId,  int status)
+        {
+            (int no, string zynumber, string yznumber, string txnumber, string fynumber) = status switch
+            {
+                1 => (0, "CASE WHEN zynumber >0 THEN 0 ELSE zynumber END", "CASE WHEN yznumber >0 THEN 0 ELSE yznumber END", "CASE WHEN txnumber >0 THEN 0 ELSE txnumber END", "CASE WHEN fynumber >0 THEN 0 ELSE fynumber END"),
+                2 => (5, "CASE WHEN zynumber <> 5 THEN 5 ELSE zynumber END", "CASE WHEN yznumber <> 5 THEN 5 ELSE yznumber END", "CASE WHEN txnumber <> 5 THEN 5 ELSE txnumber END", "CASE WHEN fynumber <> 5 THEN 5 ELSE fynumber END"),
+                3 => (10, "CASE WHEN zynumber < 10 THEN 10 ELSE zynumber END", "CASE WHEN yznumber < 10 THEN 10 ELSE yznumber END", "CASE WHEN txnumber < 10 THEN 10 ELSE txnumber END", "CASE WHEN fynumber < 10 THEN 10 ELSE fynumber END"),
+                _ => (0, "zynumber", "yznumber", "txnumber", "fynumber")
+            };
+
+            string instLexicon = $@"INSERT INTO mylexicon (userId, lexiconId, zynumber,yznumber,txnumber,fynumber,updatetime,ishand,status)
+                                    VALUES ({userId},@lexiconId,@number,@number,@number,@number,now(),1,{status})
+                                    ON DUPLICATE KEY UPDATE  
+                                    zynumber = {zynumber},
+                                    yznumber = {yznumber},
+                                    txnumber = {txnumber},
+                                    fynumber = {fynumber},
+                                    updatetime=now(),
+                                    ishand =1,
+                                    status = {status}; ";
+
+             await ExecuteAsync(instLexicon, new { number = no, lexiconId = lexiconId });
+        }
+
         public async Task UpsertNumberAsync(int userId, int lexiconId, string numberField, int number, int status)
         {
             var validFields = new HashSet<string> { "zynumber", "yznumber", "txnumber", "fynumber" };
@@ -83,19 +107,18 @@ namespace LearnEnglish.Infrastructure.Repositories
             }
 
             var sql = $@"INSERT INTO `mylexicon` 
-                (lexiconId, userId, status, {numberField}, ishand, updatetime, updatedate) 
-                VALUES (@LexiconId, @UserId, @Status, @NumberValue, 1, @UpdateTime, @UpdateDate) 
+                (lexiconId, userId, status, {numberField}, ishand, updatetime) 
+                VALUES (@LexiconId, @UserId, @Status, @NumberValue, 1, @UpdateTime) 
                 ON DUPLICATE KEY UPDATE 
                 status = VALUES(status), {numberField} = VALUES({numberField}), 
-                ishand = 1, updatetime = VALUES(updatetime), updatedate = VALUES(updatedate)";
+                ishand = 1, updatetime = VALUES(updatetime)";
             await ExecuteAsync(sql, new
             {
                 LexiconId = lexiconId,
                 UserId = userId,
                 Status = status,
                 NumberValue = number,
-                UpdateTime = DateTime.Now,
-                UpdateDate = DateTime.Today
+                UpdateTime = DateTime.Now
             });
         }
 

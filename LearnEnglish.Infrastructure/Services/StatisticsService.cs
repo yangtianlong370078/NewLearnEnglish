@@ -17,17 +17,19 @@ namespace LearnEnglish.Infrastructure.Services
         private readonly ILearnTaskRepository _learnTaskRepository;
         private readonly IRedisService _redisService;
         private readonly ILogger<StatisticsService> _logger;
-
+        private readonly IStatisticsVersionService _statsVersionService;
         public StatisticsService(
             IMyLearnRepository myLearnRepository,
             ILearnTaskRepository learnTaskRepository,
             IRedisService redisService,
-            ILogger<StatisticsService> logger)
+            ILogger<StatisticsService> logger,
+            IStatisticsVersionService statsVersionService)
         {
             _myLearnRepository = myLearnRepository;
             _learnTaskRepository = learnTaskRepository;
             _redisService = redisService;
             _logger = logger;
+            _statsVersionService = statsVersionService;
         }
 
         /// <inheritdoc/>
@@ -62,7 +64,7 @@ namespace LearnEnglish.Infrastructure.Services
             var queryDate = startDate.Date;
             if (cachedStats.Count > 0)
             {
-                queryDate = cachedStats.Max(a => a.Date);
+                queryDate = cachedStats.Max(a => a.Date).Date;
             }
 
             // 从数据库获取学习记录
@@ -73,16 +75,22 @@ namespace LearnEnglish.Infrastructure.Services
                 Count = x.Count
             }).ToList();
 
-            // 合并：数据库数据优先，缓存非当天数据
+            // 合并：数据库数据优先，缓存
             var nowDate = DateTime.Now.Date;
             if (dbStatsList.Count > 0)
             {
-                var toCache = dbStatsList.Where(a => a.Date < nowDate).ToList();
+                var toCache = dbStatsList.Where(a => a.Date <= nowDate).ToList();
                 if (toCache.Count > 0)
                 {
                     // 合并到缓存
+                    //var merged = toCache.ToDictionary(t => t.Date)
+                    //    .Union(cachedStats.ToDictionary(t => t.Date))
+                    //    .Select(kv => kv.Value)
+                    //    .ToList();
+
+
+                    //只做增量更新
                     var merged = toCache.ToDictionary(t => t.Date)
-                        .Union(cachedStats.ToDictionary(t => t.Date))
                         .Select(kv => kv.Value)
                         .ToList();
 
@@ -140,6 +148,9 @@ namespace LearnEnglish.Infrastructure.Services
         public async Task SaveTaskAsync(int userId, int count, int weekend, DateTime date)
         {
             var existing = await _learnTaskRepository.GetByUserIdAndMonthAsync(userId, date.Year, date.Month);
+
+            // 让统计 ETag 失效，触发前端拿到 200 + 新数据
+            await _statsVersionService.BumpAsync(userId);
 
             if (existing != null)
             {
