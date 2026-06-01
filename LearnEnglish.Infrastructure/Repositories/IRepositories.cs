@@ -116,6 +116,8 @@ namespace LearnEnglish.Infrastructure.Repositories
         Task SetCollectAsync(int userId, int lexiconId, int isCollect);
         Task UpdateStatusAsync(int userId, int lexiconId, int status);
         Task UpsertNumberAsync(int userId, int lexiconId, string numberField, int number, int status);
+
+        Task UpsertOrInsertNumberAsync(int userId, int lexiconId, int status);
         Task BatchUpsertNumbersAsync(int userId, Dictionary<int, int> lexiconNumbers, string numberField);
         Task<int> GetFavoriteCountAsync(int userId);
         /// <summary>
@@ -202,6 +204,8 @@ namespace LearnEnglish.Infrastructure.Repositories
         Task<IEnumerable<(DateTime Date, int Count)>> GetDailyCountByUserIdAndDatesAsync(int userId, IEnumerable<DateTime> dates);
         Task InsertIgnoreAsync(MyLearn myLearn);
         Task DeleteByUserAndLexiconAsync(int userId, int lexiconId);
+
+        Task<DateTime?> QueryByUserAndLexiconAsync(int userId, int lexiconId);
         Task BulkInsertIgnoreAsync(IEnumerable<MyLearn> records);
         Task BulkDeleteByUserAndLexiconIdsAsync(int userId, IEnumerable<int> lexiconIds);
     }

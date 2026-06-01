@@ -68,25 +68,25 @@ namespace LearnEnglish.WebApi.Controllers
             var (userId, _, startDate) = LoadUserContext();
 
             // 1. 拿到当前用户的统计版本号，构造 ETag
-            //var version = await _statsVersionService.GetAsync(userId);
-            //var etag = new EntityTagHeaderValue($"\"u{userId}-v{version}\"");
+            var version = await _statsVersionService.GetAsync(userId);
+            var etag = new EntityTagHeaderValue($"\"u{userId}-v{version}\"");
 
-            //// 2. 校验 If-None-Match：命中则返回 304，无需查询/序列化数据
-            //var ifNoneMatch = Request.Headers.IfNoneMatch;
-            //if (ifNoneMatch.Count > 0)
-            //{
-            //    foreach (var raw in ifNoneMatch)
-            //    {
-            //        if (raw is null) continue;
-            //        if (EntityTagHeaderValue.TryParse(raw, out var incoming)
-            //            && incoming.Compare(etag, useStrongComparison: false))
-            //        {
-            //            Response.Headers.ETag = etag.ToString();
-            //            Response.Headers.CacheControl = "private, no-cache";
-            //            return StatusCode(StatusCodes.Status304NotModified);
-            //        }
-            //    }
-            //}
+            // 2. 校验 If-None-Match：命中则返回 304，无需查询/序列化数据
+            var ifNoneMatch = Request.Headers.IfNoneMatch;
+            if (ifNoneMatch.Count > 0)
+            {
+                foreach (var raw in ifNoneMatch)
+                {
+                    if (raw is null) continue;
+                    if (EntityTagHeaderValue.TryParse(raw, out var incoming)
+                        && incoming.Compare(etag, useStrongComparison: false))
+                    {
+                        Response.Headers.ETag = etag.ToString();
+                        Response.Headers.CacheControl = "private, no-cache";
+                        return StatusCode(StatusCodes.Status304NotModified);
+                    }
+                }
+            }
 
             // 3. 未命中缓存，查询并返回精简后的数据
             var result = await _statisticsService.GetMonthlyStatisticsAsync(userId, startDate);
@@ -107,15 +107,16 @@ namespace LearnEnglish.WebApi.Controllers
                     : new { count = g.Task.Count, weekend = g.Task.Weekend }
             }).ToList();
 
-         //   Response.Headers.ETag = etag.ToString();
-           // Response.Headers.CacheControl = "private, no-cache";
+            Response.Headers.ETag = etag.ToString();
+            Response.Headers.CacheControl = "private, no-cache";
             return Ok(new { success = true, categorys });
         }
 
         /// <summary>保存/更新月度学习任务</summary>
+        ///weekend:0不休息，1周六休息2周日休息3，周六周日都休息
         [HttpPost("SaveLearntask")]
         [Authorize]
-        public async Task<IActionResult> SaveLearntask(int id, int count, DateTime date, int type, int weekend)
+        public async Task<IActionResult> SaveLearntask(int id, int count, DateTime date, int weekend)
         {
             var userId = RequireUserId();
             await _statisticsService.SaveTaskAsync(userId, count, weekend, date);

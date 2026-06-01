@@ -32,6 +32,32 @@ try
 
     var builder = WebApplication.CreateBuilder(args);
 
+
+// 1. 添加 CORS 服务
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins", policy =>
+    {
+        // 允许所有来源、请求头、请求方法，开发环境使用
+        policy.AllowAnyOrigin()
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+
+    // 【生产环境推荐】指定域名，不要用 AllowAnyOrigin
+    // options.AddPolicy("AllowSpecificOrigins", policy =>
+    // {
+    //     policy.WithOrigins(
+    //         "http://localhost:3001",
+    //         "http://172.16.31.11:3001" // 你的 Next 地址
+    //     )
+    //     .AllowAnyHeader()
+    //     .AllowAnyMethod()
+    //     .AllowCredentials(); // 如果使用 Cookie/JWT 凭证必须开启
+    // });
+});
+
+
     // ========== 2. 使用 Serilog ==========
     builder.Host.UseSerilog();
 
@@ -159,6 +185,9 @@ try
             return LogEventLevel.Information;
         };
     });
+
+    // 2. 启用 CORS 中间件（⚠️ 顺序很重要：放在路由之前）
+app.UseCors("AllowAllOrigins"); 
 
     app.UseRouting();
     app.UseCors("ApiCorsPolicy");

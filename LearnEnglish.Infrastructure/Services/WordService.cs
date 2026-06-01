@@ -1,5 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
+
+using LearnEnglish.Application.Dtos.Statistics;
 using LearnEnglish.Application.Dtos.Word;
 using LearnEnglish.Application.Interfaces;
 using LearnEnglish.Domain.Common;
@@ -7,7 +9,9 @@ using LearnEnglish.Domain.Entities;
 using LearnEnglish.Infrastructure.MongoDB;
 using LearnEnglish.Infrastructure.Redis;
 using LearnEnglish.Infrastructure.Repositories;
+
 using Microsoft.Extensions.Logging;
+
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -154,15 +158,9 @@ namespace LearnEnglish.Infrastructure.Services
         /// <inheritdoc/>
         public async Task SetWordStatusAsync(int userId, int lexiconId, int status)
         {
-            // 根据目标状态设置各维度默认值
-            int numberValue = status switch
-            {
-                2 => 5,   // 未牢记 → 设为5
-                3 => 10,  // 已掌握 → 设为10
-                _ => 0    // 未学习 → 清零
-            };
+            await _myLexiconRepository.UpsertOrInsertNumberAsync(userId, lexiconId, status);
 
-            await _myLexiconRepository.UpsertNumberAsync(userId, lexiconId, "zynumber", numberValue, status);
+            var keys = new List<(DateTime Date, int Count)>();
 
             // 处理 mylearn 记录
             if (status == 3)
@@ -173,14 +171,37 @@ namespace LearnEnglish.Infrastructure.Services
                     UserId = userId,
                     UpdateTime = DateTime.Now
                 });
+
+                keys.Add((DateTime.Now.Date, 0));
             }
             else
             {
+                var update = await _myLearnRepository.QueryByUserAndLexiconAsync(userId, lexiconId);
+
+                if (update != null)
+                {
+                    keys.Add((update.Value.Date, 0));
+                }
+
                 await _myLearnRepository.DeleteByUserAndLexiconAsync(userId, lexiconId);
             }
 
-            // 更新 Redis 统计缓存
-            await UpdateStatisticsCacheAsync(userId, new[] { lexiconId });
+            if (keys.Count > 0)
+            {
+                var result = (await _myLearnRepository.GetDailyCountByUserIdAndDatesAsync(userId, keys.Select(a => a.Date))).ToList();
+
+                if (result.Count > 0)
+                {
+                    for (int i = 0; i < keys.Count; i++)
+                    {
+                        var match = result.FirstOrDefault(a => a.Date == keys[i].Date);
+                        keys[i] = (keys[i].Date, match.Count);
+                    }
+                }
+
+                // 更新 Redis 统计缓存
+                await UpdateStatisticsCacheAsync(userId, keys);
+            }
         }
 
         /// <inheritdoc/>
@@ -291,6 +312,30 @@ namespace LearnEnglish.Infrastructure.Services
         }
 
         /// <summary>
+        /// 更新 Redis 统计缓存 真实更新
+        /// </summary>
+        private async Task UpdateStatisticsCacheAsync(int userId, IEnumerable<(DateTime Date, int Count)> values)
+        {
+            // 统计缓存更新逻辑：移除今天的缓存，让下次查询时重新计算
+            var key = $"categorys:user_{userId}";
+            // 让统计 ETag 失效，触发前端拿到 200 + 新数据
+            await _statsVersionService.BumpAsync(userId);
+
+            foreach (var item in values)
+            {
+                var field = item.Date.ToString("yyyy-MM-dd");
+                var data = new StatisticsLearnDto
+                {
+                    Date = item.Date,
+                    Count = item.Count
+                };
+                var json = JsonConvert.SerializeObject(data);
+                await _redisService.HashSetAsync(key, field, json);
+            }
+
+        }
+
+        /// <summary>
         /// 更新 Redis 统计缓存
         /// </summary>
         private async Task UpdateStatisticsCacheAsync(int userId, IEnumerable<int> lexiconIds)
@@ -300,7 +345,9 @@ namespace LearnEnglish.Infrastructure.Services
 
             // 让统计 ETag 失效，触发前端拿到 200 + 新数据
             await _statsVersionService.BumpAsync(userId);
+
             var today = DateTime.Now.Date.ToString("yyyy-MM-dd");
+
             await _redisService.HashDeleteAsync(key, today);
         }
 

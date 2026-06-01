@@ -1,6 +1,15 @@
+using System.Transactions;
+
 using Dapper;
+
 using LearnEnglish.Domain.Entities;
 using LearnEnglish.Infrastructure.Data;
+
+using MongoDB.Driver;
+
+using MySql.Data.MySqlClient;
+
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace LearnEnglish.Infrastructure.Repositories
 {
@@ -45,8 +54,9 @@ namespace LearnEnglish.Infrastructure.Repositories
 
         public async Task InsertIgnoreAsync(MyLearn myLearn)
         {
-            const string sql = @"INSERT IGNORE INTO `mylearn` (lexiconId, userId, updatetime, updatedate) 
-                VALUES (@LexiconId, @UserId, @UpdateTime, @UpdateDate)";
+           
+            const string sql = @"INSERT IGNORE INTO `mylearn` (lexiconId, userId, updatetime) 
+                VALUES (@LexiconId, @UserId, @UpdateTime)";
             await ExecuteAsync(sql, myLearn);
         }
 
@@ -54,6 +64,18 @@ namespace LearnEnglish.Infrastructure.Repositories
         {
             const string sql = "DELETE FROM `mylearn` WHERE userId = @UserId AND lexiconId = @LexiconId";
             await ExecuteAsync(sql, new { UserId = userId, LexiconId = lexiconId });
+        }
+
+        /// <summary>
+        /// 查询此单词之前在哪一天学习过
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="lexiconId"></param>
+        /// <returns></returns>
+        public async Task<DateTime?> QueryByUserAndLexiconAsync(int userId, int lexiconId)
+        {
+            const string sql = "SELECT updatedate  FROM `mylearn` WHERE userId = @UserId AND lexiconId = @LexiconId";
+            return await QueryFirstOrDefaultAsync< DateTime?> (sql, new { UserId = userId, LexiconId = lexiconId });
         }
 
         public async Task BulkInsertIgnoreAsync(IEnumerable<MyLearn> records)
