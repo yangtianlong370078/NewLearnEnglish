@@ -64,51 +64,57 @@ namespace LearnEnglish.Infrastructure.Services
             var queryDate = startDate.Date;
             if (cachedStats.Count > 0)
             {
-                queryDate = cachedStats.Max(a => a.Date).Date;
+                queryDate = cachedStats.Max(a => a.Date).Date.AddDays(1).AddSeconds(-1);
             }
 
-            // 从数据库获取学习记录
-            var dbStats = await _myLearnRepository.GetDailyCountByUserIdAsync(userId, queryDate);
-            var dbStatsList = dbStats.Select(x => new StatisticsLearnDto
-            {
-                Date = x.Date,
-                Count = x.Count
-            }).ToList();
+            var dbStatsList = new List<StatisticsLearnDto>();
 
-            // 合并：数据库数据优先，缓存
-            var nowDate = DateTime.Now.Date;
-            if (dbStatsList.Count > 0)
+            //缓存中没有或者缓存中数据小于今天，更新一次
+            if (cachedStats == null || !cachedStats.Any() || queryDate < DateTime.Now.Date)
             {
-                var toCache = dbStatsList.Where(a => a.Date <= nowDate).ToList();
-                if (toCache.Count > 0)
+                // 从数据库获取学习记录
+                var dbStats = await _myLearnRepository.GetDailyCountByUserIdAsync(userId, queryDate);
+                dbStatsList = dbStats.Select(x => new StatisticsLearnDto
                 {
-                    // 合并到缓存
-                    //var merged = toCache.ToDictionary(t => t.Date)
-                    //    .Union(cachedStats.ToDictionary(t => t.Date))
-                    //    .Select(kv => kv.Value)
-                    //    .ToList();
+                    Date = x.Date,
+                    Count = x.Count
+                }).ToList();
 
-
-                    //只做增量更新
-                    var merged = toCache.ToDictionary(t => t.Date)
-                        .Select(kv => kv.Value)
-                        .ToList();
-
-                    // 异步写入 Redis
-                    _ = Task.Run(async () =>
+                // 合并：数据库数据优先，缓存
+                var nowDate = DateTime.Now.Date.AddDays(1).AddSeconds(-1);
+                if (dbStatsList.Count > 0)
+                {
+                    var toCache = dbStatsList.Where(a => a.Date <= nowDate).ToList();
+                    if (toCache.Count > 0)
                     {
-                        foreach (var item in merged)
+                        // 合并到缓存
+                        //var merged = toCache.ToDictionary(t => t.Date)
+                        //    .Union(cachedStats.ToDictionary(t => t.Date))
+                        //    .Select(kv => kv.Value)
+                        //    .ToList();
+
+
+                        //只做增量更新
+                        var merged = toCache.ToDictionary(t => t.Date)
+                            .Select(kv => kv.Value)
+                            .ToList();
+
+                        // 异步写入 Redis
+                        _ = Task.Run(async () =>
                         {
-                            var field = item.Date.ToString("yyyy-MM-dd");
-                            var json = JsonConvert.SerializeObject(item);
-                            await _redisService.HashSetAsync(key, field, json);
-                        }
-                    });
+                            foreach (var item in merged)
+                            {
+                                var field = item.Date.ToString("yyyy-MM-dd");
+                                var json = JsonConvert.SerializeObject(item);
+                                await _redisService.HashSetAsync(key, field, json);
+                            }
+                        });
+                    }
                 }
             }
 
             // 合并所有数据
-            var allStats = new List<StatisticsLearnDto>(cachedStats);
+            var allStats = cachedStats ?? new List<StatisticsLearnDto>();
             allStats.AddRange(dbStatsList);
             // 去重：以日期为Key，取最新值
             allStats = allStats.GroupBy(x => x.Date).Select(g => g.Last()).ToList();
