@@ -35,7 +35,7 @@ namespace LearnEnglish.Infrastructure.Repositories
         {
             const string sql = @"SELECT updatedate AS `Date`, COUNT(1) AS `Count` 
                 FROM `mylearn` 
-                WHERE userId = @UserId AND updatedate >= @StartDate 
+                WHERE userId = @UserId AND updatedate > @StartDate 
                 GROUP BY updatedate 
                 ORDER BY updatedate";
             return await QueryAsync<(DateTime Date, int Count)>(sql,
