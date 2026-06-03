@@ -3,8 +3,16 @@ using LearnEnglish.Application.Interfaces;
 using LearnEnglish.Domain.Entities;
 using LearnEnglish.Infrastructure.Redis;
 using LearnEnglish.Infrastructure.Repositories;
+
 using Microsoft.Extensions.Logging;
+
+using MongoDB.Bson.IO;
+
 using Newtonsoft.Json;
+
+using SharpCompress.Common;
+
+using static Mysqlx.Expect.Open.Types.Condition.Types;
 
 namespace LearnEnglish.Infrastructure.Services
 {
@@ -54,6 +62,42 @@ namespace LearnEnglish.Infrastructure.Services
             return (weekCount, totalCount, string.Empty);
         }
 
+        public async Task<StudyStatisticsDto> GetStudyStatistics(int userId)
+        {
+            var studyKey = $"studystatistics:user_{userId}";
+            var statsKey = $"categorys:user_{userId}";
+
+            // 两个不同 Redis key，并行读取，减少一次网络等待
+            // GetMinMaxCachedStatAsync 内部用 HKEYS+HMGET 替代 HGETALL，只取首尾两条记录
+            var studyTask = GetStudyStatistics(studyKey);
+            var minMaxTask = GetMinMaxCachedStatAsync(statsKey);
+            await Task.WhenAll(studyTask, minMaxTask);
+
+            var result = studyTask.Result;
+            if (result == null)
+            {
+                result = await _myLearnRepository.GetStudyStatistics(userId);
+                // 回填缓存，fire-and-forget，写失败不影响主流程
+                var json = Newtonsoft.Json.JsonConvert.SerializeObject(result);
+                _ = _redisService.HashSetAsync(studyKey, "data", json);
+            }
+
+            // 计算日均增长率
+            var (minStat, maxStat) = minMaxTask.Result;
+            if (minStat != null && maxStat != null)
+            {
+                var days = (DateTime.Today - minStat.Date).Days;
+                var average = days > 0 ? result.MasteredCount / (double)days : 0;
+                var todayCount = maxStat.Date == DateTime.Now.Date ? maxStat.Count : 0;
+                result.TodayCount = todayCount;
+                result.GrowthRate = average == 0
+                    ? 0
+                    : Math.Round((todayCount - average) / average * 100, 2);
+            }
+
+            return result;
+        }
+
         /// <inheritdoc/>
         public async Task<List<StatisticsLearnGroupDto>> GetMonthlyStatisticsAsync(int userId, DateTime startDate)
         {
@@ -99,23 +143,22 @@ namespace LearnEnglish.Infrastructure.Services
                             .Select(kv => kv.Value)
                             .ToList();
 
-                        // 异步写入 Redis
-                        _ = Task.Run(async () =>
-                        {
-                            foreach (var item in merged)
-                            {
-                                var field = item.Date.ToString("yyyy-MM-dd");
-                                var json = JsonConvert.SerializeObject(item);
-                                await _redisService.HashSetAsync(key, field, json);
-                            }
-                        });
+                        // 批量写入 Redis（单次 HSET，N 条数据只需 1 次网络往返）
+                        var batchFields = merged.ToDictionary(
+                            item => item.Date.ToString("yyyy-MM-dd"),
+                            item => Newtonsoft.Json.JsonConvert.SerializeObject(item));
+                        _ = _redisService.HashSetBatchAsync(key, batchFields);
                     }
                 }
             }
 
             // 合并所有数据
             var allStats = cachedStats ?? new List<StatisticsLearnDto>();
-            allStats.AddRange(dbStatsList);
+            if(dbStatsList!=null&& dbStatsList.Any())
+            {
+                allStats.AddRange(dbStatsList);
+            }
+           
             // 去重：以日期为Key，取最新值
             allStats = allStats.GroupBy(x => x.Date).Select(g => g.Last()).ToList();
 
@@ -180,6 +223,22 @@ namespace LearnEnglish.Infrastructure.Services
             }
         }
 
+
+        /// <summary>
+        /// 从 Redis 获取缓存的学习统计
+        /// </summary>
+        private async Task<StudyStatisticsDto?> GetStudyStatistics(string key)
+        {
+            var entries = await _redisService.HashGetAllAsync(key);
+            if (entries != null && entries.TryGetValue("data", out var json))
+            {
+                return Newtonsoft.Json.JsonConvert.DeserializeObject<StudyStatisticsDto>(json);
+            }
+
+            return null;
+        }
+
+
         /// <summary>
         /// 从 Redis 获取缓存的学习统计
         /// </summary>
@@ -192,7 +251,7 @@ namespace LearnEnglish.Infrastructure.Services
             {
                 foreach (var entry in entries)
                 {
-                    var data = JsonConvert.DeserializeObject<StatisticsLearnDto>(entry.Value.ToString()!);
+                    var data = Newtonsoft.Json.JsonConvert.DeserializeObject<StatisticsLearnDto>(entry.Value.ToString()!);
                     if (data != null)
                     {
                         result.Add(data);
@@ -201,6 +260,38 @@ namespace LearnEnglish.Infrastructure.Services
             }
 
             return result.OrderBy(d => d.Date).ToList();
+        }
+
+        /// <summary>
+        /// 仅读取缓存中日期最小和最大的两条记录
+        /// 用 HKEYS（只取字段名）+ HMGET（只取2个值）代替 HGETALL，
+        /// 数据量和反序列化开销均大幅降低
+        /// </summary>
+        private async Task<(StatisticsLearnDto? min, StatisticsLearnDto? max)> GetMinMaxCachedStatAsync(string key)
+        {
+            var fields = (await _redisService.HashKeysAsync(key)).ToList();
+            if (fields.Count == 0) return (null, null);
+
+            // "yyyy-MM-dd" 格式可直接按字符串排序，等价于日期排序
+            fields.Sort(StringComparer.Ordinal);
+            var minField = fields[0];
+            var maxField = fields[fields.Count - 1];
+
+            // 同一 key 的两个 field，HMGET 单次请求取回
+            var values = await _redisService.HashMultiGetAsync(key, minField, maxField);
+
+            StatisticsLearnDto? minStat = null, maxStat = null;
+            if (values.TryGetValue(minField, out var minJson) && minJson != null)
+                minStat = Newtonsoft.Json.JsonConvert.DeserializeObject<StatisticsLearnDto>(minJson);
+
+            // 只有一条记录时 minField == maxField，复用 minStat 即可
+            if (minField == maxField)
+                return (minStat, minStat);
+
+            if (values.TryGetValue(maxField, out var maxJson) && maxJson != null)
+                maxStat = Newtonsoft.Json.JsonConvert.DeserializeObject<StatisticsLearnDto>(maxJson);
+
+            return (minStat, maxStat);
         }
 
         /// <summary>

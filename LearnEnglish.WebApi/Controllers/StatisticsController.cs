@@ -1,4 +1,6 @@
 using LearnEnglish.Application.Interfaces;
+using LearnEnglish.Domain.Entities;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
@@ -112,9 +114,55 @@ namespace LearnEnglish.WebApi.Controllers
             return Ok(new { success = true, categorys });
         }
 
-        /// <summary>保存/更新月度学习任务</summary>
-        ///weekend:0不休息，1周六休息2周日休息3，周六周日都休息
-        [HttpPost("SaveLearntask")]
+
+        /// <summary>
+        /// 获取学习统计 KPI 数据（掌握数/未熟练/强化中/今日学习/增长率）。
+        /// </summary>
+        /// <remarks>
+        /// 响应通过 ETag + Cache-Control: private, no-cache 实现协商缓存。
+        /// ETag 使用 "kpi-u{userId}-v{version}" 前缀，与 StatisticsLearnCountTwo 的
+        /// "u{userId}-v{version}" 相互独立，不会产生命中冲突。
+        /// </remarks>
+        [HttpGet("GetStudyStatistics")]
+        [Authorize]
+        public async Task<IActionResult> GetStudyStatistics()
+        {
+            var userId = RequireUserId();
+
+            // 1. 构造 KPI 专用 ETag（加 "kpi-" 前缀与月统计接口区分）
+            var version = await _statsVersionService.GetAsync(userId);
+            var etag = new EntityTagHeaderValue($"\"kpi-u{userId}-v{version}\"");
+
+            // 2. 校验 If-None-Match：命中则返回 304
+            var ifNoneMatch = Request.Headers.IfNoneMatch;
+            if (ifNoneMatch.Count > 0)
+            {
+                foreach (var raw in ifNoneMatch)
+                {
+                    if (raw is null) continue;
+                    if (EntityTagHeaderValue.TryParse(raw, out var incoming)
+                        && incoming.Compare(etag, useStrongComparison: false))
+                    {
+                        Response.Headers.ETag = etag.ToString();
+                        Response.Headers.CacheControl = "private, no-cache";
+                        return StatusCode(StatusCodes.Status304NotModified);
+                    }
+                }
+            }
+
+            // 3. 未命中缓存，查询并返回
+            var studyStatistics = await _statisticsService.GetStudyStatistics(userId);
+
+            Response.Headers.ETag = etag.ToString();
+            Response.Headers.CacheControl = "private, no-cache";
+            return Ok(new { success = true, studyStatistics });
+        }
+
+
+
+            /// <summary>保存/更新月度学习任务</summary>
+            ///weekend:0不休息，1周六休息2周日休息3，周六周日都休息
+            [HttpPost("SaveLearntask")]
         [Authorize]
         public async Task<IActionResult> SaveLearntask(int id, int count, DateTime date, int weekend)
         {

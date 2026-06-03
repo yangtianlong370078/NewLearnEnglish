@@ -39,4 +39,5 @@ namespace LearnEnglish.Application.Dtos.Statistics
         public int Year => StartDate.Year;
         public int Month => StartDate.Month;
     }
+
 }

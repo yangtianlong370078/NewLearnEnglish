@@ -2,6 +2,7 @@ using System.Transactions;
 
 using Dapper;
 
+using LearnEnglish.Application.Dtos.Statistics;
 using LearnEnglish.Domain.Entities;
 using LearnEnglish.Infrastructure.Data;
 
@@ -30,6 +31,23 @@ namespace LearnEnglish.Infrastructure.Repositories
             return result;
         }
 
+        /// <summary>
+        /// 学习数量统计
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        public async Task<StudyStatisticsDto> GetStudyStatistics(int userId)
+        {
+            const string sql = @"select
+  SUM(IF(`status`=2,1,0)) AS UnskilledCount,
+  SUM(IF(`status`=3,1,0)) AS MasteredCount,
+  SUM(IF(iscollect=1,1,0)) AS ReinforcementCount
+FROM mylexicon
+WHERE userId = @UserId";
+            return (await QueryFirstOrDefaultAsync<StudyStatisticsDto>(sql,
+                new { UserId = userId }))??new StudyStatisticsDto();
+        }
+
         public async Task<IEnumerable<(DateTime Date, int Count)>> GetDailyCountByUserIdAsync(
             int userId, DateTime startDate)
         {
@@ -54,7 +72,7 @@ namespace LearnEnglish.Infrastructure.Repositories
 
         public async Task InsertIgnoreAsync(MyLearn myLearn)
         {
-           
+
             const string sql = @"INSERT IGNORE INTO `mylearn` (lexiconId, userId, updatetime) 
                 VALUES (@LexiconId, @UserId, @UpdateTime)";
             await ExecuteAsync(sql, myLearn);
@@ -75,7 +93,7 @@ namespace LearnEnglish.Infrastructure.Repositories
         public async Task<DateTime?> QueryByUserAndLexiconAsync(int userId, int lexiconId)
         {
             const string sql = "SELECT updatedate  FROM `mylearn` WHERE userId = @UserId AND lexiconId = @LexiconId";
-            return await QueryFirstOrDefaultAsync< DateTime?> (sql, new { UserId = userId, LexiconId = lexiconId });
+            return await QueryFirstOrDefaultAsync<DateTime?>(sql, new { UserId = userId, LexiconId = lexiconId });
         }
 
         public async Task BulkInsertIgnoreAsync(IEnumerable<MyLearn> records)

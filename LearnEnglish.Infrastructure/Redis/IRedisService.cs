@@ -41,6 +41,11 @@ namespace LearnEnglish.Infrastructure.Redis
         Task HashSetAsync(string key, string field, string value);
 
         /// <summary>
+        /// 批量设置哈希值（单次 HSET 命令，一次 Redis 请求）
+        /// </summary>
+        Task HashSetBatchAsync(string key, IDictionary<string, string> fields);
+
+        /// <summary>
         /// 获取哈希值
         /// </summary>
         Task<string?> HashGetAsync(string key, string field);
@@ -49,6 +54,16 @@ namespace LearnEnglish.Infrastructure.Redis
         /// 获取所有哈希值
         /// </summary>
         Task<Dictionary<string, string>> HashGetAllAsync(string key);
+
+        /// <summary>
+        /// 获取 Hash 所有 field 名称（HKEYS，不返回 value，数据量小）
+        /// </summary>
+        Task<IEnumerable<string>> HashKeysAsync(string key);
+
+        /// <summary>
+        /// 批量获取指定 field 的值（HMGET，单次请求）
+        /// </summary>
+        Task<Dictionary<string, string?>> HashMultiGetAsync(string key, params string[] fields);
 
         /// <summary>
         /// 删除哈希字段
