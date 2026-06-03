@@ -1,6 +1,8 @@
 using System.Text.Json;
 using LearnEnglish.Redis;
 
+using StackExchange.Redis;
+
 namespace LearnEnglish.Infrastructure.Redis
 {
     /// <summary>
@@ -68,6 +70,13 @@ namespace LearnEnglish.Infrastructure.Redis
             return Task.CompletedTask;
         }
 
+        public Task HashSetBatchAsync(string key, IDictionary<string, string> fields)
+        {
+            var entries = fields.Select(kv => new HashEntry(kv.Key, kv.Value)).ToArray();
+            _redisConfig.SetHashSet(key, entries);
+            return Task.CompletedTask;
+        }
+
         public Task<string?> HashGetAsync(string key, string field)
         {
             var result = _redisConfig.GetHash(key, field);
@@ -89,6 +98,24 @@ namespace LearnEnglish.Infrastructure.Redis
         {
             var result = _redisConfig.DeleteHash(key, field);
             return Task.FromResult(result);
+        }
+
+        public Task<IEnumerable<string>> HashKeysAsync(string key)
+        {
+            var keys = _redisConfig.GetDatabase().HashKeys(key);
+            return Task.FromResult(keys.Select(k => k.ToString()));
+        }
+
+        public Task<Dictionary<string, string?>> HashMultiGetAsync(string key, params string[] fields)
+        {
+            var redisFields = fields.Select(f => (RedisValue)f).ToArray();
+            var values = _redisConfig.GetDatabase().HashGet(key, redisFields);
+            var dict = new Dictionary<string, string?>(fields.Length);
+            for (var i = 0; i < fields.Length; i++)
+            {
+                dict[fields[i]] = values[i].IsNullOrEmpty ? null : (string?)values[i];
+            }
+            return Task.FromResult(dict);
         }
 
         /// <summary>

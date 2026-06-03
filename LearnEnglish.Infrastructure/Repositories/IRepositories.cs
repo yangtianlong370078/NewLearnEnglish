@@ -1,4 +1,5 @@
 using LearnEnglish.Application.Dtos.Course;
+using LearnEnglish.Application.Dtos.Statistics;
 using LearnEnglish.Application.Dtos.Word;
 using LearnEnglish.Domain.Entities;
 
@@ -201,6 +202,16 @@ namespace LearnEnglish.Infrastructure.Repositories
     {
         Task<int> GetCountByUserIdSinceDateAsync(int userId, DateTime startDate);
         Task<IEnumerable<(DateTime Date, int Count)>> GetDailyCountByUserIdAsync(int userId, DateTime startDate);
+
+
+        /// <summary>
+        /// 统计数量
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <returns></returns>
+        Task<StudyStatisticsDto> GetStudyStatistics(int userId);
+
+
         Task<IEnumerable<(DateTime Date, int Count)>> GetDailyCountByUserIdAndDatesAsync(int userId, IEnumerable<DateTime> dates);
         Task InsertIgnoreAsync(MyLearn myLearn);
         Task DeleteByUserAndLexiconAsync(int userId, int lexiconId);
