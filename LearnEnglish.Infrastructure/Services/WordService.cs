@@ -6,11 +6,14 @@ using LearnEnglish.Application.Dtos.Word;
 using LearnEnglish.Application.Interfaces;
 using LearnEnglish.Domain.Common;
 using LearnEnglish.Domain.Entities;
+using LearnEnglish.Infrastructure.BackgroundServices;
 using LearnEnglish.Infrastructure.MongoDB;
 using LearnEnglish.Infrastructure.Redis;
 using LearnEnglish.Infrastructure.Repositories;
 
 using Microsoft.Extensions.Logging;
+
+using MySqlX.XDevAPI.Common;
 
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -32,6 +35,7 @@ namespace LearnEnglish.Infrastructure.Services
         private readonly IRedisService _redisService;
         private readonly ITranslateService _translateService;
         private readonly IStatisticsVersionService _statsVersionService;
+        private readonly IBackgroundTaskQueue _taskQueue;
         private readonly ILogger<WordService> _logger;
 
         // Redis 中单词详情的 Hash Key 前缀
@@ -48,6 +52,7 @@ namespace LearnEnglish.Infrastructure.Services
             IRedisService redisService,
             ITranslateService translateService,
             IStatisticsVersionService statsVersionService,
+            IBackgroundTaskQueue taskQueue,
             ILogger<WordService> logger)
         {
             _wordQueryRepository = wordQueryRepository;
@@ -60,6 +65,7 @@ namespace LearnEnglish.Infrastructure.Services
             _redisService = redisService;
             _translateService = translateService;
             _statsVersionService = statsVersionService;
+            _taskQueue = taskQueue;
             _logger = logger;
         }
 
@@ -199,8 +205,18 @@ namespace LearnEnglish.Infrastructure.Services
                     }
                 }
 
-                // 更新 Redis 统计缓存
-                await UpdateStatisticsCacheAsync(userId, keys);
+                // 将更新 Redis 统计缓存的任务加入后台队列
+                await _taskQueue.QueueBackgroundWorkItemAsync(async token =>
+                {
+                    try
+                    {
+                        await UpdateStatisticsCacheAsync(userId, keys, token);
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "统计用户数据 {UserId}失败", userId);
+                    }
+                });
             }
         }
 
@@ -309,20 +325,23 @@ namespace LearnEnglish.Infrastructure.Services
         public async Task SetCollectAsync(int userId, int lexiconId, int isCollect)
         {
             await _myLexiconRepository.SetCollectAsync(userId, lexiconId, isCollect);
+            //重新统计
+            await StudyStatisticsAsync(userId);
+            await _statsVersionService.BumpAsync(userId, "StudyStatistics");
         }
 
         /// <summary>
         /// 更新 Redis 统计缓存 真实更新
         /// </summary>
-        private async Task UpdateStatisticsCacheAsync(int userId, IEnumerable<(DateTime Date, int Count)> values)
+        private async Task UpdateStatisticsCacheAsync(int userId, IEnumerable<(DateTime Date, int Count)> values, CancellationToken cancellationToken = default)
         {
-            // 统计缓存更新逻辑：移除今天的缓存，让下次查询时重新计算
             var key = $"categorys:user_{userId}";
-            // 让统计 ETag 失效，触发前端拿到 200 + 新数据
             await _statsVersionService.BumpAsync(userId);
 
             foreach (var item in values)
             {
+                cancellationToken.ThrowIfCancellationRequested();
+                
                 var field = item.Date.ToString("yyyy-MM-dd");
                 var data = new StatisticsLearnDto
                 {
@@ -332,7 +351,16 @@ namespace LearnEnglish.Infrastructure.Services
                 var json = JsonConvert.SerializeObject(data);
                 await _redisService.HashSetAsync(key, field, json);
             }
+            //重新统计
+            await StudyStatisticsAsync(userId);
+        }
 
+        public async Task StudyStatisticsAsync(int userId)
+        {
+            var result = await _myLearnRepository.GetStudyStatistics(userId);
+            var studyKey = $"studystatistics:user_{userId}";
+            var jsontwo = JsonConvert.SerializeObject(result);
+            await _redisService.HashSetAsync(studyKey, "data", jsontwo);
         }
 
         /// <summary>

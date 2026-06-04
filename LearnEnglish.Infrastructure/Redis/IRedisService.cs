@@ -31,6 +31,11 @@ namespace LearnEnglish.Infrastructure.Redis
         Task<bool> RemoveAsync(string key);
 
         /// <summary>
+        /// 按 glob 模式批量删除匹配的键（内部使用 SCAN，生产安全）
+        /// </summary>
+        Task<long> RemoveByPatternAsync(string pattern);
+
+        /// <summary>
         /// 设置过期时间
         /// </summary>
         Task<bool> ExpireAsync(string key, TimeSpan time);

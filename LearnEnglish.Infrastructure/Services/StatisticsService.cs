@@ -88,7 +88,7 @@ namespace LearnEnglish.Infrastructure.Services
             {
                 var days = (DateTime.Today - minStat.Date).Days;
                 var average = days > 0 ? result.MasteredCount / (double)days : 0;
-                var todayCount = maxStat.Date == DateTime.Now.Date ? maxStat.Count : 0;
+                var todayCount = maxStat.Date.Date == DateTime.Now.Date ? maxStat.Count : 0;
                 result.TodayCount = todayCount;
                 result.GrowthRate = average == 0
                     ? 0
@@ -199,7 +199,7 @@ namespace LearnEnglish.Infrastructure.Services
             var existing = await _learnTaskRepository.GetByUserIdAndMonthAsync(userId, date.Year, date.Month);
 
             // 让统计 ETag 失效，触发前端拿到 200 + 新数据
-            await _statsVersionService.BumpAsync(userId);
+            await _statsVersionService.BumpAsync(userId, "LearnCount");
 
             if (existing != null)
             {
