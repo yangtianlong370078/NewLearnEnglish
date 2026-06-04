@@ -58,6 +58,22 @@ namespace LearnEnglish.Infrastructure.Redis
             return Task.FromResult(result);
         }
 
+        public async Task<long> RemoveByPatternAsync(string pattern)
+        {
+            var multiplexer = _redisConfig.GetConnectionMultiplexer();
+            var db = _redisConfig.GetDatabase();
+            long deleted = 0;
+            foreach (var endpoint in multiplexer.GetEndPoints())
+            {
+                var server = multiplexer.GetServer(endpoint);
+                if (server.IsReplica) continue;
+                var keys = server.Keys(db.Database, pattern: pattern, pageSize: 200).ToArray();
+                if (keys.Length > 0)
+                    deleted += await db.KeyDeleteAsync(keys);
+            }
+            return deleted;
+        }
+
         public Task<bool> ExpireAsync(string key, TimeSpan time)
         {
             var result = _redisConfig.Expire(key, time);

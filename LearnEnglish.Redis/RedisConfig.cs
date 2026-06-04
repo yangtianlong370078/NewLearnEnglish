@@ -36,6 +36,14 @@ namespace LearnEnglish.Redis
             return GetConnection().GetDatabase(_option.DefaultDb);
         }
 
+        /// <summary>
+        /// 获取 ConnectionMultiplexer，用于 SCAN 等需要 IServer 的操作
+        /// </summary>
+        public ConnectionMultiplexer GetConnectionMultiplexer()
+        {
+            return GetConnection();
+        }
+
         #endregion Redis配置
 
 

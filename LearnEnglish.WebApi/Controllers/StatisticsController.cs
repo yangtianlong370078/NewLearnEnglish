@@ -70,7 +70,7 @@ namespace LearnEnglish.WebApi.Controllers
             var (userId, _, startDate) = LoadUserContext();
 
             // 1. 拿到当前用户的统计版本号，构造 ETag
-            var version = await _statsVersionService.GetAsync(userId);
+            var version = await _statsVersionService.GetAsync(userId, "LearnCount");
             var etag = new EntityTagHeaderValue($"\"u{userId}-v{version}\"");
 
             // 2. 校验 If-None-Match：命中则返回 304，无需查询/序列化数据
@@ -130,7 +130,7 @@ namespace LearnEnglish.WebApi.Controllers
             var userId = RequireUserId();
 
             // 1. 构造 KPI 专用 ETag（加 "kpi-" 前缀与月统计接口区分）
-            var version = await _statsVersionService.GetAsync(userId);
+            var version = await _statsVersionService.GetAsync(userId, "StudyStatistics");
             var etag = new EntityTagHeaderValue($"\"kpi-u{userId}-v{version}\"");
 
             // 2. 校验 If-None-Match：命中则返回 304

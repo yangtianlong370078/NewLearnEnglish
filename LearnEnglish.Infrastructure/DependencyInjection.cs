@@ -1,4 +1,5 @@
 using LearnEnglish.Application.Interfaces;
+using LearnEnglish.Infrastructure.BackgroundServices;
 using LearnEnglish.Infrastructure.Configuration;
 using LearnEnglish.Infrastructure.Data;
 using LearnEnglish.Infrastructure.MongoDB;
@@ -76,6 +77,10 @@ namespace LearnEnglish.Infrastructure
             services.AddScoped<IExamService, Services.ExamService>();
             services.AddScoped<ITranslateService, Services.TranslateService>();
             services.AddScoped<IImportService, Services.ImportService>();
+
+            // ========== 后台任务队列服务 ==========
+            services.AddSingleton<IBackgroundTaskQueue>(new BackgroundTaskQueue(capacity: 100));
+            services.AddHostedService<QueuedHostedService>();
 
             return services;
         }
