@@ -11,7 +11,7 @@ namespace LearnEnglish.Models.MongoDB
         public ObjectId _id { get; set; }
         public string word { get; set; }
         public int frequence { get; set; }
-        public List<sampleSentence>? sampleSentences = new List<sampleSentence>();
+        public List<sampleSentence>? sampleSentences { get; set; } = new List<sampleSentence>();
 
         public string phonetic { get; set; }
         public string britishPhonetic { get; set; }
@@ -36,7 +36,7 @@ namespace LearnEnglish.Models.MongoDB
         public ObjectId _id { get; set; }
         public string word { get; set; }
         public int frequence { get; set; }
-        public List<string>? sampleSentences = new List<string>();
+        public List<string>? sampleSentences { get; set; } = new List<string>();
         public string phonetic { get; set; }
         public string britishPhonetic { get; set; }
         public string americanPhonetic { get; set; }

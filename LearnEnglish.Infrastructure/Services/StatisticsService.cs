@@ -82,17 +82,13 @@ namespace LearnEnglish.Infrastructure.Services
                 _ = _redisService.HashSetAsync(studyKey, "data", json);
             }
 
-            // 计算日均增长率
+            // 将 min/max 统计信息下发给前端，由前端结合当前日期计算 TodayCount 与 GrowthRate
             var (minStat, maxStat) = minMaxTask.Result;
             if (minStat != null && maxStat != null)
             {
-                var days = (DateTime.Today - minStat.Date).Days;
-                var average = days > 0 ? result.MasteredCount / (double)days : 0;
-                var todayCount = maxStat.Date.Date == DateTime.Now.Date ? maxStat.Count : 0;
-                result.TodayCount = todayCount;
-                result.GrowthRate = average == 0
-                    ? 0
-                    : Math.Round((todayCount - average) / average * 100, 2);
+                result.MinDate = minStat.Date.Date;
+                result.LastDate = maxStat.Date.Date;
+                result.LastCount = maxStat.Count;
             }
 
             return result;
