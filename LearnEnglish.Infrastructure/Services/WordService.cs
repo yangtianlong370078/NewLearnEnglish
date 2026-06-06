@@ -177,8 +177,6 @@ namespace LearnEnglish.Infrastructure.Services
                     UserId = userId,
                     UpdateTime = DateTime.Now
                 });
-
-                keys.Add((DateTime.Now.Date, 0));
             }
             else
             {
@@ -192,32 +190,31 @@ namespace LearnEnglish.Infrastructure.Services
                 await _myLearnRepository.DeleteByUserAndLexiconAsync(userId, lexiconId);
             }
 
-            if (keys.Count > 0)
+            keys.Add((DateTime.Now.Date, 0));
+
+            var result = (await _myLearnRepository.GetDailyCountByUserIdAndDatesAsync(userId, keys.Select(a => a.Date))).ToList();
+
+            if (result.Count > 0)
             {
-                var result = (await _myLearnRepository.GetDailyCountByUserIdAndDatesAsync(userId, keys.Select(a => a.Date))).ToList();
-
-                if (result.Count > 0)
+                for (int i = 0; i < keys.Count; i++)
                 {
-                    for (int i = 0; i < keys.Count; i++)
-                    {
-                        var match = result.FirstOrDefault(a => a.Date == keys[i].Date);
-                        keys[i] = (keys[i].Date, match.Count);
-                    }
+                    var match = result.FirstOrDefault(a => a.Date == keys[i].Date);
+                    keys[i] = (keys[i].Date, match.Count);
                 }
-
-                // 将更新 Redis 统计缓存的任务加入后台队列
-                await _taskQueue.QueueBackgroundWorkItemAsync(async token =>
-                {
-                    try
-                    {
-                        await UpdateStatisticsCacheAsync(userId, keys, token);
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "统计用户数据 {UserId}失败", userId);
-                    }
-                });
             }
+
+            // 将更新 Redis 统计缓存的任务加入后台队列
+            await _taskQueue.QueueBackgroundWorkItemAsync(async token =>
+            {
+                try
+                {
+                    await UpdateStatisticsCacheAsync(userId, keys, token);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "统计用户数据 {UserId}失败", userId);
+                }
+            });
         }
 
         /// <inheritdoc/>
@@ -341,7 +338,7 @@ namespace LearnEnglish.Infrastructure.Services
             foreach (var item in values)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                
+
                 var field = item.Date.ToString("yyyy-MM-dd");
                 var data = new StatisticsLearnDto
                 {

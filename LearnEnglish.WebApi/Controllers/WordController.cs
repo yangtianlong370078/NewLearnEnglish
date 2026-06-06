@@ -1,6 +1,8 @@
 using LearnEnglish.Application.Interfaces;
+using LearnEnglish.Models.MongoDB;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace LearnEnglish.WebApi.Controllers
 {
@@ -156,7 +158,14 @@ namespace LearnEnglish.WebApi.Controllers
         {
             var userId = RequireUserId();
             var detail = await _wordService.GetWordDetailAsync(userId, word, 0);
-            return Ok(new { success = true, word, iscx, data = detail });
+
+            lexicondetail? model = null;
+            if (detail != null)
+            {
+                var json = JsonConvert.SerializeObject(detail);
+                model = JsonConvert.DeserializeObject<lexicondetail>(json);
+            }
+            return Ok(new { success = true, word, iscx, data = model });
         }
     }
 }
