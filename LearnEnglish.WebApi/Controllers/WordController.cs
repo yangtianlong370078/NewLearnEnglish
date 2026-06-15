@@ -27,10 +27,13 @@ namespace LearnEnglish.WebApi.Controllers
         /// <summary>检查单词是否已在课程中</summary>
         [HttpGet("WordExist")]
         [Authorize]
-        public async Task<IActionResult> WordExist(int kc, string en)
+        public async Task<IActionResult> WordExist( string en)
         {
+            var kc = _currentUserService.GetValidUser().CourseId;
+
             var (exists, isEnAudio, isUsAudio) = await _wordService.WordExistAsync(kc, en);
-            return Ok(new { data = exists, isenaudio = isEnAudio, isusaudio = isUsAudio, success = true });
+
+            return Ok(new { data = exists, success = true });
         }
 
         /// <summary>课程单词分页列表</summary>
@@ -154,7 +157,7 @@ namespace LearnEnglish.WebApi.Controllers
         /// <summary>单词详情</summary>
         [HttpGet("lexiconDeatil")]
         [Authorize]
-        public async Task<IActionResult> lexiconDeatil(string word, bool iscx)
+        public async Task<IActionResult> lexiconDeatil(string word)
         {
             var userId = RequireUserId();
             var detail = await _wordService.GetWordDetailAsync(userId, word, 0);
@@ -165,7 +168,7 @@ namespace LearnEnglish.WebApi.Controllers
                 var json = JsonConvert.SerializeObject(detail);
                 model = JsonConvert.DeserializeObject<lexicondetail>(json);
             }
-            return Ok(new { success = true, word, iscx, data = model });
+            return Ok(new { success = true, word, data = model });
         }
     }
 }

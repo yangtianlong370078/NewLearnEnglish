@@ -115,10 +115,14 @@ namespace LearnEnglish.WebApi.Controllers
         /// <summary>添加单词到课程</summary>
         [HttpPost("SaveCoursecontent")]
         [Authorize]
-        public async Task<IActionResult> SaveCoursecontent(int courseId, string en, string cn)
+        public async Task<IActionResult> SaveCoursecontent(int courseId, string en, string? cn = null)
         {
             var userId = RequireUserId();
-            var result = await _courseService.SaveWordToCourseAsync(userId, courseId, en, cn);
+            if(courseId==0)
+            {
+                courseId = _currentUserService.GetValidUser().CourseId;
+            }
+            var result = await _courseService.SaveWordToCourseAsync(userId, courseId, en, cn ?? "");
             return Ok(new { msg = result ? "操作成功" : "操作失败", success = result });
         }
     }
