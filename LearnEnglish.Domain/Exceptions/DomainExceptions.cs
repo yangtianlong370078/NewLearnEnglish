@@ -36,6 +36,14 @@ namespace LearnEnglish.Domain.Exceptions
     }
 
     /// <summary>
+    /// 请求过于频繁异常
+    /// </summary>
+    public class TooManyRequestsException : Exception
+    {
+        public TooManyRequestsException(string message) : base(message) { }
+    }
+
+    /// <summary>
     /// 用户无效异常（账户过期等）
     /// </summary>
     public class InvalidUserException : Exception

@@ -14,11 +14,12 @@ namespace LearnEnglish.WebApi.Controllers
     {
         private readonly IWordService _wordService;
         private readonly ICurrentUserService _currentUserService;
-
-        public WordController(IWordService wordService, ICurrentUserService currentUserService)
+        private readonly IEdgeTtsService _ttsService;
+        public WordController(IWordService wordService, ICurrentUserService currentUserService, IEdgeTtsService ttsService)
         {
             _wordService = wordService;
             _currentUserService = currentUserService;
+            _ttsService = ttsService;
         }
 
         private int RequireUserId() => _currentUserService.UserId
@@ -169,6 +170,25 @@ namespace LearnEnglish.WebApi.Controllers
                 model = JsonConvert.DeserializeObject<lexicondetail>(json);
             }
             return Ok(new { success = true, word, data = model });
+        }
+
+
+        /// <summary>
+        /// 获取英文发音MP3
+        /// </summary>
+        /// <param name="text">单词/短语</param>
+        /// <param name="voice">音色默认 en-US-JennyNeural</param>
+        /// <returns>音频流</returns>
+        [HttpGet("speak")]
+        public async Task<IActionResult> Speak(
+            [FromQuery] string text,
+            [FromQuery] string voice = "en-US-JennyNeural")
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                return BadRequest("文本不能为空");
+
+            var mp3Bytes = await _ttsService.GetAudioBytesAsync(text, voice);
+            return File(mp3Bytes, "audio/mpeg");
         }
     }
 }

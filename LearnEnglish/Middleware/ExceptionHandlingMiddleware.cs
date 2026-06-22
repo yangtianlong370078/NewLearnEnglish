@@ -57,6 +57,20 @@ namespace LearnEnglish.Middleware
                     }
                     break;
 
+                case TooManyRequestsException tooManyRequestsEx:
+                    _logger.LogWarning(tooManyRequestsEx, "请求过于频繁: {Message}", tooManyRequestsEx.Message);
+                    if (isApiRequest)
+                    {
+                        await WriteJsonResponse(context, (HttpStatusCode)429,
+                            ApiResponse.Fail(tooManyRequestsEx.Message, "TOO_MANY_REQUESTS"));
+                    }
+                    else
+                    {
+                        context.Response.StatusCode = 429;
+                        await context.Response.WriteAsync(tooManyRequestsEx.Message);
+                    }
+                    break;
+
                 case NotFoundException notFoundEx:
                     _logger.LogWarning(notFoundEx, "资源未找到: {Message}", notFoundEx.Message);
                     if (isApiRequest)

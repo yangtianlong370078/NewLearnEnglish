@@ -37,6 +37,7 @@ namespace LearnEnglish.Infrastructure
             var redisSection = configuration.GetSection("Redis:Default");
             services.AddSingleton(new LearnEnglish.Redis.RedisConfig(redisSection.Get<LearnEnglish.Redis.RedisOption>()!));
             services.AddSingleton<IRedisService, RedisService>();
+            services.AddMemoryCache();
 
             // ========== Options 模式配置 ==========
             services.Configure<JwtOptions>(configuration.GetSection("Jwt"));
@@ -77,6 +78,7 @@ namespace LearnEnglish.Infrastructure
             services.AddScoped<IExamService, Services.ExamService>();
             services.AddScoped<ITranslateService, Services.TranslateService>();
             services.AddScoped<IImportService, Services.ImportService>();
+            services.AddScoped<IEdgeTtsService, Services.EdgeTtsService>();
 
             // ========== 后台任务队列服务 ==========
             services.AddSingleton<IBackgroundTaskQueue>(new BackgroundTaskQueue(capacity: 100));
