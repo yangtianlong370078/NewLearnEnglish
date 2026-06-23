@@ -39,16 +39,21 @@ launchSettings.json
 # ==========================================
 # 敏感配置文件 - 请勿提交真实密钥
 # ==========================================
-appsettings.json
 appsettings.Development.json
 appsettings.Production.json
 !appsettings.template.json
+# appsettings.json 需要提交
+!appsettings.json
 
 # ==========================================
 # 模型文件
 # ==========================================
 *.bin
 WhisperModels/*.bin
+# ASR 模型文件不提交
+*.onnx
+LearnEnglish/AsrModel/
+LearnEnglish/AsrModelV2/
 
 # ==========================================
 # 系统文件
