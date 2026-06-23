@@ -468,6 +468,7 @@ else
                         <option value="2">讯飞语音</option>
                         <option value="3">百度语音</option>
                         <option value="1">本地模型</option>
+                         <option value="4">本地模型2</option>
                     </select>
                 </div>
 
@@ -1221,7 +1222,7 @@ else
                    //停止录音
                  // currentWord = "";
                   let modeltype = getModelType();
-                    if(modeltype==1||modeltype==3)
+                    if(modeltype==1||modeltype==3||modeltype==4)
                   {
                       modelsAudioStop()
                   }else if(modeltype==2)
@@ -1242,7 +1243,7 @@ else
                     $(domtwo).removeClass("hide");
 
                     let modeltype = getModelType();
-                    if(modeltype==1||modeltype==3)
+                    if(modeltype==1||modeltype==3||modeltype==4)
                     {
                      await  startRecording(domtwo,id);
                     }

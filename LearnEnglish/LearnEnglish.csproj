@@ -15,6 +15,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
+  <ItemGroup>
+    <!-- FunASR-CTC-Nano 模型文件：构建时不复制（运行时从内容根目录读取），仅发布时随包输出 -->
+    <Content Remove="AsrModel\**" />
+    <Content Include="AsrModel\**">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
   
   <ItemGroup>
     <Compile Remove="Content\**" />
@@ -40,6 +49,7 @@
     <PackageReference Include="AspNetCore.HealthChecks.Redis" Version="9.0.0" />
     <PackageReference Include="DoubleMetaphone.NET" Version="1.0.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="10.0.0" />
+    <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.20.1" />
     <PackageReference Include="MongoDB.Driver" Version="3.5.2" />
     <PackageReference Include="MySql.Data" Version="9.5.0" />
     <PackageReference Include="Nancy" Version="2.0.0" />

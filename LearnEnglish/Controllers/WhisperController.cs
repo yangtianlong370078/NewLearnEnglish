@@ -1,5 +1,6 @@
 ﻿using LearnEnglish.Models;
 using LearnEnglish.WhisperModels;
+using LearnEnglish.WhisperModels.FunAsr;
 using LearnEnglish.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
@@ -21,8 +22,10 @@ namespace LearnEnglish.Controllers
 
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ITranscriptionService _transcriptionService;
+        private readonly IFunAsrTranscriptionService _funAsrTranscriptionService;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly BaiduOptions _baiduOptions;
+        private readonly IConfiguration _configuration;
 
         private const string BaiduTokenUrl = "https://aip.baidubce.com/oauth/2.0/token";
         private const string BaiduRecognizeUrl = "https://vop.baidu.com/server_api";
@@ -30,13 +33,17 @@ namespace LearnEnglish.Controllers
         public WhisperController(
             IWebHostEnvironment webHostEnvironment,
             ITranscriptionService transcriptionService,
+            IFunAsrTranscriptionService funAsrTranscriptionService,
             IHttpClientFactory httpClientFactory,
-            IOptions<BaiduOptions> baiduOptions)
+            IOptions<BaiduOptions> baiduOptions,
+            IConfiguration configuration)
         {
             _webHostEnvironment = webHostEnvironment;
             _transcriptionService = transcriptionService;
+            _funAsrTranscriptionService = funAsrTranscriptionService;
             _httpClientFactory = httpClientFactory;
             _baiduOptions = baiduOptions.Value;
+            _configuration = configuration;
         }
 
         public IActionResult Index()
@@ -148,6 +155,10 @@ namespace LearnEnglish.Controllers
                         Cuid = "baidu_speech_demo",
                         Lan = "zh"
                     }, filePath, word);
+                }
+                else if (type == 4)
+                {
+                    (result, scoring, success) = await FunAsrModel(filePath, word);
                 }
 
 
@@ -308,6 +319,48 @@ namespace LearnEnglish.Controllers
         }
 
 
+
+        /// <summary>
+        /// 使用本地 FunASR-CTC-Nano (ONNX) 模型识别音频并与目标单词匹配（type=4）。
+        /// 采用发音容错匹配：发音不太标准、识别结果有偏差时，只要“听起来足够接近”也判为正确。
+        /// 容错阈值可通过配置 FunAsr:MatchThreshold 调整（0~1，越小越宽松）。
+        /// </summary>
+        public async Task<(bool result, int scoring, bool success)> FunAsrModel(string filePath, string word)
+        {
+            var text = await _funAsrTranscriptionService.TranscribeAsync(filePath);
+            var recognizedWord = string.Join(string.Empty,
+                (text ?? string.Empty).Split(new[] { ' ', '.', ',', '!', '?' }, StringSplitOptions.RemoveEmptyEntries))
+                .ToLowerInvariant();
+
+            if (string.IsNullOrEmpty(recognizedWord))
+            {
+                return (false, 2, false);
+            }
+
+            // 读取容错阈值（默认偏宽松，0.55）
+            var threshold = _configuration.GetValue<double?>("FunAsr:MatchThreshold")
+                ?? PronunciationMatcher.DefaultThreshold;
+            var matcher = new PronunciationMatcher(threshold);
+
+            // 1. 识别结果与目标词直接做发音容错匹配
+            if (matcher.IsMatch(recognizedWord, word))
+            {
+                return (true, 1, true);
+            }
+
+            // 2. 并行获取同音词与近音词后，同样用容错匹配
+            var homophonesTask = GetHomophonesAsync(recognizedWord);
+            var similarSoundingsTask = GetSimilarSoundingsAsync(recognizedWord);
+            await Task.WhenAll(homophonesTask, similarSoundingsTask);
+
+            var words = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { recognizedWord };
+            words.UnionWith(homophonesTask.Result ?? new List<string>());
+            words.UnionWith(similarSoundingsTask.Result ?? new List<string>());
+
+            var isok = matcher.AnyMatch(words, word);
+
+            return (isok, 2, true);
+        }
 
         public async Task<(bool result, int scoring, bool success)> benIdModel(string filePath, string word)
         {

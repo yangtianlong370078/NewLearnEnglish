@@ -42,6 +42,9 @@ namespace LearnEnglish.Extensions
             // ========== Whisper 语音识别 ==========
             services.AddWhisperTranscription(configuration);
 
+            // ========== FunASR-CTC-Nano 本地语音识别（type=4） ==========
+            services.AddFunAsrTranscription(configuration);
+
             // ========== JWT 认证 ==========
             var jwtKey = configuration.GetSection("Jwt:Key").Value
                 ?? throw new InvalidOperationException("JWT Key 未在配置中设置");
