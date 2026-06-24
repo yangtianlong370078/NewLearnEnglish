@@ -1,7 +1,9 @@
 using LearnEnglish.Domain.Entities;
 using Microsoft.Extensions.Options;
-using MongoDB.Driver;
 
+using MongoDB.Bson;
+using MongoDB.Driver;
+using StackExchange.Redis;
 namespace LearnEnglish.Infrastructure.MongoDB
 {
     /// <summary>
@@ -22,22 +24,43 @@ namespace LearnEnglish.Infrastructure.MongoDB
             _simpleCollection = _database.GetCollection<LexiconDetailSimple>(mongoOptions.LexiconCollectionName);
         }
 
+        /// <summary>
+        /// 创建索引，确保 Word 字段使用忽略大小写的 collation 索引
+        /// </summary>
+        public async Task EnsureIndexesAsync(CancellationToken cancellationToken = default)
+        {
+            var collation = new Collation("en", strength: CollationStrength.Secondary);
+            var indexModel = new CreateIndexModel<LexiconDetail>(
+                Builders<LexiconDetail>.IndexKeys.Ascending(x => x.Word),
+                new CreateIndexOptions { Collation = collation, Name = "ix_word_ci" });
+            await _collection.Indexes.CreateOneAsync(indexModel, cancellationToken: cancellationToken);
+        }
+
         public async Task<LexiconDetail?> GetByWordAsync(string word)
         {
             var filter = Builders<LexiconDetail>.Filter.Eq(x => x.Word, word);
-            return await _collection.Find(filter).FirstOrDefaultAsync();
+
+            var collation = new Collation("en", strength: CollationStrength.Secondary);
+            var options = new FindOptions { Collation = collation };
+            return await _collection.Find(filter, options).FirstOrDefaultAsync();
+
         }
 
         public async Task<LexiconDetailSimple?> GetSimpleByWordAsync(string word)
         {
             var filter = Builders<LexiconDetailSimple>.Filter.Eq(x => x.Word, word);
-            return await _simpleCollection.Find(filter).FirstOrDefaultAsync();
+            var collation = new Collation("en", strength: CollationStrength.Secondary);
+            var options = new FindOptions { Collation = collation };
+            return await _simpleCollection.Find(filter, options).FirstOrDefaultAsync();
         }
 
         public async Task<IEnumerable<LexiconDetail>> GetByWordsAsync(IEnumerable<string> words)
         {
             var filter = Builders<LexiconDetail>.Filter.In(x => x.Word, words);
-            return await _collection.Find(filter).ToListAsync();
+            var collation = new Collation("en", strength: CollationStrength.Secondary);
+            var options = new FindOptions { Collation = collation };
+
+            return await _collection.Find(filter, options).ToListAsync();
         }
 
         /// <summary>
@@ -67,5 +90,7 @@ namespace LearnEnglish.Infrastructure.MongoDB
         {
             return await _collection.Find(_ => true).ToListAsync();
         }
-    }
+
+
+}
 }

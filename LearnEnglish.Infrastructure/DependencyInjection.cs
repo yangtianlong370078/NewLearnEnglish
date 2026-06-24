@@ -32,6 +32,7 @@ namespace LearnEnglish.Infrastructure
             // ========== MongoDB 配置 ==========
             services.Configure<MongoDbOptions>(configuration.GetSection("lexiconMongoDBOptions"));
             services.AddSingleton<ILexiconDetailRepository, LexiconDetailRepository>();
+            services.AddHostedService<MongoIndexInitializer>();
 
             // ========== Redis 配置 ==========
             var redisSection = configuration.GetSection("Redis:Default");

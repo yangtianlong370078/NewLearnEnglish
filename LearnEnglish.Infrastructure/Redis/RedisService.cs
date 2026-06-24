@@ -169,5 +169,86 @@ namespace LearnEnglish.Infrastructure.Redis
             var result = _redisConfig.LockRelease(key, value);
             return Task.FromResult(result);
         }
-    }
+
+        /// <summary>
+        /// 一次性方法，将大写key转成小写
+        /// </summary>
+        /// <returns></returns>
+        public async Task<long> ConvertAllWordKeysToLower()
+        {
+            IDatabase _redisDb = _redisConfig.GetDatabase();
+
+            long renameCount = 0;
+            string prefix = "word:";
+            var server = _redisDb.Multiplexer.GetServer(_redisDb.Multiplexer.GetEndPoints()[0]);
+            long cursor = 0;
+            const int pageSize = 1000;
+
+            do
+            {
+                var keys = server.Keys(
+                    database: _redisDb.Database,
+                    pattern: $"{prefix}*",
+                    pageSize: pageSize,
+                    cursor:  cursor);
+
+                foreach (RedisKey oldKey in keys)
+                {
+                    string oldKeyStr = oldKey.ToString();
+                    string wordPart = oldKeyStr.Substring(prefix.Length);
+                    string newKeyStr = prefix + wordPart.ToLowerInvariant();
+
+                    // 已经小写，跳过
+                    if (oldKeyStr == newKeyStr)
+                        continue;
+
+                    bool newKeyExists = _redisDb.KeyExists(newKeyStr);
+                    if (!newKeyExists)
+                    {
+                        // 目标不存在：直接改名
+                        _redisDb.KeyRename(oldKeyStr, newKeyStr);
+                        renameCount++;
+                    }
+                    else
+                    {
+                        // 小写key已存在，两个String冲突，二选一策略
+                        // 策略：保留小写已有值，直接删除大写旧key
+                        _redisDb.KeyDelete(oldKeyStr);
+                        renameCount++;
+
+                        // 如果你想要用旧值覆盖新值，换成下面两行：
+                        //var val = _redisDb.StringGet(oldKeyStr);
+                        //_redisDb.StringSet(newKeyStr, val);
+                    }
+                }
+            } while (cursor != 0);
+
+            return renameCount;
+        }
+
+        private const string RenameKeyToLowerLua = @"
+local cursor = '0'
+local prefix = 'word:'
+local totalRenamed = 0
+repeat
+    local scanResult = redis.call('SCAN', cursor, 'MATCH', prefix..'*', 'COUNT', 1000)
+    cursor = scanResult[1]
+    local keys = scanResult[2]
+    for _, oldKey in ipairs(keys) do
+        local wordPart = string.sub(oldKey, string.len(prefix) + 1)
+        local lowerWord = string.lower(wordPart)
+        local newKey = prefix .. lowerWord
+        if oldKey ~= newKey then
+            local exists = redis.call('EXISTS', newKey)
+            if exists == 0 then
+                redis.call('RENAME', oldKey, newKey)
+                totalRenamed = totalRenamed + 1
+            end
+        end
+    end
+until cursor == '0'
+return totalRenamed
+";
+    
+}
 }

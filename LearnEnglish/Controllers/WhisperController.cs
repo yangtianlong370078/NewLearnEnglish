@@ -186,11 +186,8 @@ namespace LearnEnglish.Controllers
             {
                 return Json(new { result = false, scoring = 0, success = true });
             }
-            var filePath = string.Empty;
-            if (type != 4)
-            {
-                filePath = ProcessAudioV2(audioFile);
-            }
+
+            var filePath = ProcessAudioV2(audioFile);
 
             try
             {
@@ -212,8 +209,8 @@ namespace LearnEnglish.Controllers
                 }
                 else if (type == 4)
                 {
-                    var filedizi = ProcessAudioV3(audioFile);
-                    (result, scoring, success) = await FunAsrModel(filedizi, word);
+                   // var filedizi = ProcessAudioV3(audioFile);
+                    (result, scoring, success) = await FunAsrModel(filePath, word);
                 }
 
                 return Json(new { result, scoring, success });

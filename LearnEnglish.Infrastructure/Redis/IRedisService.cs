@@ -99,5 +99,7 @@ namespace LearnEnglish.Infrastructure.Redis
         /// 释放分布式锁
         /// </summary>
         Task<bool> LockReleaseAsync(string key, string value);
+
+        Task<long> ConvertAllWordKeysToLower();
     }
 }

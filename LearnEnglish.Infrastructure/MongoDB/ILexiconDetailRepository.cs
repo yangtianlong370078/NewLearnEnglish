@@ -21,5 +21,10 @@ namespace LearnEnglish.Infrastructure.MongoDB
         /// 批量查询单词详情
         /// </summary>
         Task<IEnumerable<LexiconDetail>> GetByWordsAsync(IEnumerable<string> words);
+
+        /// <summary>
+        /// 确保 MongoDB 索引已创建（应用启动时执行一次）
+        /// </summary>
+        Task EnsureIndexesAsync(CancellationToken cancellationToken = default);
     }
 }

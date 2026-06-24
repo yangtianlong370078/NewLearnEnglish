@@ -274,15 +274,11 @@ namespace LearnEnglish.Infrastructure.Services
         /// <inheritdoc/>
         public async Task<object?> GetWordDetailAsync(int userId, string word, int courseId)
         {
-            var lookupWord = word.Trim();
-            var normalizedWord = lookupWord.ToLowerInvariant();
-
-            // 1. 尝试从 Redis 获取
-            var redisResult = await _redisService.HashGetAsync(WordDetailRedisKey, normalizedWord);
-            if (string.IsNullOrEmpty(redisResult) && normalizedWord != lookupWord)
-            {
-                redisResult = await _redisService.HashGetAsync(WordDetailRedisKey, lookupWord);
-            }
+            var normalizedWord = word.Trim().ToLowerInvariant();
+            var key = $"word:{normalizedWord}";
+            //一次性，将大写key改为小写key
+            // long count =await _redisService.ConvertAllWordKeysToLower();
+            var redisResult = await _redisService.GetAsync(key);
 
             if (!string.IsNullOrEmpty(redisResult))
             {
@@ -290,30 +286,30 @@ namespace LearnEnglish.Infrastructure.Services
             }
 
             // 2. 尝试从 MongoDB 获取
-            var mongoResult = await _lexiconDetailRepository.GetByWordAsync(lookupWord);
+            var mongoResult = await _lexiconDetailRepository.GetByWordAsync(normalizedWord);
             if (mongoResult != null)
             {
                 // 存入 Redis
                 var json = JsonConvert.SerializeObject(mongoResult);
-                await _redisService.HashSetAsync(WordDetailRedisKey, normalizedWord, json);
+                await _redisService.SetAsync(key, json);
                 return mongoResult;
             }
 
             // 3. 从外部 API 获取
-            var apiResult = await _translateService.QueryWordAsync(lookupWord);
+            var apiResult = await _translateService.QueryWordAsync(normalizedWord);
             if (apiResult != null)
             {
                 // 存入 Redis
                 var json = JsonConvert.SerializeObject(apiResult);
-                await _redisService.HashSetAsync(WordDetailRedisKey, normalizedWord, json);
+                await _redisService.SetAsync(key, json);
 
                 // 确保单词存在于 lexicon 表中
-                var lexicon = await _lexiconRepository.GetByEnAsync(lookupWord);
+                var lexicon = await _lexiconRepository.GetByEnAsync(normalizedWord);
                 if (lexicon == null)
                 {
                     await _lexiconRepository.CreateAsync(new Lexicon
                     {
-                        En = lookupWord,
+                        En = word.Trim(),
                         Cn = string.Empty,
                         UserId = userId
                     });
