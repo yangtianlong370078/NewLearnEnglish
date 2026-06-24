@@ -51,6 +51,40 @@ namespace LearnEnglish.Controllers
             return View();
         }
 
+
+        private string ProcessAudioV3(IFormFile audioFile)
+        {
+            // 创建临时文件路径
+            var tempInputPath = Path.GetTempFileName();
+            var tempOutputPath = Path.GetTempFileName() + ".wav";
+            try
+            {
+                // 步骤1: 保存上传的音频文件到临时位置
+                using (var stream = new FileStream(tempInputPath, FileMode.Create))
+                {
+                    audioFile.CopyTo(stream);
+                }
+
+                // 步骤2: 转换音频格式为16kHz单声道WAV
+                ConvertToWavFormatV2(tempInputPath, tempOutputPath);
+
+                return tempOutputPath;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+            finally
+            {
+                // 步骤4: 清理临时文件
+                // CleanupTempFiles(tempInputPath, tempOutputPath);
+                if (System.IO.File.Exists(tempInputPath))
+                {
+                    try { System.IO.File.Delete(tempInputPath); } catch { }
+                }
+            }
+        }
+
         private string ProcessAudioV2(IFormFile audioFile)
         {
             // 创建临时文件路径
@@ -126,6 +160,24 @@ namespace LearnEnglish.Controllers
                 throw new Exception("Failed to convert audio format", ex);
             }
         }
+
+
+        private void ConvertToWavFormatV2(string inputPath, string outputPath)
+        {
+            try
+            {
+                using (var reader = new AudioFileReader(inputPath))
+                {
+                    WaveFileWriter.CreateWaveFile(outputPath, reader);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to convert audio format", ex);
+            }
+        }
+
+
         [HttpPost]
         //[Authorize]
         public async Task<JsonResult> Recognize(IFormFile audioFile, string word = "", int type = 1)
@@ -134,9 +186,11 @@ namespace LearnEnglish.Controllers
             {
                 return Json(new { result = false, scoring = 0, success = true });
             }
-
-
-            var filePath = ProcessAudioV2(audioFile);
+            var filePath = string.Empty;
+            if (type != 4)
+            {
+                filePath = ProcessAudioV2(audioFile);
+            }
 
             try
             {
@@ -158,9 +212,9 @@ namespace LearnEnglish.Controllers
                 }
                 else if (type == 4)
                 {
-                    (result, scoring, success) = await FunAsrModel(filePath, word);
+                    var filedizi = ProcessAudioV3(audioFile);
+                    (result, scoring, success) = await FunAsrModel(filedizi, word);
                 }
-
 
                 return Json(new { result, scoring, success });
             }
@@ -263,7 +317,7 @@ namespace LearnEnglish.Controllers
                 token = request.Token,
                 speech = base64Audio, // 音频Base64
                 len = audioBytes.Length, // 音频字节长度
-                
+
             };
             var jsonContentstr = JsonConvert.SerializeObject(requestData);
 
@@ -349,17 +403,17 @@ namespace LearnEnglish.Controllers
             }
 
             // 2. 并行获取同音词与近音词后，同样用容错匹配
-            var homophonesTask = GetHomophonesAsync(recognizedWord);
-            var similarSoundingsTask = GetSimilarSoundingsAsync(recognizedWord);
-            await Task.WhenAll(homophonesTask, similarSoundingsTask);
+            //var homophonesTask = GetHomophonesAsync(recognizedWord);
+            //var similarSoundingsTask = GetSimilarSoundingsAsync(recognizedWord);
+            //await Task.WhenAll(homophonesTask, similarSoundingsTask);
 
-            var words = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { recognizedWord };
-            words.UnionWith(homophonesTask.Result ?? new List<string>());
-            words.UnionWith(similarSoundingsTask.Result ?? new List<string>());
+            //var words = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { recognizedWord };
+            //words.UnionWith(homophonesTask.Result ?? new List<string>());
+            //words.UnionWith(similarSoundingsTask.Result ?? new List<string>());
 
-            var isok = matcher.AnyMatch(words, word);
+            //var isok = matcher.AnyMatch(words, word);
 
-            return (isok, 2, true);
+            return (false, 2, true);
         }
 
         public async Task<(bool result, int scoring, bool success)> benIdModel(string filePath, string word)
