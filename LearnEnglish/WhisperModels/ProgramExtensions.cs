@@ -35,7 +35,11 @@ namespace LearnEnglish.WhisperModels
                     ? Path.Combine(env.ContentRootPath, "AsrModel")
                     : configuredDir;
 
-                return new FunAsrTranscriptionService(modelDir);
+                // CTC 解码参数：blank 惩罚（召回弱读音节）与 beam 束宽，缺省 1.0 / 10
+                var blankPenalty = configuration.GetValue<float?>("FunAsr:BlankPenalty") ?? 1.0f;
+                var beamSize = configuration.GetValue<int?>("FunAsr:BeamSize") ?? 10;
+
+                return new FunAsrTranscriptionService(modelDir, blankPenalty, beamSize);
             });
         }
     }

@@ -407,8 +407,10 @@ namespace LearnEnglish.Controllers
         public async Task<(bool result, int scoring, bool success)> FunAsrModel(string filePath, string word)
         {
             var text = await _funAsrTranscriptionService.TranscribeAsync(filePath);
-            var recognizedWord = string.Join(string.Empty,
-                (text ?? string.Empty).Split(new[] { ' ', '.', ',', '!', '?' }, StringSplitOptions.RemoveEmptyEntries))
+
+            var words = (text ?? string.Empty).Split(new[] { ' ', '.', ',', '!', '?' }, StringSplitOptions.RemoveEmptyEntries);
+            var recognizedWord = string.Join(string.Empty, words
+                )
                 .ToLowerInvariant();
 
             if (string.IsNullOrEmpty(recognizedWord))
@@ -425,6 +427,14 @@ namespace LearnEnglish.Controllers
             if (matcher.IsMatch(recognizedWord, word))
             {
                 return (true, 1, true);
+            }
+
+            foreach (var item in words)
+            {
+                if (matcher.IsMatch(item, word))
+                {
+                    return (true, 1, true);
+                }
             }
 
             // 2. 并行获取同音词与近音词后，同样用容错匹配
