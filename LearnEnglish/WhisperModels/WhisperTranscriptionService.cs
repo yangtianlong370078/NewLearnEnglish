@@ -56,17 +56,7 @@ namespace LearnEnglish.WhisperModels
             // 取第一个单词做发音匹配（适用于单词发音练习）
             var targetWord =string.Join("", words).ToLowerInvariant();
 
-            //本地算法查找相适音单词
-            List<string> similarWords = new List<string>();
-
-            if(top>0)
-            {
-                similarWords = _phoneticsHelper.FindSimilarPhoneticWords(targetWord, top)
-               .Select(x => x.word)
-               .Where(w => w != targetWord) // 排除自己
-               .ToList();
-            }
-            return (similarWords, targetWord);
+            return (words.ToList(), targetWord);
         }
 
 

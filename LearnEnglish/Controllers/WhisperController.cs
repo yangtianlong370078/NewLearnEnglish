@@ -1,15 +1,16 @@
-﻿using LearnEnglish.Models;
+﻿using LearnEnglish.Infrastructure.Configuration;
+using LearnEnglish.Models;
 using LearnEnglish.WhisperModels;
 using LearnEnglish.WhisperModels.FunAsr;
-using LearnEnglish.Infrastructure.Configuration;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
-using NAudio.Wave.SampleProviders;
 using NAudio.Wave;
-using System.Diagnostics;
-using Microsoft.AspNetCore.Authorization;
-using System.Text;
+using NAudio.Wave.SampleProviders;
 using Newtonsoft.Json;
+using System.Diagnostics;
+using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace LearnEnglish.Controllers
 {
@@ -168,7 +169,34 @@ namespace LearnEnglish.Controllers
             {
                 using (var reader = new AudioFileReader(inputPath))
                 {
-                    WaveFileWriter.CreateWaveFile(outputPath, reader);
+                    // 目标格式：16kHz, 16bit, 单声道
+                    var targetFormat = new WaveFormat(16000, 16, 1);
+
+                    if (reader.WaveFormat.Equals(targetFormat))
+                    {
+                        WaveFileWriter.CreateWaveFile(outputPath, reader);
+                        return;
+                    }
+
+                    // 创建重采样器
+                    var resampler = new MediaFoundationResampler(reader, targetFormat);
+                   // resampler.ResamplerQuality = 60;
+
+                    // 转换为ISampleProvider
+                    var resampledProvider = resampler.ToSampleProvider();
+
+                    // 创建音量控制
+                    var volumeProvider = new VolumeSampleProvider(resampledProvider);
+                    //volumeProvider.Volume = 1.2f;
+
+                    // 应用噪声抑制
+                    //  var noiseSuppression = new NoiseSuppressionSampleProvider(volumeProvider);
+
+                    // 转换为16位PCM
+                    var finalProvider = volumeProvider.ToWaveProvider16();
+
+                    // 创建WAV文件
+                    WaveFileWriter.CreateWaveFile(outputPath, finalProvider);
                 }
             }
             catch (Exception ex)
@@ -187,8 +215,8 @@ namespace LearnEnglish.Controllers
                 return Json(new { result = false, scoring = 0, success = true });
             }
 
-            var filePath = ProcessAudioV2(audioFile);
-
+          //  var filePath = ProcessAudioV2(audioFile);
+            var filePath = ProcessAudioV3(audioFile);
             try
             {
                 // var text = await _transcriptionService.TranscribeAudioAsync(filePath);
@@ -425,31 +453,60 @@ namespace LearnEnglish.Controllers
                 return (true, 1, true);
             }
 
-            // 2. 并行启动两个异步任务（不使用 await，先获取 Task）
-            var homophonesTask = GetHomophonesAsync(recognizedWord);
-            var similarSoundingsTask = GetSimilarSoundingsAsync(recognizedWord);
+             recognizedWord = string.Join(string.Empty,
+                (recognizedWord ?? string.Empty).Split(new[] { ' ', '.', ',', '!', '?' }, StringSplitOptions.RemoveEmptyEntries))
+                .ToLowerInvariant();
 
-            // 3. 等待两个任务全部完成
-            await Task.WhenAll(homophonesTask, similarSoundingsTask);
+            if (string.IsNullOrEmpty(recognizedWord))
+            {
+                return (false, 2, false);
+            }
 
-            // 4. 安全获取结果（处理 null 情况）
-            var xiantonyin = homophonesTask.Result ?? new List<string>();
-            var xianshiyin = similarSoundingsTask.Result ?? new List<string>();
+            // 读取容错阈值（默认偏宽松，0.55）
+            var threshold = _configuration.GetValue<double?>("FunAsr:MatchThreshold")
+                ?? PronunciationMatcher.DefaultThreshold;
+            var matcher = new PronunciationMatcher(threshold);
 
-            // 5. 合并所有单词（去重可选）
-            var words = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            // 1. 识别结果与目标词直接做发音容错匹配
+            if (matcher.IsMatch(recognizedWord, word))
+            {
+                return (true, 1, true);
+            }
 
-            // 添加原始相似词
-            words.UnionWith(baseSimilarWords);
-            words.Add(recognizedWord); // 添加识别出的词本身
+            foreach (var item in baseSimilarWords)
+            {
+                if (matcher.IsMatch(item, word))
+                {
+                    return (true, 1, true);
+                }
+            }
 
-            // 添加同音词和近音词
-            words.UnionWith(xiantonyin);
-            words.UnionWith(xianshiyin);
 
-            var isok = words.Select(s => s.Replace(" ", "")).Any(w => w.IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0);
+            //// 2. 并行启动两个异步任务（不使用 await，先获取 Task）
+            //var homophonesTask = GetHomophonesAsync(recognizedWord);
+            //var similarSoundingsTask = GetSimilarSoundingsAsync(recognizedWord);
 
-            return (isok, 2, true);
+            //// 3. 等待两个任务全部完成
+            //await Task.WhenAll(homophonesTask, similarSoundingsTask);
+
+            //// 4. 安全获取结果（处理 null 情况）
+            //var xiantonyin = homophonesTask.Result ?? new List<string>();
+            //var xianshiyin = similarSoundingsTask.Result ?? new List<string>();
+
+            //// 5. 合并所有单词（去重可选）
+            //var words = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            //// 添加原始相似词
+            //words.UnionWith(baseSimilarWords);
+            //words.Add(recognizedWord); // 添加识别出的词本身
+
+            //// 添加同音词和近音词
+            //words.UnionWith(xiantonyin);
+            //words.UnionWith(xianshiyin);
+
+            //var isok = words.Select(s => s.Replace(" ", "")).Any(w => w.IndexOf(word, StringComparison.OrdinalIgnoreCase) >= 0);
+
+            return (false, 2, true);
         }
 
 

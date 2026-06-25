@@ -8,6 +8,7 @@ namespace LearnEnglish.WhisperModels.FunAsr
     /// <summary>
     /// 基于 FunASR-CTC-Nano (Fun-ASR-Nano) INT8 ONNX 模型的本地语音转文字服务。
     /// 推理管线：16k 单声道 PCM -> FBANK(80) -> LFR(m=7,n=6,560维) -> encoder -> ctc -> CTC 贪心解码 -> 文本。
+    /// 识别结果仅保留英文（过滤掉中文等非英文字符），只输出英文文本。
     /// </summary>
     public interface IFunAsrTranscriptionService
     {
@@ -127,7 +128,41 @@ namespace LearnEnglish.WhisperModels.FunAsr
                     bytes.AddRange(b);
                 }
             }
-            return Encoding.UTF8.GetString(bytes.ToArray()).Trim();
+            var text = Encoding.UTF8.GetString(bytes.ToArray());
+
+            // 7. 仅保留英文：过滤掉中文等非英文字符，只输出英文文本
+            return KeepEnglishOnly(text);
+        }
+
+        /// <summary>
+        /// 仅保留英文相关字符（英文字母、数字、空白及常见英文标点），
+        /// 过滤掉中文等非英文字符，并将连续空白合并为单个空格。
+        /// </summary>
+        private static string KeepEnglishOnly(string text)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return string.Empty;
+            }
+
+            var sb = new StringBuilder(text.Length);
+            foreach (var c in text)
+            {
+                if ((c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9') ||
+                    c == ' ' || c == '\'' || c == '-')
+                {
+                    sb.Append(c);
+                }
+                else if (char.IsWhiteSpace(c))
+                {
+                    sb.Append(' ');
+                }
+                // 其余字符（中文等非英文字符）直接丢弃
+            }
+
+            // 合并连续空白为单个空格
+            var result = System.Text.RegularExpressions.Regex.Replace(sb.ToString(), "\\s+", " ");
+            return result.Trim();
         }
 
         private static Dictionary<int, byte[]> LoadTokens(string path)
