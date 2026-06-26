@@ -93,25 +93,22 @@ namespace LearnEnglish.WebApi.Controllers
             // 3. 未命中缓存，查询并返回精简后的数据
             var result = await _statisticsService.GetMonthlyStatisticsAsync(userId, startDate);
 
-            // 仅保留前端实际使用到的字段：
-            // - 父级：date / totalcount
-            // - 日明细：date / count
-            // - 任务：count / weekend（去除冗余的 id / userid / startdate；无任务则为 null）
-            var categorys = result.Select(g => new
+            // 紧凑编码：月份用 yyyyMM，每日明细用 [day, count]，任务字段平铺。
+            var data = result.Select(g => new
             {
-                date = g.Date,
-                totalcount = g.TotalCount,
-                statisticsLearns = g.StatisticsLearns
-                    .Select(s => new { date = s.Date, count = s.Count })
-                    .ToList(),
-                task = g.Task is null
-                    ? null
-                    : new { count = g.Task.Count, weekend = g.Task.Weekend }
+                ym = g.Date.Year * 100 + g.Date.Month,
+                total = g.TotalCount,
+                taskCnt = g.Task?.Count ?? 0,
+                taskWeekend = g.Task?.Weekend ?? 0,
+                items = g.StatisticsLearns
+                    .OrderBy(s => s.Date)
+                    .Select(s => new[] { s.Date.Day, s.Count })
+                    .ToList()
             }).ToList();
 
             Response.Headers.ETag = etag.ToString();
             Response.Headers.CacheControl = "private, no-cache";
-            return Ok(new { success = true, categorys });
+            return Ok(new { success = true, data });
         }
 
 
