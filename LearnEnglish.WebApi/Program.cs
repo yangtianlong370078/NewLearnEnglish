@@ -1,11 +1,16 @@
 using System.IO.Compression;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 using LearnEnglish.Application;
 using LearnEnglish.Extensions;
 using LearnEnglish.Infrastructure;
 using LearnEnglish.Infrastructure.HealthChecks;
 using LearnEnglish.Middleware;
+
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.OpenApi;
+
 using Serilog;
 using Serilog.Events;
 
@@ -63,7 +68,11 @@ builder.Services.AddCors(options =>
 
     // ========== 3. 注册服务 ==========
     // Web API 相关（Controllers + JSON 选项）
-    builder.Services.AddControllers();
+    builder.Services.AddControllers()
+        .AddJsonOptions(options =>
+        {
+            options.JsonSerializerOptions.WriteIndented = false;
+        });
 
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddOpenApi();
@@ -104,6 +113,8 @@ builder.Services.AddCors(options =>
 
     builder.Services.AddHttpContextAccessor();
     builder.Services.AddHttpClient();
+
+
 
     // ========== 响应压缩（Brotli / Gzip） ==========
     // JSON 文本压缩率通常 80–90%，对 /api/Statistics/StatisticsLearnCountTwo
@@ -173,6 +184,7 @@ builder.Services.AddCors(options =>
 
     // 必须在 UseRouting / UseCors 之前启用压缩
     app.UseResponseCompression();
+
 
     app.UseSerilogRequestLogging(options =>
     {

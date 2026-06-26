@@ -94,7 +94,7 @@ namespace LearnEnglish.WebApi.Controllers
             var result = await _statisticsService.GetMonthlyStatisticsAsync(userId, startDate);
 
             // 紧凑编码：月份用 yyyyMM，每日明细用 [day, count]，任务字段平铺。
-            var data = result.Select(g => new
+            var data2 = result.Select(g => new
             {
                 ym = g.Date.Year * 100 + g.Date.Month,
                 total = g.TotalCount,
@@ -108,6 +108,28 @@ namespace LearnEnglish.WebApi.Controllers
 
             Response.Headers.ETag = etag.ToString();
             Response.Headers.CacheControl = "private, no-cache";
+
+            List<object> data = new List<object>();
+            for (int i = 0; i < 120; i++)
+            {
+                var bb = new List<int[]>();
+
+                for (int j = 0; j < 30; j++)
+                {
+                    bb.Add(new[] { j, 5 });
+                }
+
+                data.Add( new
+                {
+                    ym =202602,
+                    total = 120,
+                    taskCnt = 150,
+                    taskWeekend =3,
+                    items = bb
+                });
+            }
+
+
             return Ok(new { success = true, data });
         }
 
