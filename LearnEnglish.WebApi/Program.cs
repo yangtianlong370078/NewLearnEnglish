@@ -185,7 +185,24 @@ builder.Services.AddCors(options =>
     // 必须在 UseRouting / UseCors 之前启用压缩
     app.UseResponseCompression();
 
+    //测试是否开启br压缩
+    //app.Use(async (context, next) =>
+    //{
+    //    if (context.Request.Path.Value?.Contains("StatisticsLearnCountTwo") == true)
+    //    {
+    //        context.Response.OnStarting(() =>
+    //        {
+    //            var acceptEncoding = context.Request.Headers.AcceptEncoding.ToString();
+    //            var contentEncoding = context.Response.Headers.ContentEncoding.ToString();
+    //            var contentType = context.Response.ContentType;
 
+    //            // 在这里打断点，看这三个变量
+    //            return Task.CompletedTask;
+    //        });
+    //    }
+
+    //    await next();
+    //});
     app.UseSerilogRequestLogging(options =>
     {
         options.MessageTemplate = "HTTP {RequestMethod} {RequestPath} 响应 {StatusCode} 耗时 {Elapsed:0.000}ms";
