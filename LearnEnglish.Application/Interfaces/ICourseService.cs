@@ -27,7 +27,7 @@ namespace LearnEnglish.Application.Interfaces
         /// <summary>
         /// 获取我的课程学习进度 JSON
         /// </summary>
-        Task<(List<CourseInfoDto> data, int collectCount)> GetMyCoursesProgressAsync(int userId, int courseId);
+        Task<(List<CourseInfoDto> data, (int NotLearned, int NotDoneCount, int DoneCount))> GetMyCoursesProgressAsync(int userId, int courseId);
 
         /// <summary>
         /// 获取课程信息（学习表格页面）

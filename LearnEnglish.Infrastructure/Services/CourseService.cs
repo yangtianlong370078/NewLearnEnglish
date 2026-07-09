@@ -17,6 +17,7 @@ namespace LearnEnglish.Infrastructure.Services
         private readonly ILexiconRepository _lexiconRepository;
         private readonly IMyLexiconRepository _myLexiconRepository;
         private readonly ILogger<CourseService> _logger;
+        private readonly ICurrentUserService _currentUserService;
 
         public CourseService(
             ICourseRepository courseRepository,
@@ -24,7 +25,8 @@ namespace LearnEnglish.Infrastructure.Services
             ICourseContentRepository courseContentRepository,
             ILexiconRepository lexiconRepository,
             IMyLexiconRepository myLexiconRepository,
-            ILogger<CourseService> logger)
+            ILogger<CourseService> logger,
+            ICurrentUserService currentUserService)
         {
             _courseRepository = courseRepository;
             _myCourseRepository = myCourseRepository;
@@ -32,6 +34,7 @@ namespace LearnEnglish.Infrastructure.Services
             _lexiconRepository = lexiconRepository;
             _myLexiconRepository = myLexiconRepository;
             _logger = logger;
+            _currentUserService = currentUserService;
         }
 
         /// <inheritdoc/>
@@ -53,51 +56,62 @@ namespace LearnEnglish.Infrastructure.Services
         public async Task<List<CategoryInfoDto>> GetCategoryListAsync(int userId, int type)
         {
             var categories = await _courseRepository.GetCategoriesWithCoursesAsync(userId, type, onlyMy: false);
-            var doneCounts = await _courseRepository.GetDoneCountsAsync(userId, onlyMyCourse: false);
-            var undoneCounts = await _courseRepository.GetUndoneCountsAsync(userId, onlyMyCourse: false);
+            var notDoneCounts = await _courseRepository.GetDoneCountsAsync(userId, 3);
+            var doneCounts = await _courseRepository.GetDoneCountsAsync(userId, 3);
+            var undoneCounts = await _courseRepository.GetUndoneCountsAsync(userId);
+            var courseId = _currentUserService.GetValidUser().CourseId;
+            var data = BuildCategoryInfoList(categories, notDoneCounts, doneCounts, undoneCounts, userId, courseId);
 
-            return BuildCategoryInfoList(categories, doneCounts, undoneCounts, userId);
+            return data.Item1;
         }
 
         /// <inheritdoc/>
         public async Task<MyCategoryInfoDto> GetMyCategoryContentAsync(int userId, int type)
         {
             var categories = await _courseRepository.GetCategoriesWithCoursesAsync(userId, type, onlyMy: true);
-            var doneCounts = await _courseRepository.GetDoneCountsAsync(userId, onlyMyCourse: false);
-            var undoneCounts = await _courseRepository.GetUndoneCountsAsync(userId, onlyMyCourse: false);
+            var doneCounts = await _courseRepository.GetDoneCountsAsync(userId, 3);
+            var notDoneCounts = await _courseRepository.GetDoneCountsAsync(userId, 2);
+            var allCounts = await _courseRepository.GetUndoneCountsAsync(userId);
+
+
             var collectCount = await _myLexiconRepository.GetFavoriteCountAsync(userId);
 
-            var allInfos = BuildCategoryInfoList(categories, doneCounts, undoneCounts, userId);
+            var courseId = _currentUserService.GetValidUser().CourseId;
+
+            var allInfos = BuildCategoryInfoList(categories, notDoneCounts, doneCounts, allCounts, userId, courseId);
 
             var result = new MyCategoryInfoDto
             {
-                CategoryInfos = allInfos.Where(a => a.Id != 9).ToList(),
-                MyCategoryInfos = allInfos.Where(a => a.Id == 9).ToList()
+                CategoryInfos = allInfos.Item1.Where(a => a.Id != 9).ToList(),
+                MyCategoryInfos = allInfos.Item1.Where(a => a.Id == 9).ToList(),
             };
 
             // 在"我的"分类中插入强化学习区
-            if (type == 1 && result.MyCategoryInfos.Count > 0)
+            if (type == 1)
             {
-                result.MyCategoryInfos.First().CourseInfos.Insert(
-                    Math.Min(1, result.MyCategoryInfos.First().CourseInfos.Count),
-                    new CourseInfoDto
+                result.NewWord = allInfos.Item2;
+                if (result.MyCategoryInfos.Count > 0)
+                {
+                    result.StrengthenWord = new CourseInfoDto
                     {
                         CourseId = -100,
                         CourseName = "强化学习区",
-                        WordsCount = collectCount,
-                        DoneCount = 0,
+                        DoneCount = collectCount.DoneCount,
+                        NotDoneCount = collectCount.NotDoneCount,
+                        NotLearned = collectCount.NotLearned,
+                        WordsCount = collectCount.DoneCount + collectCount.NotDoneCount + collectCount.NotLearned,
                         Percentage = "0.00"
-                    });
+                    };
+                }
             }
-
             return result;
         }
 
         /// <inheritdoc/>
-        public async Task<(List<CourseInfoDto> data, int collectCount)> GetMyCoursesProgressAsync(int userId, int courseId)
+        public async Task<(List<CourseInfoDto> data, (int NotLearned, int NotDoneCount, int DoneCount))> GetMyCoursesProgressAsync(int userId, int courseId)
         {
-            var doneCounts = await _courseRepository.GetDoneCountsAsync(userId, onlyMyCourse: true);
-            var undoneCounts = await _courseRepository.GetUndoneCountsAsync(userId, onlyMyCourse: true);
+            var doneCounts = await _courseRepository.GetDoneCountsAsync(userId, 3);
+            var undoneCounts = await _courseRepository.GetUndoneCountsAsync(userId);
             var collectCount = await _myLexiconRepository.GetFavoriteCountAsync(userId);
 
             var doneDict = doneCounts.ToDictionary(x => x.CourseId, x => x.Count);
@@ -229,16 +243,20 @@ namespace LearnEnglish.Infrastructure.Services
         /// <summary>
         /// 构建分类信息列表
         /// </summary>
-        private static List<CategoryInfoDto> BuildCategoryInfoList(
+        private static (List<CategoryInfoDto>, CourseInfoDto) BuildCategoryInfoList(
             IEnumerable<CategoryDto> categories,
+            IEnumerable<CourseCountDto> notDoneCounts,
             IEnumerable<CourseCountDto> doneCounts,
-            IEnumerable<CourseCountDto> undoneCounts,
-            int userId)
+            IEnumerable<CourseCountDto> allCounts,
+            int userId, int courseId)
         {
+            var notDoneDict = notDoneCounts.ToDictionary(x => x.CourseId, x => x.Count);
             var doneDict = doneCounts.ToDictionary(x => x.CourseId, x => x.Count);
-            var undoneDict = undoneCounts.ToDictionary(x => x.CourseId, x => x.Count);
+            var allDict = allCounts.ToDictionary(x => x.CourseId, x => x.Count);
 
-            return categories
+            CourseInfoDto newWord = new CourseInfoDto();
+
+            var data = categories
                 .GroupBy(x => x.Id)
                 .Select(group =>
                 {
@@ -254,9 +272,10 @@ namespace LearnEnglish.Infrastructure.Services
                     {
                         foreach (var item in group)
                         {
-                            var wc = undoneDict.GetValueOrDefault(item.CourseId, 0);
+                            var nodc = notDoneDict.GetValueOrDefault(item.CourseId, 0);
+                            var wc = allDict.GetValueOrDefault(item.CourseId, 0);
                             var dc = doneDict.GetValueOrDefault(item.CourseId, 0);
-                            var total = wc + dc;
+
                             var courseInfo = new CourseInfoDto
                             {
                                 CourseId = item.CourseId,
@@ -264,15 +283,28 @@ namespace LearnEnglish.Infrastructure.Services
                                 IsMyCourse = item.IsMyCourse,
                                 WordsCount = wc,
                                 DoneCount = dc,
-                                Percentage = total > 0 ? ((double)dc / total * 100).ToString("0.00") : "0.00"
+                                NotDoneCount = nodc,
+                                NotLearned = wc - nodc - dc,
+                                Percentage = wc > 0 ? ((double)(dc + nodc) / wc * 100).ToString("0.00") : "0.00"
                             };
-                            if (dc > 0) info.IsLearn = true;
-                            info.CourseInfos.Add(courseInfo);
+
+                            if (courseId == item.CourseId)
+                            {
+                                newWord = courseInfo;
+                            }
+                            else
+                            {
+                                info.CourseInfos.Add(courseInfo);
+                                if (dc > 0) info.IsLearn = true;
+                            }
+
                         }
                     }
-
                     return info;
                 }).ToList();
+
+
+            return (data, newWord);
         }
     }
 }

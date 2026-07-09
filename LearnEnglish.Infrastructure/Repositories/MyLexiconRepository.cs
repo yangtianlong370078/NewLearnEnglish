@@ -148,11 +148,20 @@ namespace LearnEnglish.Infrastructure.Repositories
             }
         }
 
-        public async Task<int> GetFavoriteCountAsync(int userId)
+        public async Task<(int NotLearned, int NotDoneCount, int DoneCount)> GetFavoriteCountAsync(int userId)
         {
-            const string sql = "SELECT COUNT(1) FROM `mylexicon` WHERE userId = @UserId AND iscollect = 1";
-            var result = await ExecuteScalarAsync<int>(sql, new { UserId = userId });
-            return result;
+            const string sql = @"
+		SELECT
+    COALESCE(COUNT(CASE WHEN status = 1 THEN 1 END), 0) AS NotLearned,
+    COALESCE(COUNT(CASE WHEN status = 2 THEN 1 END), 0) AS NotDoneCount,
+    COALESCE(COUNT(CASE WHEN status = 3 THEN 1 END), 0) AS DoneCount
+FROM mylexicon
+WHERE userId = @UserId AND iscollect = 1;";
+
+            using var connection = _connectionFactory.CreateConnection();
+            var result = await connection.QueryFirstAsync<(int NotLearned, int NotDoneCount, int DoneCount)>(sql, new { UserId = userId });
+
+              return result;
         }
 
         public async Task<IEnumerable<(int LexiconId, int OldStatus, int NewStatus)>> GetCalibrationChangesAsync(int userId)

@@ -48,10 +48,22 @@ namespace LearnEnglish.Application.Dtos.Course
         /// 单词数量
         /// </summary>
         public int WordsCount { get; set; }
+
+        /// <summary>
+        /// 未牢记
+        /// </summary>
+        public int NotDoneCount { get; set; }
+
         /// <summary>
         /// 已完成数量
         /// </summary>
         public int DoneCount { get; set; }
+
+        /// <summary>
+        /// 未学习
+        /// </summary>
+        public int NotLearned { get; set; }
+
         /// <summary>
         /// 完成百分比
         /// </summary>
@@ -65,6 +77,16 @@ namespace LearnEnglish.Application.Dtos.Course
     {
         public List<CategoryInfoDto> CategoryInfos { get; set; } = new();
         public List<CategoryInfoDto> MyCategoryInfos { get; set; } = new();
+
+        /// <summary>
+        /// 生词本
+        /// </summary>
+        public CourseInfoDto NewWord { get; set; }
+
+        /// <summary>
+        /// 强化区
+        /// </summary>
+        public CourseInfoDto StrengthenWord { get; set; }
     }
 
     /// <summary>

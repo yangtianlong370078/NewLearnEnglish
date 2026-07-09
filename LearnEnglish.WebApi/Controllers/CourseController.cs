@@ -2,6 +2,7 @@ using LearnEnglish.Application.Dtos.Course;
 using LearnEnglish.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using MySqlX.XDevAPI.Common;
 
 namespace LearnEnglish.WebApi.Controllers
 {
@@ -70,12 +71,14 @@ namespace LearnEnglish.WebApi.Controllers
                 Percentage = d.Percentage
             }).ToList<object>();
 
-            list.Add(new
+            list.Add(new CourseInfoDto
             {
-                courseId = -100,
-                courseName = "强化学习区",
-                WordsCount = collectCount,
-                DoneCount = 0,
+                CourseId = -100,
+                CourseName = "强化学习区",
+                DoneCount = collectCount.DoneCount,
+                NotDoneCount = collectCount.NotDoneCount,
+                NotLearned = collectCount.NotLearned,
+                WordsCount = collectCount.DoneCount + collectCount.NotDoneCount + collectCount.NotLearned,
                 Percentage = "0.00"
             });
 

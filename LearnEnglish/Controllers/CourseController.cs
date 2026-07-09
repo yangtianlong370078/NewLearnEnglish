@@ -94,7 +94,7 @@ namespace LearnEnglish.Controllers
             {
                 courseId = -100,
                 courseName = "强化学习区",
-                WordsCount = collectCount,
+                WordsCount = collectCount.DoneCount + collectCount.NotDoneCount + collectCount.NotLearned,
                 DoneCount = 0,
                 Percentage = "0.00"
             });

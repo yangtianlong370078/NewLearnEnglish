@@ -24,7 +24,9 @@ namespace LearnEnglish.Infrastructure.Services
         /// <inheritdoc/>
         public async Task<int> GetFavoriteCountAsync(int userId)
         {
-            return await _myLexiconRepository.GetFavoriteCountAsync(userId);
+            var collectCount = await _myLexiconRepository.GetFavoriteCountAsync(userId);
+
+            return collectCount.DoneCount + collectCount.NotDoneCount + collectCount.NotLearned; 
         }
     }
 }

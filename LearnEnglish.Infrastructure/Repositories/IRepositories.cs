@@ -48,8 +48,8 @@ namespace LearnEnglish.Infrastructure.Repositories
         /// <summary>
         /// 按课程统计已完成/未完成单词数
         /// </summary>
-        Task<IEnumerable<CourseCountDto>> GetDoneCountsAsync(int userId, bool onlyMyCourse);
-        Task<IEnumerable<CourseCountDto>> GetUndoneCountsAsync(int userId, bool onlyMyCourse);
+        Task<IEnumerable<CourseCountDto>> GetDoneCountsAsync(int userId, int status);
+        Task<IEnumerable<CourseCountDto>> GetUndoneCountsAsync(int userId);
     }
 
     /// <summary>
@@ -120,7 +120,7 @@ namespace LearnEnglish.Infrastructure.Repositories
 
         Task UpsertOrInsertNumberAsync(int userId, int lexiconId, int status);
         Task BatchUpsertNumbersAsync(int userId, Dictionary<int, int> lexiconNumbers, string numberField);
-        Task<int> GetFavoriteCountAsync(int userId);
+        Task<(int NotLearned, int NotDoneCount, int DoneCount)> GetFavoriteCountAsync(int userId);
         /// <summary>
         /// 校准：查询需要状态变更的单词，返回 (lexiconId, currentStatus, newStatus)
         /// </summary>
