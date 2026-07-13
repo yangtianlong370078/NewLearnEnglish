@@ -155,34 +155,44 @@ namespace LearnEnglish.Infrastructure.Services
         /// <inheritdoc/>
         public async Task<int> SaveCourseAsync(int userId, int courseId, string name, int type)
         {
+          
             if (type == 1)
             {
-                // 新增课程
-                var newCourse = new Course
+                if(courseId==0)
                 {
-                    Name = name,
-                    UserId = userId,
-                    CategoryId = 9, // 自定义分类
-                    CreateDate = DateTime.Now
-                };
-                var newId = await _courseRepository.CreateAsync(newCourse);
+                    // 新增课程
+                    var newCourse = new Course
+                    {
+                        Name = name,
+                        UserId = userId,
+                        CategoryId = 9, // 自定义分类
+                        CreateDate = DateTime.Now
+                    };
+                    courseId = await _courseRepository.CreateAsync(newCourse);
 
-                // 自动加入用户课程列表
-                await _myCourseRepository.CreateAsync(new MyCourse
+                    // 自动加入用户课程列表
+                    await _myCourseRepository.CreateAsync(new MyCourse
+                    {
+                        CourseId = courseId,
+                        UserId = userId,
+                        CreateDate = DateTime.Now
+                    });
+
+                    return courseId;
+                }
+                else
                 {
-                    CourseId = newId,
-                    UserId = userId,
-                    CreateDate = DateTime.Now
-                });
-
-                return newId;
+                    // 更新课程名称
+                    await _courseRepository.UpdateNameAsync(courseId, name);
+                    return courseId;
+                }
             }
             else
             {
-                // 更新课程名称
-                await _courseRepository.UpdateNameAsync(courseId, name);
-                return courseId;
+               
             }
+
+            return courseId;
         }
 
         /// <inheritdoc/>
