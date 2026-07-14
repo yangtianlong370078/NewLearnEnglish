@@ -13,6 +13,10 @@ namespace LearnEnglish.Application.Dtos.Course
         public int CourseId { get; set; }
         public string CourseName { get; set; } = string.Empty;
         public bool IsMyCourse { get; set; }
+        /// <summary>
+        /// 用户最后学习的课程Id（随分类课程列表一并带出，仅"我的"查询有值）
+        /// </summary>
+        public int? LastCourseId { get; set; }
     }
 
     /// <summary>
@@ -87,6 +91,11 @@ namespace LearnEnglish.Application.Dtos.Course
         /// 强化区
         /// </summary>
         public CourseInfoDto StrengthenWord { get; set; }
+
+        /// <summary>
+        /// 最后学习
+        /// </summary>
+        public CourseInfoDto LastCourse { get; set; }
     }
 
     /// <summary>

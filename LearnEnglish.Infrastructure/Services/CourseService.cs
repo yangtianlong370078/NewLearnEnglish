@@ -80,10 +80,13 @@ namespace LearnEnglish.Infrastructure.Services
 
             var allInfos = BuildCategoryInfoList(categories, notDoneCounts, doneCounts, allCounts, userId, courseId);
 
+            var lastCourseId = categories.FirstOrDefault()?.LastCourseId ?? 0;
+
             var result = new MyCategoryInfoDto
             {
                 CategoryInfos = allInfos.Item1.Where(a => a.Id != 9).ToList(),
                 MyCategoryInfos = allInfos.Item1.Where(a => a.Id == 9).ToList(),
+                LastCourse = allInfos.Item1.SelectMany(a=>a.CourseInfos).Where(a=>a.CourseId== lastCourseId).FirstOrDefault()??new CourseInfoDto(),
             };
 
             // 在"我的"分类中插入强化学习区

@@ -77,10 +77,12 @@ namespace LearnEnglish.Infrastructure.Repositories
                 //我的课程
                 sql = @"SELECT ca.id AS Id, ca.name AS Name, co.userId AS UserId, 
                     co.id AS CourseId, co.name AS CourseName, 
-                    CASE WHEN mc.id IS NOT NULL THEN 1 ELSE 0 END AS IsMyCourse
+                    CASE WHEN mc.id IS NOT NULL THEN 1 ELSE 0 END AS IsMyCourse,
+                    lc.courseId AS LastCourseId
                     FROM category ca 
                     JOIN course co ON ca.id = co.categoryId and ca.Type = @type
                     JOIN mycourse mc ON co.id = mc.courseid AND mc.userid = @UserId  
+                    LEFT JOIN lastcourse lc ON lc.userId = @UserId
                     ORDER BY ca.id, co.id";
             }
             else
