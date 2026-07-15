@@ -40,6 +40,8 @@ namespace LearnEnglish.Application.Dtos.Course
         public List<CourseInfoDto> CourseInfos { get; set; } = new();
     }
 
+    
+
     /// <summary>
     /// 课程信息
     /// </summary>
@@ -72,6 +74,29 @@ namespace LearnEnglish.Application.Dtos.Course
         /// 完成百分比
         /// </summary>
         public string Percentage { get; set; } = string.Empty;
+    }
+
+    /// <summary>
+    /// 未添加课程分类详细信息（含课程列表）
+    /// </summary>
+    public class NotAddCategoryInfoDto
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public List<NotAddCourseInfoDto> CourseInfos { get; set; } = new();
+    }
+
+    /// <summary>
+    /// 课程信息
+    /// </summary>
+    public class NotAddCourseInfoDto
+    {
+        public int CourseId { get; set; }
+        public string CourseName { get; set; } = string.Empty;
+        /// <summary>
+        /// 单词数量
+        /// </summary>
+        public int WordsCount { get; set; }
     }
 
     /// <summary>

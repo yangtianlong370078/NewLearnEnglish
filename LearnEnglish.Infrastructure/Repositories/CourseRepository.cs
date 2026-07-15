@@ -131,5 +131,14 @@ namespace LearnEnglish.Infrastructure.Repositories
                 GROUP BY cc.courseId";
             return await QueryAsync<Application.Dtos.Course.CourseCountDto>(sql, new { UserId = userId });
         }
+
+
+        public async Task<IEnumerable<Application.Dtos.Course.CourseCountDto>> GetCourseCountsAsync(List<int> courseIds)
+        {
+            var sql = $@"SELECT DISTINCT cc.courseId AS CourseId, COUNT(*) AS Count
+                FROM coursecontent cc 
+                WHERE cc.courseId  IN @courseIds; ";
+            return await QueryAsync<Application.Dtos.Course.CourseCountDto>(sql, new { courseIds });
+        }
     }
 }

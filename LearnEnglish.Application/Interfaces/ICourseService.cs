@@ -17,7 +17,7 @@ namespace LearnEnglish.Application.Interfaces
         /// <summary>
         /// 获取分类课程列表（含完成/未完成统计）
         /// </summary>
-        Task<List<CategoryInfoDto>> GetCategoryListAsync(int userId, int type);
+        Task<List<NotAddCategoryInfoDto>> GetCategoryListAsync(int userId, int type);
 
         /// <summary>
         /// 获取我的分类内容（含收藏夹统计）

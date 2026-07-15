@@ -50,6 +50,8 @@ namespace LearnEnglish.Infrastructure.Repositories
         /// </summary>
         Task<IEnumerable<CourseCountDto>> GetDoneCountsAsync(int userId, int status);
         Task<IEnumerable<CourseCountDto>> GetUndoneCountsAsync(int userId);
+
+        Task<IEnumerable<CourseCountDto>> GetCourseCountsAsync(List<int> courseIds);
     }
 
     /// <summary>

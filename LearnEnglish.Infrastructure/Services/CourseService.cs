@@ -53,16 +53,51 @@ namespace LearnEnglish.Infrastructure.Services
         }
 
         /// <inheritdoc/>
-        public async Task<List<CategoryInfoDto>> GetCategoryListAsync(int userId, int type)
+        public async Task<List<NotAddCategoryInfoDto>> GetCategoryListAsync(int userId, int type)
         {
             var categories = await _courseRepository.GetCategoriesWithCoursesAsync(userId, type, onlyMy: false);
-            var notDoneCounts = await _courseRepository.GetDoneCountsAsync(userId, 3);
-            var doneCounts = await _courseRepository.GetDoneCountsAsync(userId, 3);
-            var undoneCounts = await _courseRepository.GetUndoneCountsAsync(userId);
-            var courseId = _currentUserService.GetValidUser().CourseId;
-            var data = BuildCategoryInfoList(categories, notDoneCounts, doneCounts, undoneCounts, userId, courseId);
+            var allCounts = await _courseRepository.GetCourseCountsAsync(categories.Select(a=>a.CourseId).ToList());
+            return BuildCategoryList(categories, allCounts);
+        }
 
-            return data.Item1;
+
+        /// <summary>
+        /// 构建分类信息列表
+        /// </summary>
+        private static List<NotAddCategoryInfoDto> BuildCategoryList(
+            IEnumerable<CategoryDto> categories,
+            IEnumerable<CourseCountDto> allCounts)
+        {
+            var allDict = allCounts.ToDictionary(x => x.CourseId, x => x.Count);
+            return categories
+                .GroupBy(x => x.Id)
+                .Select(group =>
+                {
+                    var first = group.First();
+                    var info = new NotAddCategoryInfoDto
+                    {
+                        Id = group.Key,
+                        Name = first.Name,
+                    };
+
+                    if (!(group.Count() == 1 && first.CourseId == 0))
+                    {
+                        foreach (var item in group)
+                        {
+                            var wc = allDict.GetValueOrDefault(item.CourseId, 0);
+                            var courseInfo = new NotAddCourseInfoDto
+                            {
+                                CourseId = item.CourseId,
+                                CourseName = item.CourseName,
+                                WordsCount = wc,
+                            };
+                            info.CourseInfos.Add(courseInfo);
+                        }
+                    }
+                    return info;
+                }).ToList();
+
+            
         }
 
         /// <inheritdoc/>
@@ -268,7 +303,6 @@ namespace LearnEnglish.Infrastructure.Services
             var allDict = allCounts.ToDictionary(x => x.CourseId, x => x.Count);
 
             CourseInfoDto newWord = new CourseInfoDto();
-
             var data = categories
                 .GroupBy(x => x.Id)
                 .Select(group =>

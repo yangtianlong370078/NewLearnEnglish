@@ -52,7 +52,29 @@ namespace LearnEnglish.Controllers
         {
             var userId = RequireUserId();
             var categoryInfos = await _courseService.GetCategoryListAsync(userId, type);
-            return View("~/Views/Home/CategoryList.cshtml", MapToOldCategoryInfoList(categoryInfos));
+
+          var data =  categoryInfos.Select(d =>
+            {
+                var info = new CategoryInfo
+                {
+                    id = d.Id,
+                    name = d.Name,
+                    ismy = false,
+                    islearn = false
+                };
+                info.courseInfos.AddRange(d.CourseInfos.Select(c => new courseInfo
+                {
+                    courseId = c.CourseId,
+                    courseName = c.CourseName,
+                    ismycourse = false,
+                    WordsCount = c.WordsCount,
+                    DoneCount = 0,
+                    Percentage = 0.00.ToString("F2")
+                }));
+                return info;
+            }).ToList();
+
+            return View("~/Views/Home/CategoryList.cshtml", data);
         }
 
         /// <summary>
@@ -156,6 +178,35 @@ namespace LearnEnglish.Controllers
         /// 将新 CategoryInfoDto 列表映射为旧 CategoryInfo 列表（视图兼容）
         /// </summary>
         private static List<CategoryInfo> MapToOldCategoryInfoList(List<CategoryInfoDto> dtos)
+        {
+            return dtos.Select(d =>
+            {
+                var info = new CategoryInfo
+                {
+                    id = d.Id,
+                    name = d.Name,
+                    ismy = d.IsMy,
+                    islearn = d.IsLearn
+                };
+                info.courseInfos.AddRange(d.CourseInfos.Select(c => new courseInfo
+                {
+                    courseId = c.CourseId,
+                    courseName = c.CourseName,
+                    ismycourse = c.IsMyCourse,
+                    WordsCount = c.WordsCount,
+                    DoneCount = c.DoneCount,
+                    Percentage = c.Percentage
+                }));
+                return info;
+            }).ToList();
+        }
+
+
+
+        /// <summary>
+        /// 将新 CategoryInfoDto 列表映射为旧 CategoryInfo 列表（视图兼容）
+        /// </summary>
+        private static List<CategoryInfo> MapNotAddToOldCategoryInfoList(List<CategoryInfoDto> dtos)
         {
             return dtos.Select(d =>
             {
