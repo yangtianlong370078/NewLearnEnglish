@@ -100,7 +100,7 @@ namespace LearnEnglish.Infrastructure.Repositories
                     co.id AS CourseId, co.name AS CourseName
                     FROM category ca
                      JOIN course co ON ca.id = co.categoryId
-										  WHERE ca.Type = @type and
+										  WHERE ca.Type = @type and ca.id != 9 AND
 										  NOT EXISTS (			 
 										 select 1 from mycourse mc WHERE co.id = mc.courseid and mc.userid = @UserId
 										 )
@@ -135,9 +135,15 @@ namespace LearnEnglish.Infrastructure.Repositories
 
         public async Task<IEnumerable<Application.Dtos.Course.CourseCountDto>> GetCourseCountsAsync(List<int> courseIds)
         {
-            var sql = $@"SELECT DISTINCT cc.courseId AS CourseId, COUNT(*) AS Count
+            if (courseIds == null || courseIds.Count == 0)
+            {
+                return Enumerable.Empty<Application.Dtos.Course.CourseCountDto>();
+            }
+
+            const string sql = @"SELECT cc.courseId AS CourseId, COUNT(*) AS Count
                 FROM coursecontent cc 
-                WHERE cc.courseId  IN @courseIds; ";
+                WHERE cc.courseId IN @courseIds
+                GROUP BY cc.courseId;";
             return await QueryAsync<Application.Dtos.Course.CourseCountDto>(sql, new { courseIds });
         }
     }
