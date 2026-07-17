@@ -66,6 +66,29 @@ namespace LearnEnglish.WebApi.Controllers
             return Ok(new { success = true, data = items, total = result.TotalCount, pageIndex = index, pageSize, brs, wlj, yzw });
         }
 
+        /// <summary>课程单词分页列表</summary>
+        [HttpGet("Words")]
+        [Authorize]
+        public async Task<IActionResult> Words(int kc = 1, int zt = 1,  string name = "", int index = 1, int pageSize = 30)
+        {
+            var userId = RequireUserId();
+            var (result, brs, wlj, yzw) = await _wordService.GetWordListAsync(userId, kc, zt, 1, name, index, pageSize);
+            var items = result.Items.Select(d => new
+            {
+                d.Id,
+                d.LexiconId,
+                d.En,
+                d.Cn,
+                d.IsCollect,
+                d.NumberSum,
+                d.ZyNumber,
+                d.YzNumber,
+                d.TxNumber,
+                d.FyNumber
+            }).ToList();
+            return Ok(new { success = true, data = items, total = result.TotalCount, pageIndex = index, pageSize, brs, wlj, yzw });
+        }
+
         /// <summary>收藏单词分页列表</summary>
         [HttpGet("CollectWordList")]
         [Authorize]
