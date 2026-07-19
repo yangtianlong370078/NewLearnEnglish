@@ -29,4 +29,11 @@
     <ProjectReference Include="..\LearnEnglish.Redis\LearnEnglish.Redis.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="..\CMU\cmudict-0.7b" Link="CMU\cmudict-0.7b">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

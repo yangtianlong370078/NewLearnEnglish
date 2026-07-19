@@ -46,6 +46,7 @@ namespace LearnEnglish.Infrastructure
             services.Configure<WeChatOptions>(configuration.GetSection("WeChatConfig"));
             services.Configure<WhisperOptions>(configuration.GetSection("Whisper"));
             services.Configure<XfyunOptions>(configuration.GetSection("XfyunConfig"));
+            services.Configure<SyllableOptions>(configuration.GetSection("Syllable"));
 
             // ========== Repository 注册 ==========
             services.AddScoped<IUserRepository, UserRepository>();
@@ -80,6 +81,9 @@ namespace LearnEnglish.Infrastructure
             services.AddScoped<ITranslateService, Services.TranslateService>();
             services.AddScoped<IImportService, Services.ImportService>();
             services.AddScoped<IEdgeTtsService, Services.EdgeTtsService>();
+            services.AddSingleton<ISyllableService, Services.SyllableService>();
+            services.AddSingleton<IPhonicsService, Services.PhonicsService>();
+            services.AddHostedService<SyllableDictionaryInitializer>();
 
             // ========== 后台任务队列服务 ==========
             services.AddSingleton<IBackgroundTaskQueue>(new BackgroundTaskQueue(capacity: 100));

@@ -19,7 +19,33 @@ namespace LearnEnglish.Models.MongoDB
         public List<string> definition { get; set; }
         public List<string> translation { get; set; }
         public List<string> tag { get; set; }
+
+        /// <summary>
+        /// 音节拆分
+        /// </summary>
+        public List<string> Syllables { get; set; }
+
+        /// <summary>
+        /// 自然拼读拆分为字母组合
+        /// </summary>
+        public List<PhonicsSplit> PhonicsSplits { get; set; }
     }
+
+    /// <summary>
+    /// 字母组合
+    /// </summary>
+    public class PhonicsSplit
+    {
+        /// <summary>
+        /// 字母组合
+        /// </summary>
+        public string LetterCombine { get; set; }
+        /// <summary>
+        /// 对应音标
+        /// </summary>
+        public string PhoneticSymbol { get; set; }
+    }
+
 
     public class sampleSentence
     {

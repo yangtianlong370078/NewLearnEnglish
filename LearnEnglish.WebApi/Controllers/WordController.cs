@@ -3,6 +3,7 @@ using LearnEnglish.Models.MongoDB;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LearnEnglish.WebApi.Controllers
 {
@@ -15,11 +16,15 @@ namespace LearnEnglish.WebApi.Controllers
         private readonly IWordService _wordService;
         private readonly ICurrentUserService _currentUserService;
         private readonly IEdgeTtsService _ttsService;
-        public WordController(IWordService wordService, ICurrentUserService currentUserService, IEdgeTtsService ttsService)
+        private readonly ISyllableService _syllableService;
+        private readonly IPhonicsService _phonicsService;
+        public WordController(IWordService wordService, ICurrentUserService currentUserService, IEdgeTtsService ttsService, ISyllableService syllableService, IPhonicsService phonicsService)
         {
             _wordService = wordService;
             _currentUserService = currentUserService;
             _ttsService = ttsService;
+            _syllableService = syllableService;
+            _phonicsService = phonicsService;
         }
 
         private int RequireUserId() => _currentUserService.UserId
@@ -191,7 +196,25 @@ namespace LearnEnglish.WebApi.Controllers
             {
                 var json = JsonConvert.SerializeObject(detail);
                 model = JsonConvert.DeserializeObject<lexicondetail>(json);
+
+                if (model != null)
+                {
+                    model.Syllables = _syllableService.GetSyllables(word).ToList();
+                    model.PhonicsSplits = _phonicsService.Split(word, model.Syllables)
+                        .Select(split => new PhonicsSplit
+                        {
+                            LetterCombine = split.LetterCombine,
+                            PhoneticSymbol = split.PhoneticSymbol
+                        })
+                        .ToList();
+                }
             }
+
+            if (model == null)
+            {
+                return Ok(new { success = true, word, data = model });
+            }
+
             return Ok(new { success = true, word, data = model });
         }
 
