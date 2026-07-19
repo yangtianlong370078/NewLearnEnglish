@@ -47,6 +47,7 @@ namespace LearnEnglish.Infrastructure
             services.Configure<WhisperOptions>(configuration.GetSection("Whisper"));
             services.Configure<XfyunOptions>(configuration.GetSection("XfyunConfig"));
             services.Configure<SyllableOptions>(configuration.GetSection("Syllable"));
+            services.Configure<PhonicsOptions>(configuration.GetSection("Phonics"));
 
             // ========== Repository 注册 ==========
             services.AddScoped<IUserRepository, UserRepository>();

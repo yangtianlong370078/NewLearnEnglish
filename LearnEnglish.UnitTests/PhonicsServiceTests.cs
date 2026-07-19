@@ -58,18 +58,50 @@ namespace LearnEnglish.UnitTests
         }
 
         [Theory]
-        [InlineData("teacher", new[] { "tea", "cher" }, new[] { "tea", "ch", "er" })]
-        [InlineData("apple", new[] { "ap", "ple" }, new[] { "ap", "ple" })]
-        [InlineData("beautiful", new[] { "beau", "ti", "ful" }, new[] { "beau", "ti", "ful" })]
-        [InlineData("unhappy", new[] { "un", "hap", "py" }, new[] { "un", "hap", "py" })]
-        [InlineData("action", new[] { "ac", "tion" }, new[] { "ac", "tion" })]
-        [InlineData("circle", new[] { "cir", "cle" }, new[] { "cir", "cle" })]
-        [InlineData("school", new[] { "school" }, new[] { "sch", "oo", "l" })]
-        public void Split_UsesSyllableBoundariesBeforeApplyingPhonicsRules(string word, string[] syllables, string[] expected)
+        [InlineData("giraffe", new[] { "gi", "raffe" }, new[] { "gi", "ra", "ffe" })]
+        [InlineData("lion", new[] { "li", "on" }, new[] { "li", "on" })]
+        [InlineData("tomato", new[] { "to", "ma", "to" }, new[] { "to", "ma", "to" })]
+        [InlineData("potato", new[] { "po", "ta", "to" }, new[] { "po", "ta", "to" })]
+        [InlineData("pants", new[] { "pants" }, new[] { "pan", "ts" })]
+        [InlineData("goat", new[] { "goat" }, new[] { "goat" })]
+        public void Split_UsesGreedyPhonicsWithinCmuTolerance(string word, string[] syllables, string[] expected)
         {
             var result = new PhonicsService().Split(word, syllables);
 
             Assert.Equal(expected, result.Select(segment => segment.LetterCombine));
+        }
+
+        [Fact]
+        public void Split_MergesFromEndWhenGreedyPartsExceedTolerance()
+        {
+            var result = new PhonicsService().Split("clothes", ["clothes"]);
+
+            Assert.Equal(["cl", "othes"], result.Select(segment => segment.LetterCombine));
+        }
+
+        [Theory]
+        [InlineData("rabbit", new[] { "rab", "bit" }, new[] { "ra", "bb", "it" })]
+        [InlineData("bird", new[] { "bird" }, new[] { "bird" })]
+        [InlineData("miss", new[] { "miss" }, new[] { "mi", "ss" })]
+        [InlineData("ruler", new[] { "ru", "ler" }, new[] { "ru", "ler" })]
+        [InlineData("pencil", new[] { "pen", "cil" }, new[] { "pen", "cil" })]
+        [InlineData("where", new[] { "where" }, new[] { "wh", "ere" })]
+        [InlineData("today", new[] { "to", "day" }, new[] { "to", "day" })]
+        [InlineData("grape", new[] { "grape" }, new[] { "gr", "ape" })]
+        [InlineData("five", new[] { "five" }, new[] { "five" })]
+        public void Split_PreservesBeginnerPhonicsUnits(string word, string[] syllables, string[] expected)
+        {
+            var result = new PhonicsService().Split(word, syllables);
+
+            Assert.Equal(expected, result.Select(segment => segment.LetterCombine));
+        }
+
+        [Fact]
+        public void Split_UsesStrictSyllableModeWhenToleranceIsZero()
+        {
+            var result = new PhonicsService(0).Split("goat", ["goat"]);
+
+            Assert.Equal(["goat"], result.Select(segment => segment.LetterCombine));
         }
     }
 }

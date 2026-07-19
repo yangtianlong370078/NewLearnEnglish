@@ -1,4 +1,6 @@
 using LearnEnglish.Application.Interfaces;
+using LearnEnglish.Infrastructure.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace LearnEnglish.Infrastructure.Services
 {
@@ -9,6 +11,25 @@ namespace LearnEnglish.Infrastructure.Services
     public sealed class PhonicsService : IPhonicsService
     {
         private const string Silent = "∅";
+        //0：严格音节模式
+        //2：当前适度拼读模式
+        //99:大数值：接近自由拼读模式
+        private readonly int _tolerance;
+
+        public PhonicsService()
+            : this(2)
+        {
+        }
+
+        public PhonicsService(IOptions<PhonicsOptions> options)
+            : this(options?.Value.Tolerance ?? 2)
+        {
+        }
+
+        public PhonicsService(int tolerance)
+        {
+            _tolerance = Math.Max(0, tolerance);
+        }
 
         private static readonly (string Text, string PhoneticSymbol)[] Prefixes =
         [
@@ -42,6 +63,7 @@ namespace LearnEnglish.Infrastructure.Services
                 ["ple"] = "pəl",
                 ["ful"] = "fəl",
                 ["hap"] = "hæp",
+                ["ffe"] = "f",
                 ["air"] = "ɛr",
                 ["are"] = "ɛr",
                 ["ear"] = "ɪr",
@@ -52,34 +74,116 @@ namespace LearnEnglish.Infrastructure.Services
         private static readonly IReadOnlyDictionary<string, string> TwoLetterPatterns =
             new Dictionary<string, string>(StringComparer.Ordinal)
             {
-                ["ai"] = "eɪ", ["ay"] = "eɪ", ["ea"] = "iː", ["ee"] = "iː",
-                ["ei"] = "eɪ", ["ie"] = "iː", ["oa"] = "oʊ", ["oe"] = "oʊ",
-                ["oi"] = "ɔɪ", ["oy"] = "ɔɪ", ["oo"] = "uː", ["ou"] = "aʊ",
-                ["ow"] = "aʊ", ["au"] = "ɔː", ["aw"] = "ɔː", ["ew"] = "juː",
-                ["ui"] = "uː", ["ue"] = "uː", ["ar"] = "ɑːr", ["er"] = "ɜːr",
-                ["ir"] = "ɜːr", ["or"] = "ɔːr", ["ur"] = "ɜːr", ["sh"] = "ʃ",
-                ["ch"] = "tʃ", ["th"] = "θ", ["wh"] = "w", ["ph"] = "f",
-                ["ck"] = "k", ["ng"] = "ŋ", ["nk"] = "ŋk", ["qu"] = "kw",
-                ["wr"] = "r", ["kn"] = "n", ["gn"] = "n", ["mb"] = "m",
-                ["gh"] = Silent, ["an"] = "æn", ["en"] = "ɛn", ["in"] = "ɪn",
-                ["on"] = "ɒn", ["un"] = "ʌn", ["ac"] = "æk", ["es"] = "z",
+                ["ai"] = "eɪ",
+                ["ay"] = "eɪ",
+                ["ea"] = "iː",
+                ["ee"] = "iː",
+                ["ei"] = "eɪ",
+                ["ie"] = "iː",
+                ["oa"] = "oʊ",
+                ["oe"] = "oʊ",
+                ["oi"] = "ɔɪ",
+                ["oy"] = "ɔɪ",
+                ["oo"] = "uː",
+                ["ou"] = "aʊ",
+                ["ow"] = "aʊ",
+                ["au"] = "ɔː",
+                ["aw"] = "ɔː",
+                ["ew"] = "juː",
+                ["ui"] = "uː",
+                ["ue"] = "uː",
+                ["ar"] = "ɑːr",
+                ["er"] = "ɜːr",
+                ["ir"] = "ɜːr",
+                ["or"] = "ɔːr",
+                ["ur"] = "ɜːr",
+                ["sh"] = "ʃ",
+                ["ch"] = "tʃ",
+                ["th"] = "θ",
+                ["wh"] = "w",
+                ["ph"] = "f",
+                ["ck"] = "k",
+                ["ng"] = "ŋ",
+                ["nk"] = "ŋk",
+                ["qu"] = "kw",
+                ["wr"] = "r",
+                ["kn"] = "n",
+                ["gn"] = "n",
+                ["mb"] = "m",
+                ["gh"] = Silent,
+                ["an"] = "æn",
+                ["en"] = "ɛn",
+                ["in"] = "ɪn",
+                ["on"] = "ɒn",
+                ["un"] = "ʌn",
+                ["ac"] = "æk",
+                ["es"] = "z",
                 ["ti"] = "tɪ",
-                ["bl"] = "bl", ["br"] = "br", ["cl"] = "kl", ["cr"] = "kr",
-                ["dr"] = "dr", ["fl"] = "fl", ["fr"] = "fr", ["gl"] = "ɡl",
-                ["gr"] = "ɡr", ["pl"] = "pl", ["pr"] = "pr", ["sc"] = "sk",
-                ["sk"] = "sk", ["sl"] = "sl", ["sm"] = "sm", ["sn"] = "sn",
-                ["sp"] = "sp", ["st"] = "st", ["sw"] = "sw", ["tr"] = "tr",
-                ["tw"] = "tw", ["ts"] = "ts"
+                ["gi"] = "dʒɪ",
+                ["li"] = "laɪ",
+                ["ra"] = "ræ",
+                ["le"] = "l",
+                ["rr"] = "r",
+                ["bb"] = "b",
+                ["ss"] = "s",
+                ["tt"] = "t",
+                ["pp"] = "p",
+                ["ff"] = "f",
+                ["ll"] = "l",
+                ["mm"] = "m",
+                ["nn"] = "n",
+                ["bl"] = "bl",
+                ["br"] = "br",
+                ["cl"] = "kl",
+                ["cr"] = "kr",
+                ["dr"] = "dr",
+                ["fl"] = "fl",
+                ["fr"] = "fr",
+                ["gl"] = "ɡl",
+                ["gr"] = "ɡr",
+                ["pl"] = "pl",
+                ["pr"] = "pr",
+                ["sc"] = "sk",
+                ["sk"] = "sk",
+                ["sl"] = "sl",
+                ["sm"] = "sm",
+                ["sn"] = "sn",
+                ["sp"] = "sp",
+                ["st"] = "st",
+                ["sw"] = "sw",
+                ["tr"] = "tr",
+                ["tw"] = "tw",
+                ["ts"] = "ts"
             };
 
         private static readonly IReadOnlyDictionary<char, string> SingleLetterPatterns =
             new Dictionary<char, string>
             {
-                ['a'] = "æ", ['b'] = "b", ['c'] = "k", ['d'] = "d", ['e'] = "ɛ",
-                ['f'] = "f", ['g'] = "g", ['h'] = "h", ['i'] = "ɪ", ['j'] = "dʒ",
-                ['k'] = "k", ['l'] = "l", ['m'] = "m", ['n'] = "n", ['o'] = "ɒ",
-                ['p'] = "p", ['q'] = "k", ['r'] = "r", ['s'] = "s", ['t'] = "t",
-                ['u'] = "ʌ", ['v'] = "v", ['w'] = "w", ['x'] = "ks", ['y'] = "j",
+                ['a'] = "æ",
+                ['b'] = "b",
+                ['c'] = "k",
+                ['d'] = "d",
+                ['e'] = "ɛ",
+                ['f'] = "f",
+                ['g'] = "g",
+                ['h'] = "h",
+                ['i'] = "ɪ",
+                ['j'] = "dʒ",
+                ['k'] = "k",
+                ['l'] = "l",
+                ['m'] = "m",
+                ['n'] = "n",
+                ['o'] = "ɒ",
+                ['p'] = "p",
+                ['q'] = "k",
+                ['r'] = "r",
+                ['s'] = "s",
+                ['t'] = "t",
+                ['u'] = "ʌ",
+                ['v'] = "v",
+                ['w'] = "w",
+                ['x'] = "ks",
+                ['y'] = "j",
                 ['z'] = "z"
             };
 
@@ -90,7 +194,7 @@ namespace LearnEnglish.Infrastructure.Services
             return normalizedWord.Length == 0
                 ? Array.Empty<(string LetterCombine, string PhoneticSymbol)>()
                 : SplitNormalized(normalizedWord, true, false);
-            }
+        }
 
         /// <inheritdoc />
         public IReadOnlyList<(string LetterCombine, string PhoneticSymbol)> Split(string word, IReadOnlyList<string> syllables)
@@ -110,9 +214,107 @@ namespace LearnEnglish.Infrastructure.Services
                 return Split(normalizedWord);
             }
 
-            return normalizedSyllables
-                .SelectMany((syllable, index) => SplitNormalized(syllable, index == 0, true))
-                .ToList();
+            var parts = SplitNormalized(normalizedWord, true, false).ToList();
+            var targetMin = normalizedSyllables.Count;
+            if (parts.Count < targetMin)
+            {
+                // 罕见情况下贪心组合跨越了词典音节边界，回退为音节块以保证读音下限。
+                parts = normalizedSyllables.Select(CreatePhonicsBlock).ToList();
+            }
+
+            MergeMagicESegments(parts);
+            MergeIsolatedConsonants(parts);
+
+            var targetMax = targetMin >= int.MaxValue - _tolerance
+                ? int.MaxValue
+                : targetMin + _tolerance;
+            if (targetMin == 1)
+            {
+                // 单音节词仅保留 onset + rime，避免低龄学习时出现三块以上的碎片。
+                targetMax = Math.Min(targetMax, 2);
+            }
+
+            MergeFromEnd(parts, targetMax);
+            return parts;
+        }
+
+        private static void MergeMagicESegments(List<(string LetterCombine, string PhoneticSymbol)> parts)
+        {
+            for (var index = parts.Count - 1; index > 0; index--)
+            {
+                if (parts[index].LetterCombine != "e" || parts[index].PhoneticSymbol != Silent)
+                {
+                    continue;
+                }
+
+                // VCe：将元音、其后的单辅音和词尾 silent-e 合并，例如 a-p-e -> ape。
+                if (index >= 2 &&
+                    IsSingleConsonant(parts[index - 1]) &&
+                    ContainsVowel(parts[index - 2].LetterCombine))
+                {
+                    MergeRange(parts, index - 2, 3);
+                    index -= 2;
+                    continue;
+                }
+
+                // 词尾 ere 等模式：silent-e 始终与前一个拼读块绑定。
+                MergeRange(parts, index - 1, 2);
+                index--;
+            }
+        }
+
+        private static void MergeIsolatedConsonants(List<(string LetterCombine, string PhoneticSymbol)> parts)
+        {
+            for (var index = 0; index < parts.Count;)
+            {
+                if (!IsSingleConsonant(parts[index]))
+                {
+                    index++;
+                    continue;
+                }
+
+                if (index + 1 < parts.Count)
+                {
+                    MergeRange(parts, index, 2);
+                    continue;
+                }
+
+                if (index > 0)
+                {
+                    MergeRange(parts, index - 1, 2);
+                    index--;
+                    continue;
+                }
+
+                break;
+            }
+        }
+
+        private static void MergeRange(List<(string LetterCombine, string PhoneticSymbol)> parts, int startIndex, int count)
+        {
+            var merged = parts.Skip(startIndex).Take(count).ToList();
+            parts[startIndex] =
+                (string.Concat(merged.Select(part => part.LetterCombine)), string.Concat(merged.Select(part => part.PhoneticSymbol)));
+            parts.RemoveRange(startIndex + 1, count - 1);
+        }
+
+        private static void MergeFromEnd(List<(string LetterCombine, string PhoneticSymbol)> parts, int targetMax)
+        {
+            while (parts.Count > targetMax && parts.Count > 1)
+            {
+                var lastIndex = parts.Count - 1;
+                var previous = parts[lastIndex - 1];
+                var last = parts[lastIndex];
+                parts[lastIndex - 1] =
+                    (previous.LetterCombine + last.LetterCombine, previous.PhoneticSymbol + last.PhoneticSymbol);
+                parts.RemoveAt(lastIndex);
+            }
+        }
+
+        private static (string LetterCombine, string PhoneticSymbol) CreatePhonicsBlock(string text)
+        {
+            var symbols = SplitGreedily(text, 0).Select(segment => segment.PhoneticSymbol);
+            return (text, string.Concat(symbols));
         }
 
         private static IReadOnlyList<(string LetterCombine, string PhoneticSymbol)> SplitNormalized(
@@ -222,6 +424,8 @@ namespace LearnEnglish.Infrastructure.Services
             segment.LetterCombine is { Length: 1 } &&
             segment.LetterCombine[0] is 'a' or 'e' or 'i' or 'o' or 'u' &&
             segment.PhoneticSymbol is "æ" or "ɛ" or "ɪ" or "ɒ" or "ʌ";
+
+        private static bool ContainsVowel(string text) => text.Any(letter => letter is 'a' or 'e' or 'i' or 'o' or 'u');
 
         private static bool TryMatch(
             string word,
