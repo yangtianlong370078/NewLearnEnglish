@@ -79,24 +79,32 @@ namespace LearnEnglish.Infrastructure.Services
         public async Task<(PagedList<ShowTranslateDto> pagedList, int newCount, int learningCount, int masteredCount)> GetWordListAsync(
             int userId, int courseId, int status, int displayType, string? name, int pageIndex, int pageSize)
         {
-            var orderBy = status > 1 ? "t4.updatetime desc" : "t2.frequency desc, t1.id desc";
+            (IEnumerable<ShowTranslateDto> items, int total, int newCount, int learningCount, int masteredCount) queryResult;
 
-            var (items, total, newCount, learningCount, masteredCount) =
-                await _wordQueryRepository.GetCourseWordsPagedAsync(userId, courseId, status, name, pageIndex, pageSize, orderBy);
+            if (courseId == -100)
+            {
+                // 我的收藏：只查询收藏的单词
+                queryResult = await _wordQueryRepository.GetCollectedWordsPagedAsync(userId, status, name, pageIndex, pageSize, "t4.updatetime desc");
+            }
+            else
+            {
+                var orderBy = status > 1 ? "t4.updatetime desc" : "t2.frequency desc, t1.id desc";
+                queryResult = await _wordQueryRepository.GetCourseWordsPagedAsync(userId, courseId, status, name, pageIndex, pageSize, orderBy);
+            }
 
-            var list = items.ToList();
+            var list = queryResult.items.ToList();
             var textInfo = CultureInfo.CurrentCulture.TextInfo;
 
             foreach (var item in list)
             {
                 var en = textInfo.ToTitleCase(item.En.ToLower());
-                item.En = en;
+                item.En = item.En.ToLower();
                 item.Name = displayType == 1 ? item.Cn : en;
                 item.Value = displayType == 1 ? en : (displayType == 3 ? en : item.Cn);
                 item.IsUpdate = item.UserId == userId;
             }
 
-            return (new PagedList<ShowTranslateDto>(list, pageIndex, pageSize, total), newCount, learningCount, masteredCount);
+            return (new PagedList<ShowTranslateDto>(list, pageIndex, pageSize, queryResult.total), queryResult.newCount, queryResult.learningCount, queryResult.masteredCount);
         }
 
         /// <inheritdoc/>

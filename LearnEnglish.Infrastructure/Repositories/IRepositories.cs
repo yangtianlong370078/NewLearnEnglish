@@ -252,6 +252,12 @@ namespace LearnEnglish.Infrastructure.Repositories
             int userId, string? name, int pageIndex, int pageSize);
 
         /// <summary>
+        /// 获取收藏单词分页列表（含状态统计，与课程单词列表结构一致）
+        /// </summary>
+        Task<(IEnumerable<ShowTranslateDto> items, int total, int newCount, int learningCount, int masteredCount)> GetCollectedWordsPagedAsync(
+            int userId, int status, string? name, int pageIndex, int pageSize, string orderBy);
+
+        /// <summary>
         /// 检查单词是否存在于课程中
         /// </summary>
         Task<(bool exists, int isEnAudio, int isUsAudio)> CheckWordExistsAsync(int courseId, string en);
