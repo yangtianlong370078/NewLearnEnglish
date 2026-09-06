@@ -225,7 +225,7 @@ namespace LearnEnglish.WebApi.Controllers
         /// 采用发音容错匹配：发音不太标准、识别结果有偏差时，只要“听起来足够接近”也判为正确。
         /// 容错阈值可通过配置 FunAsr:MatchThreshold 调整（0~1，越小越宽松）。
         /// </summary>
-        public async Task<(bool result, int scoring, bool success)> FunAsrModel(string filePath, string word)
+        private async Task<(bool result, int scoring, bool success)> FunAsrModel(string filePath, string word)
         {
             var text = await _funAsrTranscriptionService.TranscribeAsync(filePath);
 

@@ -253,7 +253,7 @@ namespace LearnEnglish.Infrastructure.Services
         public async Task EditWordAsync(int userId, int lexiconId, string en, string cn)
         {
             // 更新 lexicon 表
-            await _lexiconRepository.UpdateEnCnAsync(lexiconId, userId, en, cn);
+           // await _lexiconRepository.UpdateEnCnAsync(lexiconId, userId, en, cn);
 
             // 更新或插入 mylexicon.cn
             var myLexicon = await _myLexiconRepository.GetByUserAndLexiconAsync(userId, lexiconId);
