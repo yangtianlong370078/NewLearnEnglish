@@ -89,7 +89,8 @@ namespace LearnEnglish.WebApi.Controllers
                 d.ZyNumber,
                 d.YzNumber,
                 d.TxNumber,
-                d.FyNumber
+                d.FyNumber,
+                MyWord = d.IsUpdate
             }).ToList();
             return Ok(new { success = true, data = items, total = result.TotalCount, pageIndex = index, pageSize, brs, wlj, yzw });
         }

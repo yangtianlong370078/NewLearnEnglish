@@ -132,8 +132,7 @@ namespace LearnEnglish.Infrastructure.Repositories
 
             var sql = $@"INSERT INTO `mylexicon` (userId, lexiconId, {numberField}, numbersum, updatetime) 
                 VALUES (@UserId, @LexiconId, @NumberValue, 1, @UpdateTime) 
-                ON DUPLICATE KEY UPDATE 
-                {numberField} = @NumberValue, numbersum = numbersum + 1, updatetime = VALUES(updatetime)";
+                ON DUPLICATE KEY UPDATE {numberField} = @NumberValue, numbersum = numbersum + 1, updatetime = VALUES(updatetime)";
 
             using var connection = _connectionFactory.CreateConnection();
             foreach (var (lexiconId, numberValue) in lexiconNumbers)
