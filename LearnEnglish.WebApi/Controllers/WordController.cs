@@ -80,7 +80,7 @@ namespace LearnEnglish.WebApi.Controllers
             var (result, brs, wlj, yzw) = await _wordService.GetWordListAsync(userId, kc, zt, 1, name, index, pageSize);
             var items = result.Items.Select(d => new
             {
-                d.Id,
+                d.CourseContentId,
                 d.LexiconId,
                 d.En,
                 d.Cn,
@@ -137,7 +137,7 @@ namespace LearnEnglish.WebApi.Controllers
         /// <summary>设置单词学习状态</summary>
         [HttpPost("szzt")]
         [Authorize]
-        public async Task<IActionResult> szzt(int zt, int dqzt, int lexiconId)
+        public async Task<IActionResult> szzt(int zt, int lexiconId)
         {
             var userId = RequireUserId();
             await _wordService.SetWordStatusAsync(userId, lexiconId, zt);
@@ -180,7 +180,7 @@ namespace LearnEnglish.WebApi.Controllers
         public async Task<IActionResult> SetCollect(int lexiconId, bool isCollect)
         {
             var userId = RequireUserId();
-            await _wordService.SetCollectAsync(userId, lexiconId, !isCollect ? 1 : 0);
+            await _wordService.SetCollectAsync(userId, lexiconId, isCollect?1:0 );
             return Ok(new { msg = "操作成功", succss = true });
         }
 
